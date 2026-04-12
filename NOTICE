@@ -1,0 +1,8 @@
+noisemake
+
+Project source code is licensed under MIT.
+
+Chinese IME dictionary data is derived from rime-luna-pinyin data, which is licensed under LGPL-3.0. Generated confusion maps derived from that data are treated as LGPL-covered data.
+
+Rime luna-pinyin source:
+https://github.com/rime/rime-luna-pinyin
