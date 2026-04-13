@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "deploy": "wrangler deploy",
-    "deploy:dev": "wrangler versions deploy",
+    "deploy:dev": "wrangler versions upload",
     "preview": "astro preview",
     "astro": "astro",
     "generate-types": "wrangler types"
