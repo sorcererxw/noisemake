@@ -6,3 +6,8 @@ Chinese IME dictionary data is derived from rime-luna-pinyin data, which is lice
 
 Rime luna-pinyin source:
 https://github.com/rime/rime-luna-pinyin
+
+Simplified Chinese dictionary data is derived from rime-pinyin-simp data, which is licensed under Apache-2.0.
+
+Rime pinyin-simp source:
+https://github.com/rime/rime-pinyin-simp

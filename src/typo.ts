@@ -50,6 +50,22 @@ const ZH_HOMOPHONE_FALLBACKS: Readonly<
   稳定: zhFallback("homophone", "问鼎"),
   实现: zhFallback("homophone", "实线"),
   可以: zhFallback("homophone", "刻意"),
+  安装: zhFallback("near-homophone", "按装"),
+  体验: zhFallback("near-homophone", "体检"),
+  生成: zhFallback("homophone", "声成", "生辰"),
+  前端: zhFallback("homophone", "前段"),
+  工具: zhFallback("near-homophone", "公具"),
+  但是: zhFallback("homophone", "但事"),
+  尝试: zhFallback("homophone", "常识"),
+  今天: zhFallback("near-homophone", "金天"),
+  模式: zhFallback("near-homophone", "摸式"),
+  复刻: zhFallback("homophone", "复课"),
+  写的: zhFallback("homophone", "写得"),
+  计算: zhFallback("near-homophone", "计蒜"),
+  免息: zhFallback("homophone", "面息"),
+  分期: zhFallback("near-homophone", "分歧"),
+  实际: zhFallback("homophone", "事迹"),
+  价值: zhFallback("near-homophone", "价植"),
 };
 
 export function buildZhImeTypoCandidates(
@@ -67,9 +83,12 @@ export function buildZhImeTypoCandidates(
 
       for (let length = maxLength; length >= 2; length -= 1) {
         const source = chars.slice(index, index + length).join("");
-        const replacements = ZH_IME_CONFUSIONS[source];
+        const replacements = mergeZhImeReplacements(
+          ZH_IME_CONFUSIONS[source],
+          ZH_HOMOPHONE_FALLBACKS[source],
+        );
 
-        if (!replacements || replacements.length === 0) {
+        if (replacements.length === 0) {
           continue;
         }
 
@@ -95,9 +114,8 @@ export function buildZhImeTypoCandidates(
     }
   }
 
-  candidates.push(
-    ...buildZhHomophoneFallbackCandidates(chars.join(""), phraseRanges),
-  );
+  const text = chars.join("");
+  candidates.push(...buildZhHomophoneFallbackCandidates(text, phraseRanges));
 
   return candidates;
 }
@@ -285,4 +303,24 @@ function zhFallback(
     reason,
     score: reason === "homophone" ? 0.8 : 0.75,
   }));
+}
+
+function mergeZhImeReplacements(
+  generated: readonly ZhImeReplacement[] | undefined,
+  fallback: readonly ZhImeReplacement[] | undefined,
+): readonly ZhImeReplacement[] {
+  const replacements = [...(generated ?? []), ...(fallback ?? [])];
+  const seen = new Set<string>();
+  const deduped: ZhImeReplacement[] = [];
+
+  for (const replacement of replacements) {
+    if (seen.has(replacement.text)) {
+      continue;
+    }
+
+    seen.add(replacement.text);
+    deduped.push(replacement);
+  }
+
+  return deduped;
 }
