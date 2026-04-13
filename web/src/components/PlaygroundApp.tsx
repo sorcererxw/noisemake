@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 type UiLang = "en" | "zh";
 type ThemeMode = "light" | "dark" | "system";
 type WorkbenchState = "idle" | "dirty" | "invalid" | "running" | "success" | "no-change";
-type ToastState = "copy-success" | "copy-error" | null;
+type ToastState = string | null;
 
 type Segment = {
   text: string;
@@ -18,6 +18,14 @@ type Copy = {
   headline: string;
   proof: string;
   framing: string;
+  cliLabel: string;
+  cliBadge: string;
+  heroPrimaryAction: string;
+  heroSecondaryAction: string;
+  commandCopied: string;
+  commandCopyError: string;
+  playgroundLabel: string;
+  playgroundIntro: string;
   inputLabel: string;
   controlsLabel: string;
   outputLabel: string;
@@ -56,6 +64,14 @@ const COPY: Record<UiLang, Copy> = {
     headline: "Deterministic text noise for evals.",
     proof: "Same input, same seed, same output.",
     framing: "Not an LLM rewrite. Controlled perturbation.",
+    cliLabel: "CLI usage",
+    cliBadge: "minimal command",
+    heroPrimaryAction: "Copy CLI command",
+    heroSecondaryAction: "Try Playground",
+    commandCopied: "Copied CLI command.",
+    commandCopyError: "Could not copy. Select the command manually.",
+    playgroundLabel: "Playground",
+    playgroundIntro: "Run the same engine in the browser.",
     inputLabel: "Paste polished text",
     controlsLabel: "Set deterministic noise",
     outputLabel: "Reproducible noisy output",
@@ -124,6 +140,14 @@ const COPY: Record<UiLang, Copy> = {
     headline: "给评测用的可复现文本噪声。",
     proof: "同一输入、同一种子、同一输出。",
     framing: "不是 LLM 改写，而是可控扰动。",
+    cliLabel: "CLI 用法",
+    cliBadge: "最小命令",
+    heroPrimaryAction: "复制 CLI 命令",
+    heroSecondaryAction: "试试 Playground",
+    commandCopied: "已复制 CLI 命令。",
+    commandCopyError: "复制失败。请手动选中命令。",
+    playgroundLabel: "Playground",
+    playgroundIntro: "在浏览器里用同一个引擎试跑。",
     inputLabel: "粘贴整理好的文本",
     controlsLabel: "设置确定性扰动",
     outputLabel: "可复现的扰动输出",
@@ -192,6 +216,7 @@ const COPY: Record<UiLang, Copy> = {
 const DEFAULT_INPUT = COPY.zh.examples.mixed.value;
 const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
+const HERO_CLI_COMMAND = 'npx noisemake "这是一段测试文本"';
 
 export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const copy = COPY[lang];
@@ -303,109 +328,159 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 
     try {
       await navigator.clipboard.writeText(output);
-      setToast("copy-success");
+      setToast(copy.copied);
     } catch {
-      setToast("copy-error");
+      setToast(copy.copyError);
+    }
+  }
+
+  async function copyCliCommand() {
+    try {
+      await navigator.clipboard.writeText(HERO_CLI_COMMAND);
+      setToast(copy.commandCopied);
+    } catch {
+      setToast(copy.commandCopyError);
     }
   }
 
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-4">
-        <TopBand lang={lang} copy={copy} />
+        <HeaderBar lang={lang} />
+        <Hero copy={copy} copyCliCommand={copyCliCommand} />
 
-        <section className="workbench" aria-label={copy.headline}>
-          <div className="workbench-grid">
-            <InputPanel
-              copy={copy}
-              input={input}
-              setInput={(value) => {
-                setInput(value);
-                markDirty();
-              }}
-              useExample={(value) => {
-                setInput(value);
-                markDirty();
-              }}
-              error={validation.input}
-            />
-            <ControlRail
-              copy={copy}
-              frequency={frequency}
-              frequencyRef={frequencyRef}
-              setFrequency={(value) => {
-                setFrequency(value);
-                markDirty();
-              }}
-              seed={seed}
-              setSeed={(value) => {
-                setSeed(value);
-                markDirty();
-              }}
-              randomSeed={randomSeed}
-              setRandomSeed={(value) => {
-                setRandomSeed(value);
-                markDirty();
-              }}
-              lastRunSeed={lastRunSeed}
-              types={types}
-              languages={languages}
-              toggleType={updateTypes}
-              toggleLanguage={updateLanguages}
-              frequencyError={validation.frequency}
-              typeError={validation.types}
-              languageError={validation.languages}
-              runLabel={state === "running" ? copy.running : copy.run}
-              run={run}
-              runDisabled={runDisabled}
-              copyOutput={copyOutput}
-              copyDisabled={!canCopy}
-            />
-            <OutputPanel
-              copy={copy}
-              state={state}
-              output={output}
-              segments={segments}
-              runError={runError}
-            />
+        <section className="playground-section" id="playground" aria-labelledby="playground-label">
+          <div className="playground-heading">
+            <h2 id="playground-label">{copy.playgroundLabel}</h2>
+            <p>{copy.playgroundIntro}</p>
           </div>
 
-          <div className="parity-row">
-            <span>{copy.parity}</span>
-            <code>npx noisemake "..." --seed 42 --frequency 200</code>
-          </div>
+          <section className="workbench" aria-label={copy.playgroundLabel}>
+            <div className="workbench-grid">
+              <InputPanel
+                copy={copy}
+                input={input}
+                setInput={(value) => {
+                  setInput(value);
+                  markDirty();
+                }}
+                useExample={(value) => {
+                  setInput(value);
+                  markDirty();
+                }}
+                error={validation.input}
+              />
+              <ControlRail
+                copy={copy}
+                frequency={frequency}
+                frequencyRef={frequencyRef}
+                setFrequency={(value) => {
+                  setFrequency(value);
+                  markDirty();
+                }}
+                seed={seed}
+                setSeed={(value) => {
+                  setSeed(value);
+                  markDirty();
+                }}
+                randomSeed={randomSeed}
+                setRandomSeed={(value) => {
+                  setRandomSeed(value);
+                  markDirty();
+                }}
+                lastRunSeed={lastRunSeed}
+                types={types}
+                languages={languages}
+                toggleType={updateTypes}
+                toggleLanguage={updateLanguages}
+                frequencyError={validation.frequency}
+                typeError={validation.types}
+                languageError={validation.languages}
+                runLabel={state === "running" ? copy.running : copy.run}
+                run={run}
+                runDisabled={runDisabled}
+                copyOutput={copyOutput}
+                copyDisabled={!canCopy}
+              />
+              <OutputPanel
+                copy={copy}
+                state={state}
+                output={output}
+                segments={segments}
+                runError={runError}
+              />
+            </div>
+          </section>
         </section>
       </div>
 
       <div className="toast-region" aria-live="polite" aria-atomic="true">
-        {toast ? (
-          <div className="toast">{toast === "copy-success" ? copy.copied : copy.copyError}</div>
-        ) : null}
+        {toast ? <div className="toast">{toast}</div> : null}
       </div>
     </main>
   );
 }
 
-function TopBand({ lang, copy }: { lang: UiLang; copy: Copy }) {
+function HeaderBar({ lang }: { lang: UiLang }) {
   return (
-    <header className="top-band">
-      <div className="brand-block">
-        <a className="brand-lockup" href={`/${lang}`} aria-label="noisemake">
-          <img className="noise-face" src="/noise-face.svg" alt="" width="24" height="24" />
-          <span>noisemake</span>
-        </a>
-        <div>
-          <p className="headline">{copy.headline}</p>
-          <p className="proof-line">
-            {copy.proof} <span>{copy.framing}</span>
-          </p>
-        </div>
-      </div>
+    <header className="site-header">
+      <a className="brand-lockup" href={`/${lang}`} aria-label="noisemake">
+        <img className="noise-face" src="/noise-face.svg" alt="" width="24" height="24" />
+        <span>noisemake</span>
+      </a>
       <div className="switches" aria-label="Page controls">
         <LanguageSwitch lang={lang} />
-        <ThemeSwitch copy={copy} />
+        <ThemeSwitch copy={COPY[lang]} />
       </div>
     </header>
+  );
+}
+
+function Hero({
+  copy,
+  copyCliCommand,
+}: {
+  copy: Copy;
+  copyCliCommand: () => void;
+}) {
+  return (
+    <section className="hero-section" aria-labelledby="hero-title">
+      <div className="hero-copy">
+        <p className="section-kicker">{copy.parity}</p>
+        <h1 id="hero-title" className="hero-headline">
+          {copy.headline}
+        </h1>
+        <p className="hero-proof">
+          {copy.proof} <span>{copy.framing}</span>
+        </p>
+        <div className="hero-actions">
+          <Button className="hero-primary" type="button" onClick={copyCliCommand}>
+            {copy.heroPrimaryAction}
+          </Button>
+          <Button className="hero-secondary" variant="outline" asChild>
+            <a href="#playground">{copy.heroSecondaryAction}</a>
+          </Button>
+        </div>
+      </div>
+      <CliUsagePanel copy={copy} />
+    </section>
+  );
+}
+
+function CliUsagePanel({ copy }: { copy: Copy }) {
+  return (
+    <aside className="cli-panel" aria-label={copy.cliLabel}>
+      <div className="cli-panel-header">
+        <span>{copy.cliLabel}</span>
+        <span>{copy.cliBadge}</span>
+      </div>
+      <pre className="cli-command">
+        <code>
+          <span aria-hidden="true">$ </span>
+          {HERO_CLI_COMMAND}
+        </code>
+      </pre>
+    </aside>
   );
 }
 

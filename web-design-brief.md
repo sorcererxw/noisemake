@@ -91,28 +91,55 @@ Support dark mode using the standard shadcn + Tailwind CSS approach:
 
 ## Suggested Page Shape
 
-Use a workbench-first layout. The playground is the page's primary visual anchor,
-not a demo embedded under a landing page.
+Use a CLI-led tool layout. The hero should be larger than the current slim top
+band, but it must still sell the tool by showing real usage, not by behaving like
+a generic SaaS landing page. The current editor/workbench becomes a `Playground`
+section directly below the hero.
 
 First-screen hierarchy:
 
-1. Product identity and language/theme controls.
-2. One-line proof copy that explains deterministic text noise.
-3. The live workbench: input, deterministic controls, and output.
-4. A short CLI/library parity hint after the workbench.
+1. Product identity, language switch, and theme switch.
+2. A larger hero with the deterministic positioning line and proof sentence.
+3. Actual CLI usage, shown as the hero's primary visual anchor.
+4. The top edge of the `Playground` section, so the user can see that the page is
+   still usable immediately.
 
-The hero must be a slim top band, not a tall hero section. It should contain only
-a tiny friendly mark, the `noisemake` name, one positioning line, one proof
-sentence, and page-level controls such as language and theme. The playground
-must be visible immediately on desktop without requiring scroll.
+The hero should feel generous: more vertical room, stronger typography, and a
+clear CLI code surface. It should not use a stock illustration, decorative blob,
+or feature-card grid. The hero earns its size by teaching:
+
+```bash
+npx noisemake "这是一段测试文本"
+```
+
+Keep the hero CLI example to one minimal command without flags. Detailed options
+belong in GitHub docs and `noisemake --help`, not in the hero.
+
+The playground can sit just below the fold on small screens, but desktop should
+show at least its section label or top border in the first viewport. This keeps
+the product from becoming a marketing page with a buried demo.
+
+Hero actions:
+
+- Primary: `Copy CLI command`. This copies the CLI example and confirms
+  with the same toast style used by output copy.
+- Secondary: `Try Playground`. This scrolls or jumps to the `Playground` section.
+- Do not use generic CTA language such as `Get started`.
 
 Suggested top-level layout:
 
 ```text
 +--------------------------------------------------------------+
-| noisemake      deterministic text noise for evals   zh/en theme |
-| Same input, same seed, same output. Not an LLM rewrite.       |
+| noise face  noisemake                         zh/en theme    |
 +--------------------------------------------------------------+
+| HERO                                                         |
+| Deterministic text noise for evals.      +----------------+  |
+| Same input, same seed, same output.      | $ npx          |  |
+| Not an LLM rewrite. Controlled noise.    |   noisemake    |  |
+| Same engine as CLI and package.          |   "..."        |  |
+|                                          +----------------+  |
++--------------------------------------------------------------+
+| Playground                                                   |
 | Paste polished text    | Set deterministic    | Reproducible  |
 |                        | noise                | noisy output  |
 |                        | - frequency          |               |
@@ -120,8 +147,6 @@ Suggested top-level layout:
 |                        | - typo/repeat        |               |
 |                        | - zh/en              |               |
 |                        | - run/copy           |               |
-+--------------------------------------------------------------+
-| Short usage hint: CLI/library parity                         |
 +--------------------------------------------------------------+
 ```
 
@@ -135,10 +160,21 @@ Workbench section labels:
 - Input panel: "Paste polished text"
 - Control rail: "Set deterministic noise"
 - Output panel: "Reproducible noisy output"
-- Parity hint: "Same engine as the CLI and npm package."
+- Playground section label: "Playground"
+- Parity hint in hero: "Same engine as the CLI and npm package."
 
 Desktop layout:
 
+- Hero: two-column composition, copy on the left and CLI usage panel on the
+  right. Keep the CLI panel compact enough that the hero does not become a fake
+  dashboard.
+- The hero can use a larger type scale than the current top band, but keep the
+  copy short: brand, headline, proof, framing, CLI parity, and one anchor link to
+  the playground if needed.
+- The CLI panel should show exactly one minimal command with no flags. Do not
+  include `--seed`, `--frequency`, `--types`, or `--languages` in the hero.
+- The hero action group should place `Copy CLI command` first and `Try Playground`
+  second.
 - Keep input and output as the dominant panes.
 - Keep the control rail narrower than the text panes.
 - Put `frequency`, `seed`, type filters, language filters, Run, and Copy in the
@@ -148,10 +184,11 @@ Desktop layout:
 
 Mobile layout:
 
+- Order the hero as product controls, headline/proof, CLI usage, then playground.
 - Order the workbench as input, compact controls, Run, output.
 - Keep output immediately after Run so users do not hunt for the result.
-- Keep the top band to the product name, one positioning line, and compact
-  language/theme controls.
+- Keep the CLI usage readable without horizontal page scroll; allow code lines to
+  wrap or scroll inside the code surface only.
 
 ## User-Facing Controls
 
@@ -226,26 +263,30 @@ Storyboard:
 
 | Step | User does | User should feel | UI support |
 |------|-----------|------------------|------------|
-| 1 | Lands on `/zh` or `/en` | "I know what this is." | Slim top band says deterministic text noise for evals and rejects LLM rewriting. |
-| 2 | Scans the workbench | "I can use this immediately." | Three labels make the flow scannable: paste text, set deterministic noise, get reproducible output. |
-| 3 | Clicks an example or pastes text | "This is a real tool, not a mockup." | Input accepts text directly; example buttons use realistic mixed/Chinese/English samples. |
-| 4 | Reviews `frequency` and `seed` | "The controls map to reproducibility." | Helper copy explains that higher frequency means less noise and same seed means same output. |
-| 5 | Clicks Run | "A deliberate operation happened." | Run shows a short running state; output changes only after Run. |
-| 6 | Reads output | "I can inspect what changed." | Changed spans are highlighted inline; no-change cases explain why nothing changed. |
-| 7 | Copies output | "This is usable in my workflow." | Copy button confirms success with a short toast. |
-| 8 | Tweaks settings | "I know the previous output is stale." | Output remains visible but shows "Settings changed, run again." |
+| 1 | Lands on `/zh` or `/en` | "I know what this is, and I can use it from my terminal." | Larger hero states deterministic text noise and shows one real CLI command. |
+| 2 | Scans the CLI panel | "This is not a vague AI rewriter." | The command is short enough to understand immediately; deeper options are left to GitHub docs and CLI help. |
+| 3 | Scrolls or jumps to Playground | "I can try the same engine here." | Playground section appears immediately after the hero, not behind feature copy. |
+| 4 | Clicks an example or pastes text | "This is a real tool, not a mockup." | Input accepts text directly; example buttons use realistic mixed/Chinese/English samples. |
+| 5 | Reviews `frequency` and `seed` | "The controls map to reproducibility." | Helper copy explains that higher frequency means less noise and same seed means same output. |
+| 6 | Clicks Run | "A deliberate operation happened." | Run shows a short running state; output changes only after Run. |
+| 7 | Reads output | "I can inspect what changed." | Changed spans are highlighted inline; no-change cases explain why nothing changed. |
+| 8 | Copies output | "This is usable in my workflow." | Copy button confirms success with a short toast. |
+| 9 | Tweaks settings | "I know the previous output is stale." | Output remains visible but shows "Settings changed, run again." |
 
 First 5 seconds:
 
 - The page must communicate deterministic research/tooling, not detector evasion.
-- The workbench must be visible and usable immediately.
-- The first visible CTA should be Run, not "Get started" or "Learn more".
+- The hero must show one real minimal CLI command before any abstract product claims.
+- The playground section label or top edge must be visible on desktop so the demo
+  feels close, not buried.
+- The first visible action should be terminal/tooling-oriented, such as copying the
+  CLI command or jumping to `Playground`, not "Get started" or "Learn more".
 
 First 5 minutes:
 
 - The user should learn the reproducibility model by using the controls.
 - The no-change result must feel expected, not broken.
-- The CLI/package parity hint should make the web page feel like the same engine,
+- The CLI/package parity cue should make the web page feel like the same engine,
   not a separate toy.
 
 Long-term relationship:
@@ -274,12 +315,12 @@ Brand mark:
 - Shape: small rounded square, two offset dot eyes, slightly jagged mouth.
 - Do not use emoji as decoration.
 - Do not add a large mascot, illustration, or hero character.
-- The mark supports the community playground feel; the workbench remains the
-  visual anchor.
+- The mark supports the community playground feel; the CLI hero and playground
+  remain the visual anchors.
 
 ## Visual Direction
 
-Classifier: hybrid, with a compact marketing top band and a primary app UI.
+Classifier: hybrid, with a CLI-led hero and a primary app playground.
 
 AI slop hard rules:
 
@@ -293,12 +334,14 @@ AI slop hard rules:
 
 Visual anchor:
 
-- The workbench is the visual anchor.
-- Input and output panes carry the page weight.
+- The hero CLI usage panel is the first visual anchor.
+- The playground is the second visual anchor and must appear directly below the
+  hero.
+- Input and output panes carry the playground's weight.
 - The control rail is narrower and denser than the text panes, but should still
   feel approachable and demo-like.
-- Changed output spans should be the most distinctive visual treatment on the
-  page, using the warm highlight tokens from `DESIGN.md`.
+- Changed output spans should be the most distinctive visual treatment inside
+  the playground, using the warm highlight tokens from `DESIGN.md`.
 
 Surface and hierarchy:
 
@@ -323,14 +366,16 @@ Viewport behavior:
 
 | Viewport | Layout |
 |----------|--------|
-| Desktop, 1024px and up | Three-column workbench: input, narrower controls, output. The workbench should fit in the first viewport when content is moderate. |
-| Tablet, 768px to 1023px | Two-row workbench: input and output side by side when space allows, controls as a full-width row between them or as a compact rail. |
-| Mobile, below 768px | Single column: top band, examples, input, controls, Run, output, parity hint. Output must appear immediately after Run. |
+| Desktop, 1024px and up | Two-column hero with CLI panel, then three-column playground: input, narrower controls, output. The playground label or top edge should remain visible in the first viewport. |
+| Tablet, 768px to 1023px | Hero stacks copy above CLI if needed, then two-row playground: input and output side by side when space allows, controls as a full-width row or compact rail. |
+| Mobile, below 768px | Single column: header controls, hero copy, CLI usage, examples, input, controls, Run, output. Output must appear immediately after Run. |
 
 Mobile rules:
 
-- Keep the top band compact: product name, one-line positioning, language switch,
-  and theme switch.
+- Keep the header compact: product name, language switch, and theme switch.
+- Keep the hero concise enough that CLI usage and the first playground controls
+  are reachable without a long scroll.
+- Keep CLI code readable at 320px width.
 - Keep example buttons near the input textarea.
 - Keep `frequency`, `seed`, and Run in the same visual group.
 - Do not hide output behind a tab, drawer, accordion, or scroll trap.
@@ -376,7 +421,8 @@ Ask the design reviewer to focus on:
 
 1. Does the page immediately communicate that this is a deterministic research/tooling
    primitive, not an AI-humanizer gimmick?
-2. Is the hero small enough that the playground remains the primary experience?
+2. Does the larger hero earn its space by teaching CLI usage instead of adding
+   marketing decoration?
 3. Does the playground layout work on desktop and mobile without feeling like an
    embedded preview?
 4. Are the controls understandable for non-expert users while still preserving the

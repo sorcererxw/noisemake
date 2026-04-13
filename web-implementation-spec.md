@@ -25,7 +25,7 @@ repo-maintenance step before relying on root-level git status, commits, or PRs.
 
 Build the `noisemake` web playground as a Hugging Face-inspired open research playground:
 
-- Workbench-first, not a landing page.
+- CLI-led tool page, not a generic landing page.
 - Friendly and community-native, not an enterprise dashboard.
 - Deterministic and trustworthy: same input, same seed, same output.
 - Uses the root package via `noisemake: "workspace:*"`.
@@ -39,7 +39,7 @@ Build the `noisemake` web playground as a Hugging Face-inspired open research pl
 
 Language behavior:
 
-- Manual language switch is visible in the top band.
+- Manual language switch is visible in the header.
 - Manual choice is stored in `localStorage`.
 - `/` still uses server-side `Accept-Language` detection.
 - If a user manually switches language on `/zh` or `/en`, navigate to the matching route and persist the choice.
@@ -54,9 +54,16 @@ Theme behavior:
 
 ```text
 --------------------------------------------------------------+
-| noise face  noisemake   positioning copy   zh/en  theme     |
-| Same input, same seed, same output. Not an LLM rewrite.      |
+| noise face  noisemake                         zh/en theme    |
 +--------------------------------------------------------------+
+| Hero                                                         |
+| Deterministic text noise for evals.      +----------------+  |
+| Same input, same seed, same output.      | $ npx          |  |
+| Not an LLM rewrite. Controlled noise.    |   noisemake    |  |
+| Same engine as CLI and package.          |   "..."        |  |
+|                                          +----------------+  |
++--------------------------------------------------------------+
+| Playground                                                   |
 | Workbench surface                                           |
 | +------------------+-------------------+-------------------+ |
 | | Input panel      | Control rail      | Output panel      | |
@@ -66,16 +73,18 @@ Theme behavior:
 | |                  | language chips    |                   | |
 | |                  | Run / Copy        |                   | |
 | +------------------+-------------------+-------------------+ |
-| CLI/package parity hint                                     |
 +--------------------------------------------------------------+
 ```
 
 Component split:
 
 - `NoiseFaceMark`
-- `TopBand`
+- `HeaderBar`
+- `Hero`
+- `CliUsagePanel`
 - `LanguageSwitch`
 - `ThemeSwitch`
+- `PlaygroundSection`
 - `Workbench`
 - `InputPanel`
 - `ControlRail`
@@ -83,7 +92,22 @@ Component split:
 - `ExampleButtons`
 - `ChangedTextOutput`
 
-Keep the main workbench as one surface with internal panel dividers. Do not build it as three unrelated decorative cards.
+Keep the main workbench as one surface with internal panel dividers. Do not build it as three unrelated decorative cards. The CLI usage panel may be framed like a terminal because it is content and instruction, not decoration.
+
+`CliUsagePanel` should show one real minimal command and may include a small copy command
+action. Copying a command should use the same toast pattern as output copy. Do
+not add any command execution behavior in the browser.
+
+The hero command must stay flagless. Detailed flags belong in GitHub docs and
+`noisemake --help`, not the first screen.
+
+Hero actions:
+
+- Primary button: `Copy CLI command`, copying the hero CLI command.
+- Secondary button/link: `Try Playground`, scrolling or jumping to the
+  `PlaygroundSection`.
+- Chinese copy may keep `Playground` as the section label and use surrounding
+  Chinese helper copy to explain that this is the browser playground.
 
 ## Noise Face SVG
 
@@ -104,6 +128,11 @@ English:
 - Headline: `Deterministic text noise for evals.`
 - Proof line: `Same input, same seed, same output.`
 - Framing: `Not an LLM rewrite. Controlled perturbation.`
+- Hero CLI label: `CLI usage`
+- Hero CLI command: `npx noisemake "这是一段测试文本"`
+- Hero primary action: `Copy CLI command`
+- Hero secondary action: `Try Playground`
+- Playground label: `Playground`
 - Input label: `Paste polished text`
 - Controls label: `Set deterministic noise`
 - Output label: `Reproducible noisy output`
@@ -116,6 +145,10 @@ Chinese:
 - Headline: `给评测用的可复现文本噪声。`
 - Proof line: `同一输入、同一种子、同一输出。`
 - Framing: `不是 LLM 改写，而是可控扰动。`
+- Hero CLI label: `CLI 用法`
+- Hero primary action: `复制 CLI 命令`
+- Hero secondary action: `试试 Playground`
+- Playground label: `Playground`
 
 Avoid copy that sounds like detector evasion.
 
@@ -217,19 +250,20 @@ If adding all three is too heavy, prioritize `IBM Plex Sans` + `Noto Sans SC`, a
 
 Breakpoints:
 
-- Desktop, `>= 1024px`: input, controls, output in three columns.
-- Tablet, `768px - 1023px`: input/output side by side if space allows, controls as a full-width row or compact rail.
-- Mobile, `< 768px`: single column.
+- Desktop, `>= 1024px`: two-column hero, then input, controls, output in three playground columns.
+- Tablet, `768px - 1023px`: hero stacks copy above CLI if needed; playground uses input/output side by side if space allows, controls as a full-width row or compact rail.
+- Mobile, `< 768px`: single column from header through output.
 
 Mobile order:
 
-1. Top band.
-2. Example buttons.
-3. Input.
-4. Controls.
-5. Run.
-6. Output.
-7. Parity hint.
+1. Header controls.
+2. Hero copy.
+3. CLI usage panel.
+4. Playground label and example buttons.
+5. Input.
+6. Controls.
+7. Run.
+8. Output.
 
 Output must appear immediately after Run. Do not hide output behind tabs, drawers, accordions, or scroll traps.
 
@@ -267,6 +301,10 @@ Output must appear immediately after Run. Do not hide output behind tabs, drawer
 - Manual language switch persists and navigates correctly.
 - Theme switch supports light, dark, and system, and persists explicit choice.
 - Same input + same seed + same options returns same output after repeated runs.
+- Hero shows exactly one flagless CLI command: `npx noisemake "这是一段测试文本"`.
+- Hero primary action copies the hero CLI command; secondary action moves to the
+  `Playground` section.
+- Playground appears directly below the hero and is not presented as a decorative embedded preview.
 - Editing after run shows stale status.
 - Invalid `frequency` disables Run and shows inline error.
 - Empty type selection disables Run and shows inline error.
@@ -284,9 +322,13 @@ After implementation, run a design QA pass before shipping. Check specifically:
 
 - The page still feels like a Hugging Face-inspired open research playground, not
   an enterprise dashboard.
+- The larger hero earns its size with CLI usage, not decorative hero art or a
+  generic feature grid.
+- At desktop size, the first viewport shows enough of the playground below the
+  hero that users know it is immediately usable.
 - Noise face appears as a tiny SVG mark near the wordmark and does not become a
   large mascot.
-- Mobile order is top band, examples, input, controls, Run, output, parity hint.
+- Mobile order is header controls, hero copy, CLI usage, examples, input, controls, Run, output.
 - Dark mode preserves contrast and does not become a dark blue/purple dashboard.
 - Changed spans are visible and do not rely on color alone.
 - shadcn components support the experience without turning the page into a card

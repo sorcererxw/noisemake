@@ -133,6 +133,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
 
   html {
@@ -159,19 +160,12 @@
 }
 
 @layer components {
-  .top-band {
+  .site-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 20px 0 4px;
-  }
-
-  .brand-block {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 8px;
+    padding: 18px 0 8px;
   }
 
   .brand-lockup {
@@ -193,24 +187,131 @@
     flex: 0 0 auto;
   }
 
-  .headline {
-    max-width: 46rem;
-    font-family: var(--font-display);
-    font-size: 1.35rem;
-    font-weight: 600;
-    line-height: 1.2;
+  .hero-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+    gap: 32px;
+    align-items: center;
+    padding: 40px 0 36px;
   }
 
-  .proof-line {
-    margin-top: 4px;
-    max-width: 46rem;
+  .hero-copy {
+    min-width: 0;
+  }
+
+  .hero-section > * {
+    min-width: 0;
+  }
+
+  .section-kicker {
+    margin-bottom: 10px;
+    color: var(--muted-foreground);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .hero-headline {
+    max-width: 48rem;
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.05;
+  }
+
+  .hero-proof {
+    margin-top: 14px;
+    max-width: 40rem;
+    color: var(--muted-foreground);
+    font-size: 1.05rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-proof span {
+    color: var(--foreground);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .hero-actions [data-slot="button"] {
+    min-height: 44px;
+    border-radius: 8px;
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .hero-primary {
+    font-weight: 600;
+  }
+
+  .cli-panel {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: color-mix(in oklch, var(--card) 88%, var(--muted));
+    box-shadow: 0 10px 28px color-mix(in oklch, var(--foreground) 8%, transparent);
+  }
+
+  .cli-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 12px;
+    color: var(--muted-foreground);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .cli-panel-header span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .cli-command {
+    margin: 0;
+    padding: 18px;
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .playground-section {
+    display: flex;
+    scroll-margin-top: 16px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .playground-heading {
+    max-width: 42rem;
+    padding-top: 4px;
+  }
+
+  .playground-heading h2 {
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.15;
+  }
+
+  .playground-heading p:not(.section-kicker) {
+    margin-top: 6px;
     color: var(--muted-foreground);
     font-size: 0.95rem;
     line-height: 1.5;
-  }
-
-  .proof-line span {
-    color: var(--foreground);
   }
 
   .switches {
@@ -340,7 +441,7 @@
   }
 
   .mono-value,
-  .parity-row code {
+  .cli-command {
     font-family: var(--font-mono);
   }
 
@@ -510,28 +611,6 @@
     animation: changed-entry 180ms cubic-bezier(0.2, 0, 0, 1);
   }
 
-  .parity-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    border-top: 1px solid var(--border);
-    background: color-mix(in oklch, var(--accent) 52%, var(--card));
-    padding: 12px 16px;
-    color: var(--accent-foreground);
-    font-size: 0.85rem;
-  }
-
-  .parity-row code {
-    overflow-wrap: anywhere;
-    border: 1px solid color-mix(in oklch, var(--changed-border) 60%, var(--border));
-    border-radius: 6px;
-    background: color-mix(in oklch, var(--card) 74%, var(--accent));
-    padding: 4px 7px;
-    font-size: 0.76rem;
-  }
-
   .toast-region {
     pointer-events: none;
     position: fixed;
@@ -575,6 +654,16 @@
 
 @media (max-width: 1023px) {
   @layer components {
+    .hero-section {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+      padding: 32px 0 24px;
+    }
+
+    .hero-headline {
+      font-size: 2.4rem;
+    }
+
     .workbench-grid {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       min-height: 0;
@@ -601,13 +690,66 @@
 
 @media (max-width: 767px) {
   @layer components {
-    .top-band {
+    .site-header {
+      align-items: flex-start;
       flex-direction: column;
       padding-top: 16px;
     }
 
-    .headline {
-      font-size: 1.1rem;
+    .hero-section {
+      max-width: calc(100vw - 32px);
+      gap: 18px;
+      padding: 24px 0 22px;
+    }
+
+    .hero-copy,
+    .hero-actions,
+    .cli-panel,
+    .playground-section {
+      max-width: 100%;
+    }
+
+    .hero-headline {
+      max-width: calc(100% - 16px);
+      font-size: 2rem;
+      line-height: 1.08;
+    }
+
+    .hero-proof {
+      max-width: calc(100% - 16px);
+      font-size: 0.98rem;
+    }
+
+    .hero-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .hero-actions [data-slot="button"] {
+      width: calc(100% - 16px);
+      max-width: 100%;
+      flex: 0 0 auto;
+      align-self: stretch;
+      white-space: normal;
+    }
+
+    .cli-panel-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cli-panel {
+      max-width: calc(100% - 16px);
+    }
+
+    .cli-command {
+      padding: 14px;
+      font-size: 0.86rem;
+    }
+
+    .playground-heading h2 {
+      font-size: 1.35rem;
     }
 
     .switches {
@@ -650,11 +792,6 @@
       padding: 12px;
     }
 
-    .parity-row {
-      align-items: flex-start;
-      flex-direction: column;
-      padding: 12px;
-    }
   }
 }
 

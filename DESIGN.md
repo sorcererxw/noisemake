@@ -31,7 +31,7 @@ Chosen direction:
 
 ## Typography
 
-- **Display:** Space Grotesk, for the product name and compact top-band headline.
+- **Display:** Space Grotesk, for the product name and CLI-led hero headline.
 - **Body:** IBM Plex Sans, with Noto Sans SC fallback for Chinese UI and content.
 - **UI labels:** IBM Plex Sans Medium, concise and readable.
 - **Data / seed / frequency / code-like values:** JetBrains Mono Variable, already installed in `web/src/styles/global.css`.
@@ -107,16 +107,19 @@ Dark mode target:
 
 ## Layout
 
-- **Approach:** Workbench-first demo layout.
-- **First viewport:** Product identity, one-line proof, and usable playground.
-- **Desktop grid:** Input pane, compact controls, output pane. Text panes dominate; control rail is narrower.
-- **Mobile order:** Input, examples, controls, Run, output.
+- **Approach:** Tool-first page with a larger CLI-led hero and the playground directly below it.
+- **First viewport:** Product identity, deterministic proof, CLI usage, and the top edge of the playground. The page may ask for a short scroll before the full playground, but it must not feel like the playground is buried under marketing.
+- **Hero structure:** Brand and page controls in a compact nav row, then a generous hero band with the headline/proof on one side and a real CLI usage panel on the other. The CLI panel is the hero's visual anchor; do not replace it with decorative art.
+- **Playground position:** The current editor/workbench becomes a section named `Playground` below the hero. It stays a real usable tool, not an embedded preview.
+- **Desktop playground grid:** Input pane, compact controls, output pane. Text panes dominate; control rail is narrower.
+- **Mobile order:** Header controls, hero copy, CLI usage, playground examples, input, controls, Run, output.
 - **Max width:** 1180px for the workbench, centered with 24px page padding.
 - **Main surface:** One friendly playground surface with internal separation. Do not turn input, controls, and output into three unrelated decorative cards.
 - **Border radius:** Default 8px, small 6px, large 10px only for the outer workbench. No pill-shaped everything.
 
 ## Components
 
+- **Hero CLI panel:** Use a compact terminal-like code surface that shows actual commands, such as `npx noisemake "..." --seed 42 --frequency 200`, and a short reproducibility note. This surface earns its frame because it teaches usage.
 - **Buttons:** Run is the primary warm-yellow action. Copy is secondary. Example buttons are small soft chips.
 - **Checkboxes:** Prefer shadcn checkbox or toggle-like chips for `typo`, `repeat`, `zh`, and `en`. Active state uses the yellow accent, not blue or purple.
 - **Textareas:** Large, calm, and resizable only if it does not break the workbench. Use clear labels above each pane.
@@ -129,7 +132,7 @@ Dark mode target:
 - **Approach:** Friendly functional motion.
 - **Durations:** 120ms for micro state changes, 180ms for highlight entry, 250ms for toast entry.
 - **Easing:** `cubic-bezier(0.2, 0, 0, 1)` for state entry; standard ease-out for exit.
-- **Allowed motions:** Changed span highlight after Run, Copy toast, invalid field focus/error pulse.
+- **Allowed motions:** Hero CLI copy hover/focus state, changed span highlight after Run, Copy toast, invalid field focus/error pulse.
 - **Not allowed:** Ambient animation, parallax, animated blobs, carousels, decorative hero motion.
 
 ## Copy
@@ -162,7 +165,8 @@ Dark mode target:
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2026-04-13 | Use Hugging Face-inspired open research playground direction | User prefers the friendly community demo feel over a colder instrument panel. |
-| 2026-04-13 | Keep workbench-first layout | The product should be usable immediately, not hidden below marketing. |
+| 2026-04-13 | Keep workbench-first layout (superseded) | Original direction was to make the product usable immediately; the current direction keeps that intent by placing the playground directly below the larger CLI hero. |
+| 2026-04-13 | Shift to a larger CLI-led hero with the playground below | User wants the hero to carry more structure, teach CLI usage, and demote the current editor into a `Playground` section without becoming a generic landing page. |
 | 2026-04-13 | Use warm yellow as the primary accent | Matches the open playground direction while avoiding purple SaaS defaults. |
 | 2026-04-13 | Keep JetBrains Mono for deterministic values only | The existing shadcn setup already imports it, but all-mono hurts mixed Chinese/English reading. |
 | 2026-04-13 | Allow one tiny friendly mark near the wordmark | Captures Hugging Face-style warmth without turning the page into a toy. |
