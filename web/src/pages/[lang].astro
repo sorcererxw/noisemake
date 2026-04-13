@@ -1,0 +1,44 @@
+---
+import PlaygroundApp from "@/components/PlaygroundApp";
+import "../styles/global.css";
+
+export const prerender = false;
+
+const lang = Astro.params.lang;
+
+if (lang !== "zh" && lang !== "en") {
+  return Astro.redirect("/en", 302);
+}
+
+const title = lang === "zh"
+  ? "noisemake - 给评测用的可复现文本噪声"
+  : "noisemake - Deterministic text noise for evals";
+const description = lang === "zh"
+  ? "同一输入、同一种子、同一输出。不是 LLM 改写，而是可控扰动。"
+  : "Same input, same seed, same output. Not an LLM rewrite. Controlled perturbation.";
+---
+
+<html lang={lang} class="theme-boot">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const theme = localStorage.getItem("noisemake-theme") || "system";
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle(
+          "dark",
+          theme === "dark" || (theme === "system" && prefersDark),
+        );
+      })();
+    </script>
+  </head>
+  <body>
+    <PlaygroundApp lang={lang} client:load />
+  </body>
+</html>

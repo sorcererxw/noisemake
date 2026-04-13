@@ -1,0 +1,293 @@
+# Web Implementation Spec
+
+## Inputs
+
+Read these first:
+
+- `DESIGN.md`
+- `web-design-brief.md`
+- `web/src/styles/global.css`
+- root package exports from `src/index.ts`
+
+This spec is the engineering handoff. `DESIGN.md` is the design system. `web-design-brief.md` is the product/interaction brief.
+
+## Repo Setup Note
+
+The generated `web/` directory currently appears to contain its own `.git/`
+metadata. Before implementation, decide whether `web/` is meant to be a normal
+package inside the root pnpm workspace or an intentionally separate repository.
+
+Expected direction for this project: `web/` should be a normal workspace package
+owned by the root repo. If so, remove the nested git boundary in a deliberate
+repo-maintenance step before relying on root-level git status, commits, or PRs.
+
+## Goal
+
+Build the `noisemake` web playground as a Hugging Face-inspired open research playground:
+
+- Workbench-first, not a landing page.
+- Friendly and community-native, not an enterprise dashboard.
+- Deterministic and trustworthy: same input, same seed, same output.
+- Uses the root package via `noisemake: "workspace:*"`.
+- Does not change CLI behavior or the core perturbation algorithm.
+
+## Routes
+
+- `/` redirects server-side based on `Accept-Language`.
+- `/zh` renders the Chinese page.
+- `/en` renders the English page.
+
+Language behavior:
+
+- Manual language switch is visible in the top band.
+- Manual choice is stored in `localStorage`.
+- `/` still uses server-side `Accept-Language` detection.
+- If a user manually switches language on `/zh` or `/en`, navigate to the matching route and persist the choice.
+
+Theme behavior:
+
+- Use class-based dark mode.
+- Support light, dark, and system modes.
+- Store explicit user theme choice in `localStorage`.
+
+## Page Structure
+
+```text
+--------------------------------------------------------------+
+| noise face  noisemake   positioning copy   zh/en  theme     |
+| Same input, same seed, same output. Not an LLM rewrite.      |
++--------------------------------------------------------------+
+| Workbench surface                                           |
+| +------------------+-------------------+-------------------+ |
+| | Input panel      | Control rail      | Output panel      | |
+| | examples         | frequency         | output            | |
+| | textarea         | seed              | changed spans     | |
+| |                  | type chips        | copy status       | |
+| |                  | language chips    |                   | |
+| |                  | Run / Copy        |                   | |
+| +------------------+-------------------+-------------------+ |
+| CLI/package parity hint                                     |
++--------------------------------------------------------------+
+```
+
+Component split:
+
+- `NoiseFaceMark`
+- `TopBand`
+- `LanguageSwitch`
+- `ThemeSwitch`
+- `Workbench`
+- `InputPanel`
+- `ControlRail`
+- `OutputPanel`
+- `ExampleButtons`
+- `ChangedTextOutput`
+
+Keep the main workbench as one surface with internal panel dividers. Do not build it as three unrelated decorative cards.
+
+## Noise Face SVG
+
+Create a small SVG asset:
+
+- Path: prefer `web/src/assets/noise-face.svg` if Astro import is convenient; otherwise `web/public/noise-face.svg`.
+- Size target: readable at 16-24px.
+- Shape: rounded square.
+- Details: two offset dot eyes, slightly jagged mouth.
+- No emoji.
+- No large mascot or hero character.
+- Use near the `noisemake` wordmark only.
+
+## Copy
+
+English:
+
+- Headline: `Deterministic text noise for evals.`
+- Proof line: `Same input, same seed, same output.`
+- Framing: `Not an LLM rewrite. Controlled perturbation.`
+- Input label: `Paste polished text`
+- Controls label: `Set deterministic noise`
+- Output label: `Reproducible noisy output`
+- Parity hint: `Same engine as the CLI and npm package.`
+- Run: `Run noisemake`
+- Copy: `Copy output`
+
+Chinese:
+
+- Headline: `给评测用的可复现文本噪声。`
+- Proof line: `同一输入、同一种子、同一输出。`
+- Framing: `不是 LLM 改写，而是可控扰动。`
+
+Avoid copy that sounds like detector evasion.
+
+## Controls
+
+Default values:
+
+- `input`: prefill with a realistic mixed Chinese/English sample.
+- `frequency`: `200`
+- `seed`: `42`
+- `types`: `["typo", "repeat"]`
+- `languages`: `["zh", "en"]`
+
+Control behavior:
+
+- Output changes only after the user clicks Run.
+- Editing input or controls after a successful run marks the output as stale.
+- Example buttons replace input and mark output stale; they do not auto-run.
+- Copy output is disabled until a successful run has produced output.
+
+Validation:
+
+- `frequency` must be a positive integer.
+- At least one type must be selected.
+- At least one language must be selected.
+- Inline validation errors live next to the relevant field or group.
+- Run is disabled while validation errors exist.
+
+Helper copy:
+
+- `frequency`: `Higher means less noise. 200 = about 1 change per 200 eligible tokens.`
+- `seed`: `Same input + same seed = same output.`
+- `typo`: `IME-style Chinese substitutions and keyboard-like English typos.`
+- `repeat`: `Light word or phrase repetition.`
+- `zh`: `Apply Chinese strategies.`
+- `en`: `Apply English strategies.`
+
+## State Machine
+
+States:
+
+| State | Trigger | UI |
+|-------|---------|----|
+| `idle` | Initial load | Output placeholder. Copy disabled. |
+| `dirty` | User edits input or settings after output exists | Previous output remains, stale status says `Settings changed, run again`. |
+| `invalid` | Invalid frequency, empty types, or empty languages | Inline error, Run disabled. |
+| `running` | User clicks Run | Run disabled, label `Running...`. |
+| `success` | `noisemake()` returns changed output | Output visible, changed spans highlighted if available. Copy enabled. |
+| `no-change` | Output equals input | Show unchanged output and explain: `No eligible mutation was selected for this seed and frequency. Try a lower frequency or a different seed.` |
+| `copy-success` | Copy succeeds | Short toast: `Copied output.` |
+| `copy-error` | Copy fails | Short toast: `Could not copy. Select the output text manually.` |
+
+## noisemake Integration
+
+Call the root package:
+
+```ts
+import { noisemake } from "noisemake";
+
+const output = noisemake(inputText, {
+  frequency,
+  seed,
+  types,
+  languages,
+});
+```
+
+Do not add a server-side API. Run the package in the web app.
+
+If the current package only returns a string and not mutation spans:
+
+- MVP highlight option: compute a simple text diff between input and output and highlight changed output segments.
+- Better future option: add span/report support only in a later planned core API change. Do not change the core perturbation algorithm for this web page.
+- Do not modify the core perturbation algorithm just to support web highlighting.
+
+## Styling Tasks
+
+Start from `web/src/styles/global.css`.
+
+Required token changes:
+
+- Add `--font-display` and `--font-body`.
+- Stop applying mono to all `html`; use body font globally.
+- Keep `JetBrains Mono Variable` for seed, frequency, CLI snippets, and compact metadata.
+- Add `--changed-bg` and `--changed-border` to `:root` and `.dark`.
+- Tune primary/accent toward warm yellow from `DESIGN.md`.
+- Avoid purple/indigo accents and dark-blue dashboard surfaces.
+- Keep default radius at `8px` or below for normal controls; outer workbench may be `10px`.
+
+Recommended font dependencies:
+
+- `@fontsource/space-grotesk` or equivalent variable package.
+- `@fontsource/ibm-plex-sans`.
+- `@fontsource/noto-sans-sc`.
+
+If adding all three is too heavy, prioritize `IBM Plex Sans` + `Noto Sans SC`, and use existing JetBrains Mono for code-like values.
+
+## Responsive Behavior
+
+Breakpoints:
+
+- Desktop, `>= 1024px`: input, controls, output in three columns.
+- Tablet, `768px - 1023px`: input/output side by side if space allows, controls as a full-width row or compact rail.
+- Mobile, `< 768px`: single column.
+
+Mobile order:
+
+1. Top band.
+2. Example buttons.
+3. Input.
+4. Controls.
+5. Run.
+6. Output.
+7. Parity hint.
+
+Output must appear immediately after Run. Do not hide output behind tabs, drawers, accordions, or scroll traps.
+
+## Accessibility
+
+- Use one `main` landmark.
+- All controls need visible labels.
+- Language switch and theme switch must be keyboard reachable.
+- Minimum mobile touch target: `44px`.
+- Validation errors must be associated with the relevant input/group.
+- Output region should use a polite live region after Run completes.
+- Changed spans must not rely on color alone; combine warm highlight with underline, border, or marker.
+- Focus rings must be visible in light and dark mode.
+- Respect `prefers-reduced-motion`.
+
+## Not In Scope
+
+- Auth.
+- Saved history.
+- File upload.
+- Batch processing.
+- Server-side API for perturbation.
+- Database or KV storage.
+- Analytics.
+- Actual Cloudflare deployment.
+- CLI behavior changes.
+- Core perturbation algorithm changes.
+- Exporting mutation reports from the package in this pass.
+
+## QA Checklist
+
+- `/` redirects based on `Accept-Language`.
+- `/zh` renders Chinese page.
+- `/en` renders English page.
+- Manual language switch persists and navigates correctly.
+- Theme switch supports light, dark, and system, and persists explicit choice.
+- Same input + same seed + same options returns same output after repeated runs.
+- Editing after run shows stale status.
+- Invalid `frequency` disables Run and shows inline error.
+- Empty type selection disables Run and shows inline error.
+- Empty language selection disables Run and shows inline error.
+- No-change output is explained.
+- Copy success and failure states work.
+- Desktop, tablet, and mobile layouts match this spec.
+- Keyboard-only path can reach input, controls, Run, output, copy, language, and theme.
+- Dark mode contrast is acceptable.
+- No purple/indigo gradient or generic SaaS card grid.
+
+## Design QA Gate
+
+After implementation, run a design QA pass before shipping. Check specifically:
+
+- The page still feels like a Hugging Face-inspired open research playground, not
+  an enterprise dashboard.
+- Noise face appears as a tiny SVG mark near the wordmark and does not become a
+  large mascot.
+- Mobile order is top band, examples, input, controls, Run, output, parity hint.
+- Dark mode preserves contrast and does not become a dark blue/purple dashboard.
+- Changed spans are visible and do not rely on color alone.
+- shadcn components support the experience without turning the page into a card
+  grid or component gallery.
