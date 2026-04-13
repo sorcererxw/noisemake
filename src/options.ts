@@ -24,8 +24,8 @@ const DEFAULT_TYPES: readonly NoiseType[] = ["typo", "repeat"];
 const DEFAULT_LANGUAGES: readonly Language[] = ["zh", "en"];
 
 const TYPE_MULTIPLIERS: Readonly<Record<NoiseType, number>> = {
-  typo: 1,
-  repeat: 0.2,
+  typo: 2,
+  repeat: 0.05,
 };
 
 export function normalizeOptions(options: NoisemakeOptions = {}): NormalizedOptions {

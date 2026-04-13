@@ -23,6 +23,21 @@ describe("typo", () => {
     ).toBe(true);
   });
 
+  it("uses valid word-level Chinese fallback replacements", () => {
+    const candidates = buildZhImeTypoCandidates(Array.from("动画电影票房"));
+    const replacements = candidates
+      .filter((candidate) => candidate.subtype === "zh-ime")
+      .flatMap((candidate) =>
+        candidate.replacements.map((replacement) => replacement.text),
+      );
+
+    expect(replacements).toContain("童话");
+    expect(replacements).toContain("电音");
+    expect(replacements).not.toEqual(
+      expect.arrayContaining(["动话", "点影", "店影", "票芳"]),
+    );
+  });
+
   it("builds English keyboard candidates for words with length >= 3", () => {
     const candidates = buildEnKeyboardTypoCandidates(Array.from("to stable CLI"));
 

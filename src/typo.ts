@@ -15,8 +15,6 @@ import {
 
 type EnglishTypoOperation = "substitute" | "transpose" | "duplicate" | "delete";
 
-const MAX_ZH_HOMOPHONE_FALLBACK_REPLACEMENTS = 5;
-
 const ENGLISH_OPERATION_WEIGHTS: Readonly<Record<EnglishTypoOperation, number>> = {
   substitute: 0.4,
   transpose: 0.3,
@@ -24,76 +22,35 @@ const ENGLISH_OPERATION_WEIGHTS: Readonly<Record<EnglishTypoOperation, number>> 
   delete: 0.1,
 };
 
-// Common same-pinyin groups keep simplified Chinese from depending entirely on the
-// generated phrase table, which is sparse for modern news-style text.
-const ZH_HOMOPHONE_FALLBACK_GROUPS = [
-  "的得地",
-  "一衣依",
-  "是事世式试市使始史驶士",
-  "在再载",
-  "和何河合盒",
-  "已以乙意易亿忆艺议义",
-  "为维围唯味未位胃",
-  "这浙者着",
-  "个各哥歌格隔",
-  "公工功攻宫供共",
-  "司私思斯丝四寺",
-  "宣轩喧",
-  "布步部不",
-  "动洞东冬",
-  "画话花化",
-  "电点店典",
-  "影映应营英颖",
-  "结节洁杰",
-  "束数树术述",
-  "全权泉拳",
-  "球求",
-  "票漂飘",
-  "房防方芳访",
-  "收手首守",
-  "入如",
-  "达答搭",
-  "到道倒",
-  "作做坐",
-  "本奔笨",
-  "次刺词辞",
-  "突图徒途涂",
-  "破迫坡",
-  "创窗疮",
-  "历力立利例",
-  "年念",
-  "高告糕",
-  "累类泪",
-  "计记季际继",
-  "观关官冠",
-  "人仁任认",
-  "其期齐棋旗",
-  "中终钟忠",
-  "海还害",
-  "外歪",
-  "多朵躲",
-  "国过锅果郭",
-  "家加佳夹价架假嘉",
-  "区去取曲",
-  "播波玻",
-  "近进尽仅紧锦",
-  "上尚",
-  "片篇偏骗",
-  "之只知支",
-  "后候厚",
-  "也野冶",
-  "集急级及极即",
-  "团湍抟",
-  "索锁所",
-  "尼泥呢",
-  "下夏吓",
-  "出初",
-  "元原园员圆源",
-] as const;
-
-const ZH_HOMOPHONE_FALLBACKS = buildZhHomophoneFallbacks(
-  ZH_HOMOPHONE_FALLBACK_GROUPS,
-);
+const ZH_HOMOPHONE_FALLBACKS: Readonly<
+  Record<string, readonly ZhImeReplacement[]>
+> = {
+  旗下: zhFallback("homophone", "其下"),
+  公司: zhFallback("homophone", "公私"),
+  部分: zhFallback("homophone", "不分"),
+  动画: zhFallback("near-homophone", "童话"),
+  电影: zhFallback("near-homophone", "电音"),
+  结束: zhFallback("homophone", "劫数"),
+  上映: zhFallback("near-homophone", "上瘾"),
+  达到: zhFallback("homophone", "打到"),
+  作为: zhFallback("homophone", "座位"),
+  首次: zhFallback("near-homophone", "手册"),
+  累计: zhFallback("homophone", "累积"),
+  其中: zhFallback("homophone", "期中"),
+  万人: zhFallback("homophone", "完人"),
+  国家: zhFallback("homophone", "郭嘉"),
+  国内: zhFallback("homophone", "锅内"),
+  史上: zhFallback("homophone", "世上"),
+  之后: zhFallback("homophone", "滞后"),
+  影院: zhFallback("near-homophone", "因缘"),
+  观影: zhFallback("near-homophone", "观音"),
+  影片: zhFallback("near-homophone", "饮片"),
+  东宝: zhFallback("homophone", "动保"),
+  需要: zhFallback("homophone", "须要"),
+  稳定: zhFallback("homophone", "问鼎"),
+  实现: zhFallback("homophone", "实线"),
+  可以: zhFallback("homophone", "刻意"),
+};
 
 export function buildZhImeTypoCandidates(
   chars: readonly string[],
@@ -292,7 +249,7 @@ function buildZhHomophoneFallbackCandidates(
       continue;
     }
 
-    const replacements = buildZhHomophoneTokenReplacements(token.text);
+    const replacements = ZH_HOMOPHONE_FALLBACKS[token.text] ?? [];
 
     if (replacements.length === 0) {
       continue;
@@ -311,89 +268,21 @@ function buildZhHomophoneFallbackCandidates(
   return candidates;
 }
 
-function buildZhHomophoneTokenReplacements(token: string): ZhImeReplacement[] {
-  const chars = Array.from(token);
-  const replacements: ZhImeReplacement[] = [];
-  const seen = new Set<string>();
-  const maxAlternatives = chars.reduce(
-    (max, char) => Math.max(max, ZH_HOMOPHONE_FALLBACKS[char]?.length ?? 0),
-    0,
-  );
-
-  for (
-    let alternativeIndex = 0;
-    alternativeIndex < maxAlternatives;
-    alternativeIndex += 1
-  ) {
-    for (let index = 0; index < chars.length; index += 1) {
-      const source = chars[index];
-
-      if (source === undefined) {
-        continue;
-      }
-
-      const replacement = ZH_HOMOPHONE_FALLBACKS[source]?.[alternativeIndex];
-
-      if (!replacement) {
-        continue;
-      }
-
-      const next = [...chars];
-      next[index] = replacement;
-      const text = next.join("");
-
-      if (text === token || seen.has(text)) {
-        continue;
-      }
-
-      seen.add(text);
-      replacements.push({
-        text,
-        reason: "homophone",
-        score: 0.75,
-      });
-
-      if (replacements.length >= MAX_ZH_HOMOPHONE_FALLBACK_REPLACEMENTS) {
-        return replacements;
-      }
-    }
-  }
-
-  return replacements;
-}
-
-function buildZhHomophoneFallbacks(
-  groups: readonly string[],
-): Readonly<Record<string, readonly string[]>> {
-  const result: Record<string, string[]> = {};
-
-  for (const group of groups) {
-    const chars = Array.from(group);
-
-    for (const char of chars) {
-      const replacements = result[char] ?? [];
-      const seen = new Set(replacements);
-
-      for (const replacement of chars) {
-        if (replacement === char || seen.has(replacement)) {
-          continue;
-        }
-
-        replacements.push(replacement);
-        seen.add(replacement);
-      }
-
-      result[char] = replacements;
-    }
-  }
-
-  return result;
-}
-
 function overlapsAny(
   start: number,
   end: number,
   ranges: readonly (readonly [number, number])[],
 ): boolean {
   return ranges.some(([rangeStart, rangeEnd]) => start < rangeEnd && end > rangeStart);
+}
+
+function zhFallback(
+  reason: ZhImeReplacement["reason"],
+  ...texts: readonly string[]
+): readonly ZhImeReplacement[] {
+  return texts.map((text) => ({
+    text,
+    reason,
+    score: reason === "homophone" ? 0.8 : 0.75,
+  }));
 }

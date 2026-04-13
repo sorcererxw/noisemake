@@ -20,6 +20,15 @@ describe("normalizeOptions", () => {
     expect([...options.languages]).toEqual(["zh", "en"]);
   });
 
+  it("biases default noise toward typo over repeat", () => {
+    const options = normalizeOptions();
+
+    expect(options.typeMultipliers.typo).toBeGreaterThan(
+      options.typeMultipliers.repeat,
+    );
+    expect(options.typeMultipliers.repeat).toBeLessThanOrEqual(0.05);
+  });
+
   it("rejects invalid frequency", () => {
     expect(() => normalizeOptions({ frequency: 0 })).toThrow(RangeError);
     expect(() => normalizeOptions({ frequency: 1.5 })).toThrow(RangeError);
