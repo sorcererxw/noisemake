@@ -57,6 +57,21 @@ describe("noisemake", () => {
     expect(enOnly.includes("稳定")).toBe(true);
   });
 
+  it("can produce Chinese typo changes for modern simplified paragraphs", () => {
+    const text =
+      "索尼集团旗下的公司宣布，动画电影已结束上映，全球票房收入达到1179亿日元。" +
+      "这部电影在海外多个国家和地区播出，日本国内票房排在史上第2位。";
+
+    expect(
+      noisemake(text, {
+        frequency: 1,
+        seed: "simplified-zh",
+        types: ["typo"],
+        languages: ["zh"],
+      }),
+    ).not.toBe(text);
+  });
+
   it("can return unchanged text for very low noise", () => {
     expect(
       noisemake("短文本", {
