@@ -3,6 +3,7 @@ import { ChevronDown, Languages, Moon, Sun } from "lucide-react";
 import { noisemake, type Language, type NoiseType } from "noisemake";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,11 +52,8 @@ type Copy = {
   randomSeedHelper: string;
   typoHelper: string;
   repeatHelper: string;
-  zhHelper: string;
-  enHelper: string;
   frequencyError: string;
   typeError: string;
-  languageError: string;
   inputRequired: string;
   runtimeError: string;
   footerPromise: string;
@@ -67,7 +65,7 @@ type Copy = {
   languageLabel: string;
   themeLabel: string;
   defaultInput: string;
-  labels: Record<NoiseType | Language, string>;
+  labels: Record<NoiseType, string>;
   theme: Record<ThemeMode, string>;
 };
 
@@ -103,11 +101,8 @@ const COPY: Record<UiLang, Copy> = {
     randomSeedHelper: "Ignore the seed field and generate a new seed on every run.",
     typoHelper: "IME-style Chinese substitutions and keyboard-like English typos.",
     repeatHelper: "Light word or phrase repetition.",
-    zhHelper: "Apply Chinese strategies.",
-    enHelper: "Apply English strategies.",
     frequencyError: "Use a positive whole number.",
     typeError: "Choose at least one noise type.",
-    languageError: "Choose at least one language.",
     inputRequired: "Add text before running.",
     runtimeError: "Could not run noisemake with these settings.",
     footerPromise: "Same input. Same seed. Same output.",
@@ -123,8 +118,6 @@ const COPY: Record<UiLang, Copy> = {
     labels: {
       typo: "typos",
       repeat: "repeats",
-      zh: "Chinese",
-      en: "English",
     },
     theme: {
       light: "Light",
@@ -161,11 +154,8 @@ const COPY: Record<UiLang, Copy> = {
     randomSeedHelper: "开启后会忽略 seed 输入框，每次运行都生成一个新的 seed。",
     typoHelper: "中文使用输入法式替换，英文使用键盘式 typo。",
     repeatHelper: "轻微重复词或短语。",
-    zhHelper: "应用中文策略。",
-    enHelper: "应用英文策略。",
     frequencyError: "请输入正整数。",
     typeError: "至少选择一种噪声类型。",
-    languageError: "至少选择一种语言策略。",
     inputRequired: "运行前请先输入文本。",
     runtimeError: "当前设置无法运行 noisemake。",
     footerPromise: "同一输入。同一种子。同一输出。",
@@ -180,8 +170,6 @@ const COPY: Record<UiLang, Copy> = {
     labels: {
       typo: "错字",
       repeat: "重复",
-      zh: "中文",
-      en: "English",
     },
     theme: {
       light: "浅",
@@ -204,7 +192,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const [seed, setSeed] = useState("42");
   const [randomSeed, setRandomSeed] = useState(false);
   const [types, setTypes] = useState<NoiseType[]>(DEFAULT_TYPES);
-  const [languages, setLanguages] = useState<Language[]>(DEFAULT_LANGUAGES);
   const [output, setOutput] = useState("");
   const [segments, setSegments] = useState<Segment[]>([]);
   const [state, setState] = useState<WorkbenchState>("idle");
@@ -221,12 +208,11 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
       frequency:
         Number.isInteger(parsedFrequency) && parsedFrequency > 0 ? "" : copy.frequencyError,
       types: types.length > 0 ? "" : copy.typeError,
-      languages: languages.length > 0 ? "" : copy.languageError,
     };
-  }, [copy, frequency, input, languages.length, types.length]);
+  }, [copy, frequency, input, types.length]);
 
   const hasValidationError = Boolean(
-    validation.input || validation.frequency || validation.types || validation.languages,
+    validation.input || validation.frequency || validation.types,
   );
   const runDisabled = state === "running" || hasValidationError;
   const canCopy =
@@ -259,15 +245,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
     markDirty();
   }
 
-  function updateLanguages(language: Language) {
-    setLanguages((current) =>
-      current.includes(language)
-        ? current.filter((value) => value !== language)
-        : [...current, language],
-    );
-    markDirty();
-  }
-
   async function run() {
     if (hasValidationError) {
       setState("invalid");
@@ -291,7 +268,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
         frequency: validation.parsedFrequency,
         seed: runSeed,
         types,
-        languages,
+        languages: DEFAULT_LANGUAGES,
       });
       setOutput(nextOutput);
       setSegments(diffOutput(input, nextOutput));
@@ -366,12 +343,9 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                   markDirty();
                 }}
                 types={types}
-                languages={languages}
                 toggleType={updateTypes}
-                toggleLanguage={updateLanguages}
                 frequencyError={validation.frequency}
                 typeError={validation.types}
-                languageError={validation.languages}
                 runLabel={state === "running" ? copy.running : copy.run}
                 run={run}
                 runDisabled={runDisabled}
@@ -679,12 +653,9 @@ function ControlRail({
   randomSeed,
   setRandomSeed,
   types,
-  languages,
   toggleType,
-  toggleLanguage,
   frequencyError,
   typeError,
-  languageError,
   runLabel,
   run,
   runDisabled,
@@ -698,12 +669,9 @@ function ControlRail({
   randomSeed: boolean;
   setRandomSeed: (value: boolean) => void;
   types: NoiseType[];
-  languages: Language[];
   toggleType: (type: NoiseType) => void;
-  toggleLanguage: (language: Language) => void;
   frequencyError: string;
   typeError: string;
-  languageError: string;
   runLabel: string;
   run: () => void;
   runDisabled: boolean;
@@ -714,57 +682,57 @@ function ControlRail({
         <h2 id="controls-label">{copy.controlsLabel}</h2>
       </div>
 
-      <label className="field-label" htmlFor="frequency">
-        frequency
-      </label>
-      <input
-        ref={frequencyRef}
-        className="control-input mono-value"
-        id="frequency"
-        inputMode="numeric"
-        value={frequency}
-        aria-describedby="frequency-helper frequency-error"
-        aria-invalid={Boolean(frequencyError)}
-        onChange={(event) => setFrequency(event.target.value)}
-      />
-      <p className="helper-text" id="frequency-helper">
-        {copy.frequencyHelper}
-      </p>
-      {frequencyError ? (
-        <p className="field-error" id="frequency-error">
-          {frequencyError}
-        </p>
-      ) : null}
-
-      <div className="seed-row">
-        <label className="field-label" htmlFor="seed">
-          seed
+      <div className="control-field">
+        <label className="field-label" htmlFor="frequency">
+          frequency
         </label>
-        <button
-          className={cn("random-seed-button", randomSeed && "is-active")}
-          type="button"
-          role="switch"
-          aria-checked={randomSeed}
-          title={copy.randomSeedHelper}
-          onClick={() => setRandomSeed(!randomSeed)}
-        >
-          <span className="switch-track" aria-hidden="true">
-            <span className="switch-thumb" />
-          </span>
-          <span>{copy.randomSeedLabel}</span>
-        </button>
+        <input
+          ref={frequencyRef}
+          className="control-input mono-value"
+          id="frequency"
+          inputMode="numeric"
+          value={frequency}
+          aria-describedby="frequency-helper frequency-error"
+          aria-invalid={Boolean(frequencyError)}
+          onChange={(event) => setFrequency(event.target.value)}
+        />
+        <p className="helper-text" id="frequency-helper">
+          {copy.frequencyHelper}
+        </p>
+        {frequencyError ? (
+          <p className="field-error" id="frequency-error">
+            {frequencyError}
+          </p>
+        ) : null}
       </div>
-      <input
-        className="control-input mono-value"
-        id="seed"
-        value={seed}
-        disabled={randomSeed}
-        aria-describedby="seed-helper"
-        onChange={(event) => setSeed(event.target.value)}
-      />
-      <p className="helper-text" id="seed-helper">
-        {copy.seedHelper}
-      </p>
+
+      <div className="control-field">
+        <div className="seed-row">
+          <label className="field-label" htmlFor="seed">
+            seed
+          </label>
+          <label className={cn("random-seed-checkbox", randomSeed && "is-active")}>
+            <Checkbox
+              className="random-seed-input"
+              checked={randomSeed}
+              title={copy.randomSeedHelper}
+              onCheckedChange={(checked) => setRandomSeed(checked === true)}
+            />
+            <span>{copy.randomSeedLabel}</span>
+          </label>
+        </div>
+        <input
+          className="control-input mono-value"
+          id="seed"
+          value={seed}
+          disabled={randomSeed}
+          aria-describedby="seed-helper"
+          onChange={(event) => setSeed(event.target.value)}
+        />
+        <p className="helper-text" id="seed-helper">
+          {copy.seedHelper}
+        </p>
+      </div>
 
       <ChipGroup
         legend="types"
@@ -778,20 +746,8 @@ function ControlRail({
         }))}
       />
 
-      <ChipGroup
-        legend="languages"
-        error={languageError}
-        options={(["zh", "en"] as const).map((value) => ({
-          value,
-          label: copy.labels[value],
-          helper: value === "zh" ? copy.zhHelper : copy.enHelper,
-          active: languages.includes(value),
-          toggle: () => toggleLanguage(value),
-        }))}
-      />
-
       <div className="control-actions">
-        <Button className="run-button" type="button" onClick={run} disabled={runDisabled}>
+        <Button className="run-button !px-3" type="button" onClick={run} disabled={runDisabled}>
           {runLabel}
         </Button>
       </div>
@@ -817,7 +773,7 @@ function ChipGroup({
   const errorId = `${legend}-error`;
 
   return (
-    <fieldset className="chip-fieldset" aria-describedby={error ? errorId : undefined}>
+    <fieldset className="control-field chip-fieldset" aria-describedby={error ? errorId : undefined}>
       <legend>{legend}</legend>
       <div className="chip-row">
         {options.map((option) => (
@@ -872,7 +828,7 @@ function OutputPanel({
       <div className="panel-heading">
         <h2 id="output-label">{copy.outputLabel}</h2>
         <Button
-          className="output-copy-button"
+          className="output-copy-button !px-3"
           type="button"
           variant="outline"
           onClick={copyOutput}
