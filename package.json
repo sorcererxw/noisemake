@@ -20,6 +20,8 @@
     "src/data/zh-ime-confusions.generated.ts",
     "third_party/rime-luna-pinyin/LICENSE",
     "third_party/rime-luna-pinyin/SOURCE.md",
+    "third_party/rime-pinyin-simp/LICENSE",
+    "third_party/rime-pinyin-simp/SOURCE.md",
     "NOTICE",
     "README.md"
   ],

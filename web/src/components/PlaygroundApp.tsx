@@ -44,13 +44,11 @@ type Copy = {
   copyError: string;
   inputPlaceholder: string;
   outputPlaceholder: string;
-  stale: string;
   noChange: string;
   frequencyHelper: string;
   seedHelper: string;
   randomSeedLabel: string;
   randomSeedHelper: string;
-  lastGeneratedSeed: string;
   typoHelper: string;
   repeatHelper: string;
   zhHelper: string;
@@ -68,7 +66,6 @@ type Copy = {
   footerDataNotice: string;
   languageLabel: string;
   themeLabel: string;
-  status: Record<WorkbenchState, string>;
   defaultInput: string;
   labels: Record<NoiseType | Language, string>;
   theme: Record<ThemeMode, string>;
@@ -98,14 +95,12 @@ const COPY: Record<UiLang, Copy> = {
     copyError: "Could not copy. Select the output text manually.",
     inputPlaceholder: "Paste polished text for a deterministic noisy variant.",
     outputPlaceholder: "Run noisemake to create a reproducible noisy variant.",
-    stale: "Settings changed, run again.",
     noChange:
       "No eligible mutation was selected for this seed and frequency. Try a lower frequency or a different seed.",
-    frequencyHelper: "Higher means less noise. 200 = about 1 change per 200 eligible tokens.",
-    seedHelper: "Same input + same seed = same output.",
+    frequencyHelper: "Higher = less noise.",
+    seedHelper: "Same seed = same output.",
     randomSeedLabel: "Random seed",
     randomSeedHelper: "Ignore the seed field and generate a new seed on every run.",
-    lastGeneratedSeed: "Last generated seed",
     typoHelper: "IME-style Chinese substitutions and keyboard-like English typos.",
     repeatHelper: "Light word or phrase repetition.",
     zhHelper: "Apply Chinese strategies.",
@@ -123,21 +118,13 @@ const COPY: Record<UiLang, Copy> = {
     footerDataNotice: "Data notice",
     languageLabel: "Language",
     themeLabel: "Toggle theme",
-    status: {
-      idle: "ready",
-      dirty: "stale",
-      invalid: "check settings",
-      running: "running",
-      success: "reproducible",
-      "no-change": "no change",
-    },
     defaultInput:
       "This benchmark needs controlled text noise, not a rewrite, so repeated runs should stay reproducible.",
     labels: {
-      typo: "typo",
-      repeat: "repeat",
-      zh: "zh",
-      en: "en",
+      typo: "typos",
+      repeat: "repeats",
+      zh: "Chinese",
+      en: "English",
     },
     theme: {
       light: "Light",
@@ -167,13 +154,11 @@ const COPY: Record<UiLang, Copy> = {
     copyError: "复制失败。请手动选中输出文本。",
     inputPlaceholder: "粘贴一段文本，生成可复现的扰动版本。",
     outputPlaceholder: "运行 noisemake 后会生成可复现的扰动文本。",
-    stale: "设置已变化，请重新运行。",
     noChange: "这个 seed 和 frequency 没有选中可用扰动。可以调低 frequency，或换一个 seed。",
-    frequencyHelper: "数值越高，噪声越少。200 约等于每 200 个候选 token 出现 1 次变化。",
-    seedHelper: "同一输入 + 同一种子 = 同一输出。",
+    frequencyHelper: "数值越高，噪声越少。",
+    seedHelper: "同 seed，同输出。",
     randomSeedLabel: "随机 seed",
     randomSeedHelper: "开启后会忽略 seed 输入框，每次运行都生成一个新的 seed。",
-    lastGeneratedSeed: "上次生成的 seed",
     typoHelper: "中文使用输入法式替换，英文使用键盘式 typo。",
     repeatHelper: "轻微重复词或短语。",
     zhHelper: "应用中文策略。",
@@ -191,20 +176,12 @@ const COPY: Record<UiLang, Copy> = {
     footerDataNotice: "数据许可",
     languageLabel: "语言",
     themeLabel: "切换主题",
-    status: {
-      idle: "就绪",
-      dirty: "待重跑",
-      invalid: "检查设置",
-      running: "运行中",
-      success: "可复现",
-      "no-change": "无变化",
-    },
     defaultInput: "这个工具用于构造评测样本，帮助我们观察模型在轻微文本扰动下是否仍然稳定。",
     labels: {
-      typo: "typo",
-      repeat: "repeat",
-      zh: "zh",
-      en: "en",
+      typo: "错字",
+      repeat: "重复",
+      zh: "中文",
+      en: "English",
     },
     theme: {
       light: "浅",
@@ -226,7 +203,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const [frequency, setFrequency] = useState("200");
   const [seed, setSeed] = useState("42");
   const [randomSeed, setRandomSeed] = useState(false);
-  const [lastRunSeed, setLastRunSeed] = useState("");
   const [types, setTypes] = useState<NoiseType[]>(DEFAULT_TYPES);
   const [languages, setLanguages] = useState<Language[]>(DEFAULT_LANGUAGES);
   const [output, setOutput] = useState("");
@@ -253,7 +229,8 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
     validation.input || validation.frequency || validation.types || validation.languages,
   );
   const runDisabled = state === "running" || hasValidationError;
-  const canCopy = Boolean(output) && (state === "success" || state === "no-change" || state === "dirty");
+  const canCopy =
+    Boolean(output) && (state === "success" || state === "no-change" || state === "dirty");
 
   useEffect(() => {
     if (!toast) {
@@ -307,7 +284,9 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 
     try {
       const runSeed = randomSeed ? createRandomSeed() : seed;
-      setLastRunSeed(runSeed);
+      if (randomSeed) {
+        setSeed(runSeed);
+      }
       const nextOutput = noisemake(input, {
         frequency: validation.parsedFrequency,
         seed: runSeed,
@@ -386,7 +365,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                   setRandomSeed(value);
                   markDirty();
                 }}
-                lastRunSeed={lastRunSeed}
                 types={types}
                 languages={languages}
                 toggleType={updateTypes}
@@ -397,8 +375,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                 runLabel={state === "running" ? copy.running : copy.run}
                 run={run}
                 runDisabled={runDisabled}
-                copyOutput={copyOutput}
-                copyDisabled={!canCopy}
               />
               <OutputPanel
                 copy={copy}
@@ -406,6 +382,8 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                 output={output}
                 segments={segments}
                 runError={runError}
+                copyOutput={copyOutput}
+                copyDisabled={!canCopy}
               />
             </div>
           </section>
@@ -700,7 +678,6 @@ function ControlRail({
   setSeed,
   randomSeed,
   setRandomSeed,
-  lastRunSeed,
   types,
   languages,
   toggleType,
@@ -711,8 +688,6 @@ function ControlRail({
   runLabel,
   run,
   runDisabled,
-  copyOutput,
-  copyDisabled,
 }: {
   copy: Copy;
   frequency: string;
@@ -722,7 +697,6 @@ function ControlRail({
   setSeed: (value: string) => void;
   randomSeed: boolean;
   setRandomSeed: (value: boolean) => void;
-  lastRunSeed: string;
   types: NoiseType[];
   languages: Language[];
   toggleType: (type: NoiseType) => void;
@@ -733,8 +707,6 @@ function ControlRail({
   runLabel: string;
   run: () => void;
   runDisabled: boolean;
-  copyOutput: () => void;
-  copyDisabled: boolean;
 }) {
   return (
     <section className="panel control-panel" aria-labelledby="controls-label">
@@ -764,9 +736,24 @@ function ControlRail({
         </p>
       ) : null}
 
-      <label className="field-label" htmlFor="seed">
-        seed
-      </label>
+      <div className="seed-row">
+        <label className="field-label" htmlFor="seed">
+          seed
+        </label>
+        <button
+          className={cn("random-seed-button", randomSeed && "is-active")}
+          type="button"
+          role="switch"
+          aria-checked={randomSeed}
+          title={copy.randomSeedHelper}
+          onClick={() => setRandomSeed(!randomSeed)}
+        >
+          <span className="switch-track" aria-hidden="true">
+            <span className="switch-thumb" />
+          </span>
+          <span>{copy.randomSeedLabel}</span>
+        </button>
+      </div>
       <input
         className="control-input mono-value"
         id="seed"
@@ -778,26 +765,6 @@ function ControlRail({
       <p className="helper-text" id="seed-helper">
         {copy.seedHelper}
       </p>
-      <div className="switch-row">
-        <button
-          className={cn("switch-button", randomSeed && "is-active")}
-          type="button"
-          role="switch"
-          aria-checked={randomSeed}
-          onClick={() => setRandomSeed(!randomSeed)}
-        >
-          <span className="switch-track" aria-hidden="true">
-            <span className="switch-thumb" />
-          </span>
-          <span>{copy.randomSeedLabel}</span>
-        </button>
-        <p className="helper-text">{copy.randomSeedHelper}</p>
-        {randomSeed && lastRunSeed ? (
-          <p className="helper-text">
-            {copy.lastGeneratedSeed}: <code className="mono-value">{lastRunSeed}</code>
-          </p>
-        ) : null}
-      </div>
 
       <ChipGroup
         legend="types"
@@ -826,9 +793,6 @@ function ControlRail({
       <div className="control-actions">
         <Button className="run-button" type="button" onClick={run} disabled={runDisabled}>
           {runLabel}
-        </Button>
-        <Button type="button" variant="outline" onClick={copyOutput} disabled={copyDisabled}>
-          {copy.copy}
         </Button>
       </div>
     </section>
@@ -862,14 +826,19 @@ function ChipGroup({
             className={cn("choice-chip", option.active && "is-active")}
             type="button"
             aria-pressed={option.active}
+            aria-describedby={`${legend}-${option.value}-helper`}
             title={option.helper}
             onClick={option.toggle}
           >
-            {option.label}
+            <span className="choice-chip-mark" aria-hidden="true" />
+            <span className="choice-chip-value">{option.value}</span>
+            <span className="choice-chip-label">{option.label}</span>
+            <span className="sr-only" id={`${legend}-${option.value}-helper`}>
+              {option.helper}
+            </span>
           </button>
         ))}
       </div>
-      <p className="helper-text">{options.map((option) => option.helper).join(" ")}</p>
       {error ? (
         <p className="field-error" id={errorId}>
           {error}
@@ -885,12 +854,16 @@ function OutputPanel({
   output,
   segments,
   runError,
+  copyOutput,
+  copyDisabled,
 }: {
   copy: Copy;
   state: WorkbenchState;
   output: string;
   segments: Segment[];
   runError: string;
+  copyOutput: () => void;
+  copyDisabled: boolean;
 }) {
   const showOutput = Boolean(output);
 
@@ -898,15 +871,20 @@ function OutputPanel({
     <section className="panel output-panel" aria-labelledby="output-label">
       <div className="panel-heading">
         <h2 id="output-label">{copy.outputLabel}</h2>
-        <span className={cn("status-pill", state === "dirty" && "is-stale")}>
-          {copy.status[state]}
-        </span>
+        <Button
+          className="output-copy-button"
+          type="button"
+          variant="outline"
+          onClick={copyOutput}
+          disabled={copyDisabled}
+        >
+          {copy.copy}
+        </Button>
       </div>
       <div className="output-region" aria-live="polite" aria-atomic="false">
         {showOutput ? <ChangedTextOutput segments={segments} /> : <p>{copy.outputPlaceholder}</p>}
       </div>
       {state === "no-change" ? <p className="notice-text">{copy.noChange}</p> : null}
-      {state === "dirty" ? <p className="notice-text">{copy.stale}</p> : null}
       {runError ? <p className="field-error">{runError}</p> : null}
     </section>
   );

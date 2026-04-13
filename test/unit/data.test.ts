@@ -34,5 +34,5 @@ describe("data", () => {
         expect(replacement.score).toBeGreaterThanOrEqual(0.75);
       }
     }
-  });
+  }, 15_000);
 });

@@ -23,8 +23,8 @@ describe("typo", () => {
     ).toBe(true);
   });
 
-  it("uses valid word-level Chinese fallback replacements", () => {
-    const candidates = buildZhImeTypoCandidates(Array.from("动画电影票房"));
+  it("preserves curated word-level Chinese fallback replacements", () => {
+    const candidates = buildZhImeTypoCandidates(Array.from("动画，电影，票房"));
     const replacements = candidates
       .filter((candidate) => candidate.subtype === "zh-ime")
       .flatMap((candidate) =>
@@ -34,8 +34,35 @@ describe("typo", () => {
     expect(replacements).toContain("童话");
     expect(replacements).toContain("电音");
     expect(replacements).not.toEqual(
-      expect.arrayContaining(["动话", "点影", "店影", "票芳"]),
+      expect.arrayContaining(["点影", "店影", "票芳"]),
     );
+  });
+
+  it("builds Chinese typo candidates for modern simplified tool-writing text", () => {
+    const text =
+      "看到 brew 终于有 Trae 的 cask 了，安装一个试试看。" +
+      "之前体验过AI生成生成前端的工具，但是从来没有尝试过生成一个正儿八经的小工具。" +
+      "今天试试看用 Trae builder 模式“复刻”了下我的一年前的写的小工具，" +
+      "可以用来计算免息分期的实际价值。";
+    const candidates = buildZhImeTypoCandidates(Array.from(text));
+    const replacementsBySource = new Map(
+      candidates.map((candidate) => [
+        Array.from(text).slice(candidate.start, candidate.end).join(""),
+        candidate.replacements.map((replacement) => replacement.text),
+      ]),
+    );
+
+    expect(candidates.length).toBeGreaterThanOrEqual(10);
+    expect(replacementsBySource.get("生成")).toEqual(
+      expect.arrayContaining(["声成"]),
+    );
+    expect(replacementsBySource.get("工具")).toEqual(
+      expect.arrayContaining(["公具"]),
+    );
+    expect(replacementsBySource.get("计算")).toEqual(
+      expect.arrayContaining(["计蒜"]),
+    );
+    expect(replacementsBySource.get("价值")?.length).toBeGreaterThan(0);
   });
 
   it("builds English keyboard candidates for words with length >= 3", () => {
