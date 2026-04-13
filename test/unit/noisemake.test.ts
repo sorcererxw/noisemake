@@ -72,6 +72,20 @@ describe("noisemake", () => {
     ).not.toBe(text);
   });
 
+  it("avoids stitched non-word Chinese typos for evaluation sample text", () => {
+    const text =
+      "这个工具用于构造评测样本，帮助我们观察模型在轻微文本扰动下是否仍然稳定。";
+
+    expect(
+      noisemake(text, {
+        frequency: 1,
+        seed: "0r7ezqx-0qgyra9",
+        types: ["typo"],
+        languages: ["zh"],
+      }),
+    ).not.toMatch(/这歌|构早|样苯|帮猪|观差/u);
+  });
+
   it("can return unchanged text for very low noise", () => {
     expect(
       noisemake("短文本", {

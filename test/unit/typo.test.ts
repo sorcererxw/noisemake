@@ -54,15 +54,29 @@ describe("typo", () => {
 
     expect(candidates.length).toBeGreaterThanOrEqual(10);
     expect(replacementsBySource.get("生成")).toEqual(
-      expect.arrayContaining(["声成"]),
+      expect.arrayContaining(["声称"]),
     );
-    expect(replacementsBySource.get("工具")).toEqual(
-      expect.arrayContaining(["公具"]),
+    expect(replacementsBySource.get("前端")).toEqual(["前段"]);
+    expect(replacementsBySource.get("尝试")).toEqual(
+      expect.arrayContaining(["常识"]),
     );
-    expect(replacementsBySource.get("计算")).toEqual(
-      expect.arrayContaining(["计蒜"]),
+    expect(replacementsBySource.get("分期")).toEqual(
+      expect.arrayContaining(["分歧"]),
     );
     expect(replacementsBySource.get("价值")?.length).toBeGreaterThan(0);
+  });
+
+  it("does not build single-character stitched non-word Chinese replacements", () => {
+    const text =
+      "这个工具用于构造评测样本，帮助我们观察模型在轻微文本扰动下是否仍然稳定。";
+    const candidates = buildZhImeTypoCandidates(Array.from(text));
+    const replacements = candidates.flatMap((candidate) =>
+      candidate.replacements.map((replacement) => replacement.text),
+    );
+
+    expect(replacements).not.toEqual(
+      expect.arrayContaining(["这歌", "构早", "样苯", "帮猪", "观差"]),
+    );
   });
 
   it("builds English keyboard candidates for words with length >= 3", () => {

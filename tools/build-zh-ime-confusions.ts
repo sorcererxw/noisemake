@@ -7,7 +7,6 @@ type Reason = "homophone" | "same-char-homophone";
 interface RimeEntry {
   word: string;
   pinyin: string;
-  normalizedSyllables: readonly string[];
   normalizedPinyin: string;
   weight: number;
 }
@@ -36,8 +35,7 @@ const sourceDictionaries: readonly SourceDictionary[] = [
   },
 ];
 const outputPath = resolve(repoRoot, "src/data/zh-ime-confusions.generated.ts");
-const MIN_SCORE = 0.75;
-const MIN_CHARACTER_FALLBACK_SOURCE_WEIGHT = 1000;
+const MIN_SCORE = 0.55;
 const MAX_SOURCE_LENGTH = 5;
 const TOP_K = 5;
 
@@ -49,9 +47,7 @@ const wordEntries = entries.filter((entry) => {
   return length >= 2 && length <= MAX_SOURCE_LENGTH;
 });
 const grouped = groupBy(wordEntries, (entry) => entry.normalizedPinyin);
-const characterEntries = entries.filter((entry) => Array.from(entry.word).length === 1);
-const characterGrouped = groupBy(characterEntries, (entry) => entry.normalizedPinyin);
-const confusions = buildConfusionMap(grouped, characterGrouped);
+const confusions = buildConfusionMap(grouped);
 
 writeFileSync(outputPath, renderConfusionMap(confusions), "utf8");
 
@@ -82,8 +78,7 @@ function parseRimeDictionary(input: string): RimeEntry[] {
       continue;
     }
 
-    const normalizedSyllables = normalizePinyinSyllables(pinyin);
-    const normalizedPinyin = normalizedSyllables.join("");
+    const normalizedPinyin = normalizePinyin(pinyin);
 
     if (normalizedPinyin === "") {
       continue;
@@ -94,7 +89,6 @@ function parseRimeDictionary(input: string): RimeEntry[] {
     entries.push({
       word,
       pinyin,
-      normalizedSyllables,
       normalizedPinyin,
       weight: Number.isFinite(parsedWeight) && parsedWeight > 0 ? parsedWeight : 1,
     });
@@ -105,7 +99,6 @@ function parseRimeDictionary(input: string): RimeEntry[] {
 
 function buildConfusionMap(
   grouped: ReadonlyMap<string, readonly RimeEntry[]>,
-  characterGrouped: ReadonlyMap<string, readonly RimeEntry[]>,
 ): Record<string, Replacement[]> {
   const result: Record<string, Replacement[]> = {};
 
@@ -113,25 +106,20 @@ function buildConfusionMap(
     const maxWeight = Math.max(...group.map((entry) => entry.weight));
 
     for (const source of group) {
-      const replacements = dedupeReplacements([
-        ...group
-          .filter((candidate) => candidate.word !== source.word)
-          .filter(
-            (candidate) =>
-              Math.abs(
-                Array.from(candidate.word).length - Array.from(source.word).length,
-              ) <= 1,
-          )
-          .map((candidate) => ({
-            text: candidate.word,
-            reason: getReason(source.word, candidate.word),
-            score: scoreCandidate(source.word, candidate, maxWeight),
-          }))
-          .filter((candidate) => candidate.score >= MIN_SCORE)
-          .sort(compareReplacements)
-          .slice(0, TOP_K),
-        ...buildCharacterHomophoneReplacements(source, characterGrouped),
-      ])
+      const replacements = group
+        .filter((candidate) => candidate.word !== source.word)
+        .filter(
+          (candidate) =>
+            Math.abs(
+              Array.from(candidate.word).length - Array.from(source.word).length,
+            ) <= 1,
+        )
+        .map((candidate) => ({
+          text: candidate.word,
+          reason: getReason(source.word, candidate.word),
+          score: scoreCandidate(source.word, candidate, maxWeight),
+        }))
+        .filter((candidate) => candidate.score >= MIN_SCORE)
         .sort(compareReplacements)
         .slice(0, TOP_K);
 
@@ -142,51 +130,6 @@ function buildConfusionMap(
   }
 
   return result;
-}
-
-function buildCharacterHomophoneReplacements(
-  source: RimeEntry,
-  characterGrouped: ReadonlyMap<string, readonly RimeEntry[]>,
-): Replacement[] {
-  const chars = Array.from(source.word);
-
-  if (
-    source.weight < MIN_CHARACTER_FALLBACK_SOURCE_WEIGHT ||
-    chars.length !== source.normalizedSyllables.length
-  ) {
-    return [];
-  }
-
-  const replacements: Replacement[] = [];
-
-  for (const [index, syllable] of source.normalizedSyllables.entries()) {
-    const candidates = [...(characterGrouped.get(syllable) ?? [])]
-      .filter((candidate) => candidate.word !== chars[index])
-      .filter((candidate) => isCommonCharacter(candidate))
-      .sort((left, right) => right.weight - left.weight)
-      .slice(0, 3);
-
-    for (const candidate of candidates) {
-      const next = [...chars];
-      next[index] = candidate.word;
-      const text = next.join("");
-
-      if (text === source.word) {
-        continue;
-      }
-
-      replacements.push({
-        text,
-        reason:
-          sharedCharCount(source.word, text) > 0
-            ? "same-char-homophone"
-            : "homophone",
-        score: 0.75,
-      });
-    }
-  }
-
-  return replacements;
 }
 
 function scoreCandidate(
@@ -236,20 +179,15 @@ export const MAX_ZH_IME_SOURCE_LENGTH = ${maxLength};
 `;
 }
 
-function normalizePinyinSyllables(value: string): string[] {
+function normalizePinyin(value: string): string {
   return value
-    .trim()
-    .split(/\s+/u)
-    .map((syllable) =>
-      syllable
-        .normalize("NFD")
-        .replace(/\p{Diacritic}/gu, "")
-        .toLowerCase()
-        .replace(/ü/gu, "v")
-        .replace(/u:/gu, "v")
-        .replace(/[1-5]/gu, ""),
-    )
-    .filter((syllable) => syllable !== "");
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/ü/gu, "v")
+    .replace(/u:/gu, "v")
+    .replace(/[1-5]/gu, "")
+    .replace(/\s+/gu, "");
 }
 
 function groupBy<T>(
@@ -290,24 +228,6 @@ function compareReplacements(left: Replacement, right: Replacement): number {
   }
 
   return left.text.localeCompare(right.text, "zh-Hans-CN");
-}
-
-function dedupeReplacements(replacements: readonly Replacement[]): Replacement[] {
-  const byText = new Map<string, Replacement>();
-
-  for (const replacement of replacements) {
-    const existing = byText.get(replacement.text);
-
-    if (!existing || replacement.score > existing.score) {
-      byText.set(replacement.text, replacement);
-    }
-  }
-
-  return [...byText.values()];
-}
-
-function isCommonCharacter(entry: RimeEntry): boolean {
-  return entry.weight >= 100;
 }
 
 function isAllHan(value: string): boolean {
