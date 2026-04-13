@@ -1,11 +1,18 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { ChevronDown, Languages, Moon, Sun } from "lucide-react";
 import { noisemake, type Language, type NoiseType } from "noisemake";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 type UiLang = "en" | "zh";
-type ThemeMode = "light" | "dark" | "system";
+type ThemeMode = "light" | "dark";
 type WorkbenchState = "idle" | "dirty" | "invalid" | "running" | "success" | "no-change";
 type ToastState = string | null;
 
@@ -53,8 +60,16 @@ type Copy = {
   languageError: string;
   inputRequired: string;
   runtimeError: string;
+  footerPromise: string;
+  footerLicense: string;
+  footerLinksLabel: string;
+  footerSource: string;
+  footerDocs: string;
+  footerDataNotice: string;
+  languageLabel: string;
+  themeLabel: string;
   status: Record<WorkbenchState, string>;
-  examples: Record<"mixed" | "zh" | "en", { label: string; value: string }>;
+  defaultInput: string;
   labels: Record<NoiseType | Language, string>;
   theme: Record<ThemeMode, string>;
 };
@@ -100,6 +115,14 @@ const COPY: Record<UiLang, Copy> = {
     languageError: "Choose at least one language.",
     inputRequired: "Add text before running.",
     runtimeError: "Could not run noisemake with these settings.",
+    footerPromise: "Same input. Same seed. Same output.",
+    footerLicense: "MIT code. LGPL-covered Chinese IME data.",
+    footerLinksLabel: "Project links",
+    footerSource: "Source",
+    footerDocs: "CLI docs",
+    footerDataNotice: "Data notice",
+    languageLabel: "Language",
+    themeLabel: "Toggle theme",
     status: {
       idle: "ready",
       dirty: "stale",
@@ -108,22 +131,8 @@ const COPY: Record<UiLang, Copy> = {
       success: "reproducible",
       "no-change": "no change",
     },
-    examples: {
-      mixed: {
-        label: "Mixed",
-        value:
-          "我们正在评测一个 agent workflow. Same input, same seed, same output, so every noisy fixture should be reproducible.",
-      },
-      zh: {
-        label: "Chinese",
-        value: "这个工具用于构造评测样本，帮助我们观察模型在轻微文本扰动下是否仍然稳定。",
-      },
-      en: {
-        label: "English",
-        value:
-          "This benchmark needs controlled text noise, not a rewrite, so repeated runs should stay reproducible.",
-      },
-    },
+    defaultInput:
+      "This benchmark needs controlled text noise, not a rewrite, so repeated runs should stay reproducible.",
     labels: {
       typo: "typo",
       repeat: "repeat",
@@ -133,7 +142,6 @@ const COPY: Record<UiLang, Copy> = {
     theme: {
       light: "Light",
       dark: "Dark",
-      system: "System",
     },
   },
   zh: {
@@ -175,6 +183,14 @@ const COPY: Record<UiLang, Copy> = {
     languageError: "至少选择一种语言策略。",
     inputRequired: "运行前请先输入文本。",
     runtimeError: "当前设置无法运行 noisemake。",
+    footerPromise: "同一输入。同一种子。同一输出。",
+    footerLicense: "代码 MIT。中文输入法混淆数据保持 LGPL 覆盖。",
+    footerLinksLabel: "项目链接",
+    footerSource: "源码",
+    footerDocs: "CLI 文档",
+    footerDataNotice: "数据许可",
+    languageLabel: "语言",
+    themeLabel: "切换主题",
     status: {
       idle: "就绪",
       dirty: "待重跑",
@@ -183,22 +199,7 @@ const COPY: Record<UiLang, Copy> = {
       success: "可复现",
       "no-change": "无变化",
     },
-    examples: {
-      mixed: {
-        label: "中英混合",
-        value:
-          "我们正在评测一个 agent workflow. Same input, same seed, same output, so every noisy fixture should be reproducible.",
-      },
-      zh: {
-        label: "中文",
-        value: "这个工具用于构造评测样本，帮助我们观察模型在轻微文本扰动下是否仍然稳定。",
-      },
-      en: {
-        label: "英文",
-        value:
-          "This benchmark needs controlled text noise, not a rewrite, so repeated runs should stay reproducible.",
-      },
-    },
+    defaultInput: "这个工具用于构造评测样本，帮助我们观察模型在轻微文本扰动下是否仍然稳定。",
     labels: {
       typo: "typo",
       repeat: "repeat",
@@ -206,21 +207,22 @@ const COPY: Record<UiLang, Copy> = {
       en: "en",
     },
     theme: {
-      light: "浅色",
-      dark: "深色",
-      system: "跟随系统",
+      light: "浅",
+      dark: "深",
     },
   },
 };
 
-const DEFAULT_INPUT = COPY.zh.examples.mixed.value;
 const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
 const HERO_CLI_COMMAND = 'npx noisemake "这是一段测试文本"';
+const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
+const README_URL = "https://github.com/sorcererxw/noisemake#readme";
+const NOTICE_URL = "https://github.com/sorcererxw/noisemake/blob/main/NOTICE";
 
 export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const copy = COPY[lang];
-  const [input, setInput] = useState(DEFAULT_INPUT);
+  const [input, setInput] = useState(copy.defaultInput);
   const [frequency, setFrequency] = useState("200");
   const [seed, setSeed] = useState("42");
   const [randomSeed, setRandomSeed] = useState(false);
@@ -364,10 +366,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                   setInput(value);
                   markDirty();
                 }}
-                useExample={(value) => {
-                  setInput(value);
-                  markDirty();
-                }}
                 error={validation.input}
               />
               <ControlRail
@@ -412,12 +410,36 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
             </div>
           </section>
         </section>
+
+        <SiteFooter copy={copy} />
       </div>
 
       <div className="toast-region" aria-live="polite" aria-atomic="true">
         {toast ? <div className="toast">{toast}</div> : null}
       </div>
     </main>
+  );
+}
+
+function SiteFooter({ copy }: { copy: Copy }) {
+  return (
+    <footer className="site-footer">
+      <div className="footer-copy">
+        <p>{copy.footerPromise}</p>
+        <p>{copy.footerLicense}</p>
+      </div>
+      <nav className="footer-links" aria-label={copy.footerLinksLabel}>
+        <a href={SOURCE_URL} target="_blank" rel="noreferrer">
+          {copy.footerSource}
+        </a>
+        <a href={README_URL} target="_blank" rel="noreferrer">
+          {copy.footerDocs}
+        </a>
+        <a href={NOTICE_URL} target="_blank" rel="noreferrer">
+          {copy.footerDataNotice}
+        </a>
+      </nav>
+    </footer>
   );
 }
 
@@ -429,7 +451,8 @@ function HeaderBar({ lang }: { lang: UiLang }) {
         <span>noisemake</span>
       </a>
       <div className="switches" aria-label="Page controls">
-        <LanguageSwitch lang={lang} />
+        <LanguageSwitch lang={lang} copy={COPY[lang]} />
+        <span className="control-divider" aria-hidden="true" />
         <ThemeSwitch copy={COPY[lang]} />
       </div>
     </header>
@@ -484,76 +507,153 @@ function CliUsagePanel({ copy }: { copy: Copy }) {
   );
 }
 
-function LanguageSwitch({ lang }: { lang: UiLang }) {
-  function switchLang(nextLang: UiLang) {
-    localStorage.setItem("noisemake-lang", nextLang);
-    if (nextLang !== lang) {
-      window.location.href = `/${nextLang}`;
+function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
+
+  function cancelLanguageClose() {
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
     }
   }
 
+  function openLanguageMenu() {
+    cancelLanguageClose();
+    setLanguageOpen(true);
+  }
+
+  function closeLanguageMenu() {
+    cancelLanguageClose();
+    closeTimerRef.current = window.setTimeout(() => {
+      setLanguageOpen(false);
+      closeTimerRef.current = null;
+    }, 120);
+  }
+
+  function storeLang(nextLang: UiLang) {
+    localStorage.setItem("noisemake-lang", nextLang);
+    setLanguageOpen(false);
+  }
+
   return (
-    <div className="segmented-control" aria-label="Language">
-      {(["zh", "en"] as const).map((item) => (
+    <DropdownMenu open={languageOpen} onOpenChange={setLanguageOpen} modal={false}>
+      <DropdownMenuTrigger asChild>
         <button
-          key={item}
-          className={cn("segmented-button", item === lang && "is-active")}
+          className="language-trigger"
           type="button"
-          aria-pressed={item === lang}
-          onClick={() => switchLang(item)}
+          aria-label={copy.languageLabel}
+          onPointerEnter={openLanguageMenu}
+          onPointerLeave={closeLanguageMenu}
+          onMouseEnter={openLanguageMenu}
+          onMouseLeave={closeLanguageMenu}
+          onPointerDown={(event) => {
+            event.preventDefault();
+          }}
+          onFocus={openLanguageMenu}
+          onBlur={closeLanguageMenu}
         >
-          {item}
+          <Languages aria-hidden="true" size={15} />
+          <ChevronDown className="language-chevron" aria-hidden="true" size={12} />
         </button>
-      ))}
-    </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="language-menu"
+        onPointerEnter={openLanguageMenu}
+        onPointerLeave={closeLanguageMenu}
+        onMouseEnter={openLanguageMenu}
+        onMouseLeave={closeLanguageMenu}
+        onFocusCapture={openLanguageMenu}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+            closeLanguageMenu();
+          }
+        }}
+        onEscapeKeyDown={() => setLanguageOpen(false)}
+        onCloseAutoFocus={(event) => event.preventDefault()}
+      >
+        {(["zh", "en"] as const).map((item) => (
+          <DropdownMenuItem
+            key={item}
+            asChild
+            className={cn("language-menu-item", item === lang && "is-active")}
+          >
+            <a href={`/${item}`} onClick={() => storeLang(item)}>
+              <span>{item}</span>
+            </a>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 function ThemeSwitch({ copy }: { copy: Copy }) {
-  const [theme, setTheme] = useState<ThemeMode>("system");
+  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    if (typeof window === "undefined") {
+      return "light";
+    }
+
+    const stored = localStorage.getItem("noisemake-theme") as ThemeMode | null;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return stored === "light" || stored === "dark" ? stored : prefersDark ? "dark" : "light";
+  });
 
   useEffect(() => {
-    const stored = localStorage.getItem("noisemake-theme") as ThemeMode | null;
-    const initial = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
-    setTheme(initial);
-
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const applyTheme = (mode: ThemeMode) => {
-      document.documentElement.classList.toggle(
-        "dark",
-        mode === "dark" || (mode === "system" && media.matches),
-      );
-    };
-
-    applyTheme(initial);
-    const listener = () => applyTheme(localStorage.getItem("noisemake-theme") as ThemeMode || "system");
-    media.addEventListener("change", listener);
-    return () => media.removeEventListener("change", listener);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    setMounted(true);
   }, []);
 
   function updateTheme(nextTheme: ThemeMode) {
     setTheme(nextTheme);
     localStorage.setItem("noisemake-theme", nextTheme);
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.classList.toggle(
-      "dark",
-      nextTheme === "dark" || (nextTheme === "system" && prefersDark),
-    );
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+  }
+
+  function toggleTheme() {
+    updateTheme(theme === "dark" ? "light" : "dark");
   }
 
   return (
-    <div className="segmented-control theme-control" aria-label="Theme">
-      {(["light", "dark", "system"] as const).map((item) => (
-        <button
-          key={item}
-          className={cn("segmented-button", item === theme && "is-active")}
-          type="button"
-          aria-pressed={item === theme}
-          onClick={() => updateTheme(item)}
-        >
-          {copy.theme[item]}
-        </button>
-      ))}
+    <div className="theme-switch-control" aria-label="Theme">
+      <Button
+        className="theme-toggle-button"
+        type="button"
+        variant="ghost"
+        size="icon"
+        aria-label={copy.themeLabel}
+        aria-pressed={mounted && theme === "dark"}
+        suppressHydrationWarning
+        title={copy.themeLabel}
+        onPointerDown={(event) => {
+          event.preventDefault();
+          toggleTheme();
+        }}
+        onClick={(event) => {
+          if (event.detail === 0) {
+            toggleTheme();
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            toggleTheme();
+          }
+        }}
+      >
+        <Sun className="theme-icon theme-icon-sun" aria-hidden="true" size={16} />
+        <Moon className="theme-icon theme-icon-moon" aria-hidden="true" size={16} />
+      </Button>
     </div>
   );
 }
@@ -562,33 +662,17 @@ function InputPanel({
   copy,
   input,
   setInput,
-  useExample,
   error,
 }: {
   copy: Copy;
   input: string;
   setInput: (value: string) => void;
-  useExample: (value: string) => void;
   error: string;
 }) {
   return (
     <section className="panel input-panel" aria-labelledby="input-label">
       <div className="panel-heading">
         <h2 id="input-label">{copy.inputLabel}</h2>
-      </div>
-      <div className="example-row" aria-label="Examples">
-        {(Object.keys(copy.examples) as Array<keyof Copy["examples"]>).map((key) => (
-          <Button
-            key={key}
-            className="example-button"
-            variant="outline"
-            size="sm"
-            type="button"
-            onClick={() => useExample(copy.examples[key].value)}
-          >
-            {copy.examples[key].label}
-          </Button>
-        ))}
       </div>
       <textarea
         className="text-field input-textarea"

@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsdown";
 
 export default defineConfig([
   {
@@ -6,7 +6,7 @@ export default defineConfig([
     format: ["esm", "cjs"],
     dts: true,
     clean: true,
-    splitting: false,
+    fixedExtension: false,
     sourcemap: true,
     target: "node22",
   },
@@ -15,7 +15,7 @@ export default defineConfig([
     format: ["esm"],
     dts: false,
     clean: false,
-    splitting: false,
+    fixedExtension: false,
     sourcemap: true,
     target: "node22",
   },

@@ -458,7 +458,7 @@ Test command split:
 ```json
 {
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "vitest run",
     "test:unit": "vitest run test/unit",
     "test:dist": "npm run build && vitest run test/cli.test.ts test/package.test.ts",
@@ -618,15 +618,15 @@ Pinyin normalization:
 Dependencies:
 - TypeScript.
 - Vitest for tests.
-- `tsup` for build output.
+- `tsdown` for build output.
 - No native tokenizer in MVP.
 - Commander for CLI parsing. Keep it isolated to `src/cli.ts`; runtime-neutral core modules must not depend on it.
 
 Build strategy:
-- Use two tsup build targets.
+- Use two tsdown build targets.
 - Library target: `src/index.ts`, ESM + CJS, declaration output, no shebang.
 - CLI target: `src/cli.ts`, ESM only, shebang banner, no declaration output.
-- Verify actual tsup output filenames during implementation before finalizing `package.json` exports.
+- Verify actual tsdown output filenames during implementation before finalizing `package.json` exports.
 
 Expected package surface:
 
@@ -652,7 +652,7 @@ Expected package surface:
 
 ## Implementation Order
 
-1. Create package scaffolding: `package.json`, `tsconfig.json`, `tsup.config.ts`, Vitest config if needed.
+1. Create package scaffolding: `package.json`, `tsconfig.json`, `tsdown.config.ts`, Vitest config if needed.
 2. Add license/data skeleton:
    - `NOTICE`
    - `third_party/rime-luna-pinyin/LICENSE`

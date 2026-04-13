@@ -67,8 +67,8 @@ Theme behavior:
 | Workbench surface                                           |
 | +------------------+-------------------+-------------------+ |
 | | Input panel      | Control rail      | Output panel      | |
-| | examples         | frequency         | output            | |
-| | textarea         | seed              | changed spans     | |
+| | textarea         | frequency         | output            | |
+| |                  | seed              | changed spans     | |
 | |                  | type chips        | copy status       | |
 | |                  | language chips    |                   | |
 | |                  | Run / Copy        |                   | |
@@ -89,7 +89,6 @@ Component split:
 - `InputPanel`
 - `ControlRail`
 - `OutputPanel`
-- `ExampleButtons`
 - `ChangedTextOutput`
 
 Keep the main workbench as one surface with internal panel dividers. Do not build it as three unrelated decorative cards. The CLI usage panel may be framed like a terminal because it is content and instruction, not decoration.
@@ -156,7 +155,7 @@ Avoid copy that sounds like detector evasion.
 
 Default values:
 
-- `input`: prefill with a realistic mixed Chinese/English sample.
+- `input`: prefill with a realistic sample that matches the current UI language.
 - `frequency`: `200`
 - `seed`: `42`
 - `types`: `["typo", "repeat"]`
@@ -166,7 +165,6 @@ Control behavior:
 
 - Output changes only after the user clicks Run.
 - Editing input or controls after a successful run marks the output as stale.
-- Example buttons replace input and mark output stale; they do not auto-run.
 - Copy output is disabled until a successful run has produced output.
 
 Validation:
@@ -328,7 +326,7 @@ After implementation, run a design QA pass before shipping. Check specifically:
   hero that users know it is immediately usable.
 - Noise face appears as a tiny SVG mark near the wordmark and does not become a
   large mascot.
-- Mobile order is header controls, hero copy, CLI usage, examples, input, controls, Run, output.
+- Mobile order is header controls, hero copy, CLI usage, input, controls, Run, output.
 - Dark mode preserves contrast and does not become a dark blue/purple dashboard.
 - Changed spans are visible and do not rely on color alone.
 - shadcn components support the experience without turning the page into a card

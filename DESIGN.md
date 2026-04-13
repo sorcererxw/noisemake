@@ -112,7 +112,7 @@ Dark mode target:
 - **Hero structure:** Brand and page controls in a compact nav row, then a generous hero band with the headline/proof on one side and a real CLI usage panel on the other. The CLI panel is the hero's visual anchor; do not replace it with decorative art.
 - **Playground position:** The current editor/workbench becomes a section named `Playground` below the hero. It stays a real usable tool, not an embedded preview.
 - **Desktop playground grid:** Input pane, compact controls, output pane. Text panes dominate; control rail is narrower.
-- **Mobile order:** Header controls, hero copy, CLI usage, playground examples, input, controls, Run, output.
+- **Mobile order:** Header controls, hero copy, CLI usage, input, controls, Run, output.
 - **Max width:** 1180px for the workbench, centered with 24px page padding.
 - **Main surface:** One friendly playground surface with internal separation. Do not turn input, controls, and output into three unrelated decorative cards.
 - **Border radius:** Default 8px, small 6px, large 10px only for the outer workbench. No pill-shaped everything.
@@ -120,7 +120,7 @@ Dark mode target:
 ## Components
 
 - **Hero CLI panel:** Use a compact terminal-like code surface that shows actual commands, such as `npx noisemake "..." --seed 42 --frequency 200`, and a short reproducibility note. This surface earns its frame because it teaches usage.
-- **Buttons:** Run is the primary warm-yellow action. Copy is secondary. Example buttons are small soft chips.
+- **Buttons:** Run is the primary warm-yellow action. Copy is secondary.
 - **Checkboxes:** Prefer shadcn checkbox or toggle-like chips for `typo`, `repeat`, `zh`, and `en`. Active state uses the yellow accent, not blue or purple.
 - **Textareas:** Large, calm, and resizable only if it does not break the workbench. Use clear labels above each pane.
 - **Output highlights:** Changed spans should use `--changed-bg` and `--changed-border`. This is the page's main visual event.
@@ -140,7 +140,7 @@ Dark mode target:
 - Keep the research/eval framing.
 - English anchor: "Deterministic text noise for evals."
 - Chinese anchor: "给评测用的可复现文本噪声。"
-- Use "playground", "examples", "seed", "frequency", and "same engine as the CLI/package" language.
+- Use "playground", "seed", "frequency", and "same engine as the CLI/package" language.
 - Avoid detector-evasion wording. "Less mechanically polished" is acceptable only when the surrounding copy makes the research/eval use case clear.
 
 ## Accessibility
@@ -172,3 +172,4 @@ Dark mode target:
 | 2026-04-13 | Allow one tiny friendly mark near the wordmark | Captures Hugging Face-style warmth without turning the page into a toy. |
 | 2026-04-13 | Use "给评测用的可复现文本噪声。" as the Chinese anchor | User accepted the more natural Chinese phrasing over the stiffer draft. |
 | 2026-04-13 | Choose the noise face mark | User preferred it over the glitch glyph and seed badge variants after previewing all three. |
+| 2026-04-13 | Remove Mixed/Chinese/English playground presets | The input now defaults to a language-matched sample from the current UI locale instead of offering preset example chips. |

@@ -202,7 +202,6 @@ The playground should include:
 - Language checkboxes: `zh`, `en`.
 - Run button.
 - Copy output button.
-- Example text buttons for mixed, Chinese, and English input.
 - Clear error messages for invalid settings.
 
 Interaction model:
@@ -210,13 +209,12 @@ Interaction model:
 - Output changes only when the user clicks Run.
 - Editing input or controls after a run marks the output as stale until Run is
   clicked again.
-- Example buttons replace the input text and mark the output as stale; they do
-  not auto-run.
 - Copy output is disabled until a successful run has produced output.
 
 Default controls:
 
 - `frequency`: numeric input, default `200`, positive integer only.
+- `input`: prefilled with a language-matched sample for the current UI route.
 - `seed`: text input, default `42` so first-time users immediately see
   reproducible behavior.
 - Noise types: `typo` and `repeat` both checked by default; at least one must
@@ -238,7 +236,7 @@ Interaction states:
 
 | Feature | State | What the user sees |
 |---------|-------|--------------------|
-| Input | Empty | Placeholder text plus example buttons: mixed, Chinese, English. Run is disabled until input has non-empty text. |
+| Input | Empty | Placeholder text appears. Run is disabled until input has non-empty text. |
 | Input | Edited after run | Output keeps the previous result but shows a small "Settings changed, run again" status. |
 | Controls | Invalid frequency | Inline error next to frequency: "Use a positive whole number." Run is disabled and focus moves to the field on submit. |
 | Controls | No type selected | Inline error in the type group: "Choose at least one noise type." |
@@ -266,7 +264,7 @@ Storyboard:
 | 1 | Lands on `/zh` or `/en` | "I know what this is, and I can use it from my terminal." | Larger hero states deterministic text noise and shows one real CLI command. |
 | 2 | Scans the CLI panel | "This is not a vague AI rewriter." | The command is short enough to understand immediately; deeper options are left to GitHub docs and CLI help. |
 | 3 | Scrolls or jumps to Playground | "I can try the same engine here." | Playground section appears immediately after the hero, not behind feature copy. |
-| 4 | Clicks an example or pastes text | "This is a real tool, not a mockup." | Input accepts text directly; example buttons use realistic mixed/Chinese/English samples. |
+| 4 | Reviews or edits the default text | "This is a real tool, not a mockup." | Input starts with a realistic sample that matches the current interface language and accepts pasted text directly. |
 | 5 | Reviews `frequency` and `seed` | "The controls map to reproducibility." | Helper copy explains that higher frequency means less noise and same seed means same output. |
 | 6 | Clicks Run | "A deliberate operation happened." | Run shows a short running state; output changes only after Run. |
 | 7 | Reads output | "I can inspect what changed." | Changed spans are highlighted inline; no-change cases explain why nothing changed. |
@@ -368,7 +366,7 @@ Viewport behavior:
 |----------|--------|
 | Desktop, 1024px and up | Two-column hero with CLI panel, then three-column playground: input, narrower controls, output. The playground label or top edge should remain visible in the first viewport. |
 | Tablet, 768px to 1023px | Hero stacks copy above CLI if needed, then two-row playground: input and output side by side when space allows, controls as a full-width row or compact rail. |
-| Mobile, below 768px | Single column: header controls, hero copy, CLI usage, examples, input, controls, Run, output. Output must appear immediately after Run. |
+| Mobile, below 768px | Single column: header controls, hero copy, CLI usage, input, controls, Run, output. Output must appear immediately after Run. |
 
 Mobile rules:
 

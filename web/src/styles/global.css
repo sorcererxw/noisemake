@@ -170,7 +170,7 @@
 
   .brand-lockup {
     display: inline-flex;
-    width: fit-content;
+    width: 135px;
     align-items: center;
     gap: 8px;
     color: var(--foreground);
@@ -314,35 +314,171 @@
     line-height: 1.5;
   }
 
-  .switches {
+  .site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 8px;
+    border-top: 1px solid var(--border);
+    padding: 18px 0 24px;
+    color: var(--muted-foreground);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .footer-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .footer-copy p {
+    margin: 0;
+  }
+
+  .footer-copy p:first-child {
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .footer-links {
     display: flex;
     flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px 12px;
+  }
+
+  .footer-links a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    color: var(--foreground);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklch, var(--foreground) 35%, transparent);
+    text-underline-offset: 4px;
+  }
+
+  .footer-links a:hover {
+    text-decoration-color: var(--primary);
+  }
+
+  .switches {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: flex-end;
     gap: 8px;
   }
 
+  .language-trigger,
+  .theme-switch-control {
+    min-height: 44px;
+    color: var(--muted-foreground);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  .language-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    border-radius: 8px;
+    padding: 0 4px;
+    transition: color 120ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .language-trigger[data-state="open"] {
+    color: var(--foreground);
+  }
+
+  .language-trigger svg {
+    height: 15px;
+    width: 15px;
+  }
+
+  .language-trigger .language-chevron {
+    height: 12px;
+    width: 12px;
+  }
+
+  .language-menu {
+    min-width: 72px;
+  }
+
+  .language-menu-item {
+    justify-content: space-between;
+    color: var(--muted-foreground);
+  }
+
+  .language-menu-item.is-active {
+    background: var(--muted);
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .control-divider {
+    width: 1px;
+    height: 16px;
+    background: var(--border);
+    opacity: 0.8;
+  }
+
+  .theme-switch-control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .theme-toggle-button {
+    color: var(--muted-foreground);
+  }
+
+  .theme-icon {
+    display: block;
+  }
+
+  .theme-icon-moon {
+    display: none;
+  }
+
+  .dark .theme-icon-sun {
+    display: none;
+  }
+
+  .dark .theme-icon-moon {
+    display: block;
+  }
+
+  .theme-toggle-button[aria-pressed="true"] {
+    color: var(--foreground);
+  }
+
   .segmented-control {
     display: inline-flex;
-    gap: 2px;
+    gap: 0;
     border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    padding: 3px;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 0;
   }
 
   .segmented-button {
-    min-height: 32px;
+    min-height: 34px;
     border-radius: 6px;
-    padding: 0 10px;
+    padding: 0 9px;
     color: var(--muted-foreground);
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 500;
     transition: background 120ms cubic-bezier(0.2, 0, 0, 1), color 120ms cubic-bezier(0.2, 0, 0, 1);
   }
 
   .segmented-button.is-active {
-    background: var(--primary);
-    color: var(--primary-foreground);
+    background: color-mix(in oklch, var(--muted) 72%, transparent);
+    color: var(--foreground);
   }
 
   .workbench {
@@ -754,10 +890,17 @@
 
     .switches {
       justify-content: flex-start;
+      gap: 4px 8px;
     }
 
-    .theme-control .segmented-button {
-      padding: 0 8px;
+    .site-footer {
+      align-items: flex-start;
+      flex-direction: column;
+      padding-bottom: 20px;
+    }
+
+    .footer-links {
+      justify-content: flex-start;
     }
 
     .workbench-grid {
