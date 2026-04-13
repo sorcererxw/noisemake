@@ -499,8 +499,12 @@
     display: flex;
     min-width: 0;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
     padding: 16px;
+  }
+
+  .control-panel {
+    gap: 14px;
   }
 
   .control-panel,
@@ -610,67 +614,50 @@
     font-weight: 500;
   }
 
+  .control-field,
   .chip-fieldset {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
   }
 
   .seed-row {
     display: flex;
+    min-height: 24px;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
   }
 
-  .random-seed-button {
+  .random-seed-checkbox {
     display: inline-flex;
-    min-height: 44px;
+    min-height: 24px;
     width: fit-content;
     align-items: center;
-    gap: 7px;
-    border: 0;
-    border-radius: 8px;
-    background: transparent;
-    padding: 0 9px;
+    gap: 6px;
+    border-radius: 6px;
+    padding: 0 2px;
     color: var(--muted-foreground);
+    cursor: pointer;
     font-size: 0.78rem;
     font-weight: 600;
-    transition: background 120ms cubic-bezier(0.2, 0, 0, 1), border-color 120ms cubic-bezier(0.2, 0, 0, 1), color 120ms cubic-bezier(0.2, 0, 0, 1);
+    transition: color 120ms cubic-bezier(0.2, 0, 0, 1);
   }
 
-  .random-seed-button.is-active {
-    background: var(--accent);
+  .random-seed-checkbox.is-active {
     color: var(--accent-foreground);
   }
 
-  .switch-track {
-    display: inline-flex;
-    width: 34px;
-    height: 20px;
-    align-items: center;
-    border-radius: 8px;
-    background: var(--muted);
-    padding: 2px;
-    transition: background 120ms cubic-bezier(0.2, 0, 0, 1);
-  }
-
-  .switch-thumb {
-    display: block;
+  .random-seed-input {
     width: 16px;
     height: 16px;
-    border-radius: 6px;
-    background: var(--muted-foreground);
-    transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), background 120ms cubic-bezier(0.2, 0, 0, 1);
+    flex: 0 0 auto;
+    accent-color: var(--primary);
   }
 
-  .random-seed-button.is-active .switch-track {
-    background: var(--primary);
-  }
-
-  .random-seed-button.is-active .switch-thumb {
-    background: var(--primary-foreground);
-    transform: translateX(14px);
+  .random-seed-input:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 
   .choice-chip {
@@ -678,20 +665,20 @@
     min-width: 0;
     flex: 1 1 100%;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: color-mix(in oklch, var(--card) 88%, var(--muted));
-    padding: 7px 9px;
+    padding: 0 12px;
     color: var(--muted-foreground);
     text-align: left;
     transition: background 120ms cubic-bezier(0.2, 0, 0, 1), border-color 120ms cubic-bezier(0.2, 0, 0, 1), color 120ms cubic-bezier(0.2, 0, 0, 1);
   }
 
   .choice-chip.is-active {
-    border-color: var(--changed-border);
-    background: var(--accent);
+    border-color: color-mix(in oklch, var(--primary) 58%, var(--border));
+    background: color-mix(in oklch, var(--accent) 42%, var(--card));
     color: var(--accent-foreground);
   }
 
@@ -741,8 +728,6 @@
   .output-copy-button {
     min-height: 44px;
     border-radius: 8px;
-    padding-right: 10px;
-    padding-left: 10px;
     font-size: 0.78rem;
     font-weight: 600;
   }
