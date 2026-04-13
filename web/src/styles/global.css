@@ -491,7 +491,7 @@
 
   .workbench-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.68fr) minmax(0, 1.15fr);
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.82fr) minmax(0, 1.1fr);
     min-height: 520px;
   }
 
@@ -540,6 +540,11 @@
   .example-button {
     background: var(--accent);
     color: var(--accent-foreground);
+  }
+
+  .chip-row {
+    flex-direction: column;
+    gap: 6px;
   }
 
   .text-field,
@@ -611,30 +616,30 @@
     gap: 8px;
   }
 
-  .switch-row {
+  .seed-row {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
 
-  .switch-button {
+  .random-seed-button {
     display: inline-flex;
     min-height: 44px;
     width: fit-content;
     align-items: center;
-    gap: 8px;
-    border: 1px solid var(--border);
+    gap: 7px;
+    border: 0;
     border-radius: 8px;
-    background: var(--card);
-    padding: 0 10px;
+    background: transparent;
+    padding: 0 9px;
     color: var(--muted-foreground);
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 600;
     transition: background 120ms cubic-bezier(0.2, 0, 0, 1), border-color 120ms cubic-bezier(0.2, 0, 0, 1), color 120ms cubic-bezier(0.2, 0, 0, 1);
   }
 
-  .switch-button.is-active {
-    border-color: var(--changed-border);
+  .random-seed-button.is-active {
     background: var(--accent);
     color: var(--accent-foreground);
   }
@@ -644,7 +649,7 @@
     width: 34px;
     height: 20px;
     align-items: center;
-    border-radius: 999px;
+    border-radius: 8px;
     background: var(--muted);
     padding: 2px;
     transition: background 120ms cubic-bezier(0.2, 0, 0, 1);
@@ -654,35 +659,71 @@
     display: block;
     width: 16px;
     height: 16px;
-    border-radius: 999px;
+    border-radius: 6px;
     background: var(--muted-foreground);
     transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), background 120ms cubic-bezier(0.2, 0, 0, 1);
   }
 
-  .switch-button.is-active .switch-track {
+  .random-seed-button.is-active .switch-track {
     background: var(--primary);
   }
 
-  .switch-button.is-active .switch-thumb {
+  .random-seed-button.is-active .switch-thumb {
     background: var(--primary-foreground);
     transform: translateX(14px);
   }
 
   .choice-chip {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     border: 1px solid var(--border);
     border-radius: 8px;
-    background: var(--card);
-    padding: 0 12px;
+    background: color-mix(in oklch, var(--card) 88%, var(--muted));
+    padding: 7px 9px;
     color: var(--muted-foreground);
-    font-size: 0.85rem;
-    font-weight: 600;
+    text-align: left;
     transition: background 120ms cubic-bezier(0.2, 0, 0, 1), border-color 120ms cubic-bezier(0.2, 0, 0, 1), color 120ms cubic-bezier(0.2, 0, 0, 1);
   }
 
   .choice-chip.is-active {
     border-color: var(--changed-border);
-    background: var(--primary);
-    color: var(--primary-foreground);
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  .choice-chip-mark {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 auto;
+    border: 1px solid color-mix(in oklch, var(--muted-foreground) 55%, transparent);
+    border-radius: 4px;
+    background: transparent;
+  }
+
+  .choice-chip.is-active .choice-chip-mark {
+    border-color: var(--primary-foreground);
+    background: var(--primary-foreground);
+  }
+
+  .choice-chip-value {
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .choice-chip-label {
+    flex: 1 1 auto;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.2;
   }
 
   .control-actions {
@@ -690,26 +731,20 @@
   }
 
   .control-actions button {
-    flex: 1 1 130px;
+    width: 100%;
   }
 
   .run-button {
     font-weight: 600;
   }
 
-  .status-pill {
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 3px 7px;
-    color: var(--muted-foreground);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-  }
-
-  .status-pill.is-stale {
-    border-color: var(--changed-border);
-    background: var(--changed-bg);
-    color: var(--foreground);
+  .output-copy-button {
+    min-height: 44px;
+    border-radius: 8px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
   }
 
   .output-region {
