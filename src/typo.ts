@@ -50,22 +50,14 @@ const ZH_HOMOPHONE_FALLBACKS: Readonly<
   稳定: zhFallback("homophone", "问鼎"),
   实现: zhFallback("homophone", "实线"),
   可以: zhFallback("homophone", "刻意"),
-  安装: zhFallback("near-homophone", "按装"),
   体验: zhFallback("near-homophone", "体检"),
-  生成: zhFallback("homophone", "声成", "生辰"),
+  生成: zhFallback("near-homophone", "生辰"),
   前端: zhFallback("homophone", "前段"),
-  工具: zhFallback("near-homophone", "公具"),
-  但是: zhFallback("homophone", "但事"),
   尝试: zhFallback("homophone", "常识"),
-  今天: zhFallback("near-homophone", "金天"),
-  模式: zhFallback("near-homophone", "摸式"),
   复刻: zhFallback("homophone", "复课"),
   写的: zhFallback("homophone", "写得"),
-  计算: zhFallback("near-homophone", "计蒜"),
-  免息: zhFallback("homophone", "面息"),
   分期: zhFallback("near-homophone", "分歧"),
   实际: zhFallback("homophone", "事迹"),
-  价值: zhFallback("near-homophone", "价植"),
 };
 
 export function buildZhImeTypoCandidates(

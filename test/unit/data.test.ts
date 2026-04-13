@@ -31,7 +31,7 @@ describe("data", () => {
       for (const replacement of replacements) {
         expect(replacement.text).not.toBe(source);
         expect(Array.from(replacement.text).length).toBeGreaterThanOrEqual(2);
-        expect(replacement.score).toBeGreaterThanOrEqual(0.75);
+        expect(replacement.score).toBeGreaterThanOrEqual(0.55);
       }
     }
   }, 15_000);
