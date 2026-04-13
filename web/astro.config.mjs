@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { fileURLToPath } from 'node:url';
 
 import tailwindcss from '@tailwindcss/vite';
 
@@ -13,6 +14,11 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        noisemake: fileURLToPath(new URL('../src/index.ts', import.meta.url))
+      }
+    },
     ssr: {
       noExternal: ['react', 'react-dom', 'react/jsx-runtime']
     }
