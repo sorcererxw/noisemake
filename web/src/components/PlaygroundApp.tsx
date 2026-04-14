@@ -618,21 +618,7 @@ function ThemeSwitch({ copy }: { copy: Copy }) {
         aria-pressed={mounted && theme === "dark"}
         suppressHydrationWarning
         title={copy.themeLabel}
-        onPointerDown={(event) => {
-          event.preventDefault();
-          toggleTheme();
-        }}
-        onClick={(event) => {
-          if (event.detail === 0) {
-            toggleTheme();
-          }
-        }}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            toggleTheme();
-          }
-        }}
+        onClick={toggleTheme}
       >
         <Sun className="theme-icon theme-icon-sun" aria-hidden="true" size={16} />
         <Moon className="theme-icon theme-icon-moon" aria-hidden="true" size={16} />
