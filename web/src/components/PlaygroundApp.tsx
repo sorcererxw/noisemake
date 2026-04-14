@@ -316,9 +316,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 
   function updateRandomSeed(nextRandomSeed: boolean) {
     setRandomSeed(nextRandomSeed);
-    if (nextRandomSeed) {
-      setSeed(createRandomSeed());
-    }
     markDirty();
   }
 
