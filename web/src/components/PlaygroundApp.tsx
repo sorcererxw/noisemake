@@ -1,5 +1,12 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { ChevronDown, Languages, Moon, Sun } from "lucide-react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import { ChevronDown, CircleHelp, Languages, Moon, Sun } from "lucide-react";
 import { noisemake, type Language, type NoiseType } from "noisemake";
 
 import { Button } from "@/components/ui/button";
@@ -682,10 +689,14 @@ function ControlRail({
         <h2 id="controls-label">{copy.controlsLabel}</h2>
       </div>
 
-      <div className="control-field">
-        <label className="field-label" htmlFor="frequency">
-          frequency
-        </label>
+      <FormItem
+        title="frequency"
+        htmlFor="frequency"
+        helper={copy.frequencyHelper}
+        helperId="frequency-helper"
+        error={frequencyError}
+        errorId="frequency-error"
+      >
         <input
           ref={frequencyRef}
           className="control-input mono-value"
@@ -696,21 +707,14 @@ function ControlRail({
           aria-invalid={Boolean(frequencyError)}
           onChange={(event) => setFrequency(event.target.value)}
         />
-        <p className="helper-text" id="frequency-helper">
-          {copy.frequencyHelper}
-        </p>
-        {frequencyError ? (
-          <p className="field-error" id="frequency-error">
-            {frequencyError}
-          </p>
-        ) : null}
-      </div>
+      </FormItem>
 
-      <div className="control-field">
-        <div className="seed-row">
-          <label className="field-label" htmlFor="seed">
-            seed
-          </label>
+      <FormItem
+        title="seed"
+        htmlFor="seed"
+        helper={copy.seedHelper}
+        helperId="seed-helper"
+        action={
           <label className={cn("random-seed-checkbox", randomSeed && "is-active")}>
             <Checkbox
               className="random-seed-input"
@@ -720,7 +724,8 @@ function ControlRail({
             />
             <span>{copy.randomSeedLabel}</span>
           </label>
-        </div>
+        }
+      >
         <input
           className="control-input mono-value"
           id="seed"
@@ -729,10 +734,7 @@ function ControlRail({
           aria-describedby="seed-helper"
           onChange={(event) => setSeed(event.target.value)}
         />
-        <p className="helper-text" id="seed-helper">
-          {copy.seedHelper}
-        </p>
-      </div>
+      </FormItem>
 
       <ChipGroup
         legend="types"
@@ -773,8 +775,13 @@ function ChipGroup({
   const errorId = `${legend}-error`;
 
   return (
-    <fieldset className="control-field chip-fieldset" aria-describedby={error ? errorId : undefined}>
-      <legend>{legend}</legend>
+    <FormItem
+      title={legend}
+      error={error}
+      errorId={errorId}
+      asFieldset
+      aria-describedby={error ? errorId : undefined}
+    >
       <div className="chip-row">
         {options.map((option) => (
           <button
@@ -795,12 +802,94 @@ function ChipGroup({
           </button>
         ))}
       </div>
-      {error ? (
-        <p className="field-error" id={errorId}>
-          {error}
-        </p>
-      ) : null}
-    </fieldset>
+    </FormItem>
+  );
+}
+
+function FormItem({
+  title,
+  htmlFor,
+  action,
+  helper,
+  helperId,
+  error,
+  errorId,
+  asFieldset,
+  children,
+  ...fieldsetProps
+}: {
+  title: string;
+  htmlFor?: string;
+  action?: ReactNode;
+  helper?: string;
+  helperId?: string;
+  error?: string;
+  errorId?: string;
+  asFieldset?: boolean;
+  children: ReactNode;
+  "aria-describedby"?: string;
+}) {
+  const helperDescription = helper ? (
+    <span className="sr-only" id={helperId}>
+      {helper}
+    </span>
+  ) : null;
+  const helpTip = helper ? <HelpTip text={helper} /> : null;
+  const errorText = error ? (
+    <p className="field-error" id={errorId}>
+      {error}
+    </p>
+  ) : null;
+
+  if (asFieldset) {
+    const titleId = `${title}-form-item-title`;
+
+    return (
+      <div
+        className="form-item chip-fieldset"
+        role="group"
+        aria-labelledby={titleId}
+        {...fieldsetProps}
+      >
+        <div className="form-item-header">
+          <span className="form-item-heading">
+            <span className="form-item-title" id={titleId}>
+              {title}
+            </span>
+            {helpTip}
+          </span>
+          {action}
+        </div>
+        {children}
+        {helperDescription}
+        {errorText}
+      </div>
+    );
+  }
+
+  return (
+    <div className="form-item">
+      <div className="form-item-header">
+        <span className="form-item-heading">
+          <label className="form-item-title" htmlFor={htmlFor}>
+            {title}
+          </label>
+          {helpTip}
+        </span>
+        {action}
+      </div>
+      {children}
+      {helperDescription}
+      {errorText}
+    </div>
+  );
+}
+
+function HelpTip({ text }: { text: string }) {
+  return (
+    <button className="form-item-help" type="button" aria-label={text} data-tooltip={text}>
+      <CircleHelp aria-hidden="true" size={14} />
+    </button>
   );
 }
 

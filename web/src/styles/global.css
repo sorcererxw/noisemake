@@ -590,9 +590,11 @@
     font-family: var(--font-mono);
   }
 
-  .field-label,
-  .chip-fieldset legend {
+  .form-item-title {
     color: var(--foreground);
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
     font-size: 0.82rem;
     font-weight: 600;
   }
@@ -614,19 +616,76 @@
     font-weight: 500;
   }
 
-  .control-field,
+  .form-item,
   .chip-fieldset {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
 
-  .seed-row {
+  .form-item-header {
     display: flex;
     min-height: 24px;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+  }
+
+  .form-item-heading {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .form-item-help {
+    position: relative;
+    display: inline-flex;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    padding: 0;
+    color: var(--muted-foreground);
+    cursor: help;
+  }
+
+  .form-item-help:hover,
+  .form-item-help:focus-visible {
+    color: var(--foreground);
+  }
+
+  .form-item-help::after {
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    z-index: 20;
+    width: max-content;
+    max-width: 220px;
+    transform: translateY(-50%);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--popover);
+    box-shadow: 0 8px 22px color-mix(in oklch, var(--foreground) 14%, transparent);
+    color: var(--popover-foreground);
+    content: attr(data-tooltip);
+    opacity: 0;
+    padding: 7px 8px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.35;
+    transition: opacity 120ms cubic-bezier(0.2, 0, 0, 1);
+    white-space: normal;
+  }
+
+  .form-item-help:hover::after,
+  .form-item-help:focus-visible::after {
+    opacity: 1;
   }
 
   .random-seed-checkbox {
