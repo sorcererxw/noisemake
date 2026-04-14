@@ -18,17 +18,31 @@ CLI:
 ```bash
 npx noisemake "这个 parser 很 stable" --frequency 200 --seed baseline
 echo "这是一段测试文本" | npx noisemake --frequency 1000 --seed 42
+npx noisemake --file ./input.txt --seed 42
+npx noisemake --file ./input.txt --out ./output.txt --seed 42
 ```
 
 Options:
 
 ```text
---frequency <n>    Average one perturbation per n eligible tokens (default: 200)
---seed <seed>      Seed for deterministic output
---types <list>     Enabled noise types: typo,repeat (default: typo,repeat)
---languages <list> Enabled languages: zh,en (default: zh,en)
---help             Show help
+--frequency <n>     Average one perturbation per n eligible tokens (default: "200")
+--seed <seed>       Seed for deterministic output
+--types <list>      Enabled noise types: typo,repeat (default: "typo,repeat")
+--languages <list>  Enabled languages: zh,en (default: "zh,en")
+--file <path>       Read input text from a UTF-8 file
+--out <path>        Write output text to a UTF-8 file, creating parent directories if needed
+-h, --help          Show help
 ```
+
+Input and output:
+
+- Use exactly one input source: positional text, stdin, or `--file <path>`.
+- Multiple positional text arguments are joined with a single space.
+- `--file` reads UTF-8 text from a file.
+- `--out` writes UTF-8 output to a file instead of stdout, and creates parent directories if needed.
+- Input formatting is preserved. Existing trailing newlines stay unchanged.
+- `--frequency 100` is noisier than `--frequency 1000`.
+- Short text can legitimately produce no changes.
 
 Library:
 

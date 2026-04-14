@@ -22,6 +22,8 @@ CLI:
 ```bash
 npx noisemake "这是一段测试文本" --frequency 1000 --seed 42
 echo "这是一段测试文本" | npx noisemake --frequency 1000 --seed 42
+npx noisemake --file ./input.txt --seed 42
+npx noisemake --file ./input.txt --out ./output.txt --seed 42
 npx noisemake "这是一段测试文本" --frequency 200 --seed baseline --types typo,repeat
 npx noisemake "这个 parser 很 stable" --languages zh,en
 npx noisemake "这个 parser 很 stable" --languages zh
@@ -31,14 +33,16 @@ CLI help draft:
 
 ```text
 Usage:
-  noisemake [options] [text]
+  noisemake [options] [text...]
 
 Options:
-  --frequency <n>  Average one perturbation per n eligible tokens (default: 200)
-  --seed <seed>    Seed for deterministic output
-  --types <list>   Enabled noise types: typo,repeat (default: typo,repeat)
+  --frequency <n>   Average one perturbation per n eligible tokens (default: "200")
+  --seed <seed>     Seed for deterministic output
+  --types <list>    Enabled noise types: typo,repeat (default: "typo,repeat")
   --languages <list> Enabled languages: zh,en (default: zh,en)
-  --help           Show help
+  --file <path>     Read input text from a UTF-8 file
+  --out <path>      Write output text to a UTF-8 file, creating parent directories if needed
+  -h, --help        Show help
 ```
 
 Library:
@@ -63,11 +67,12 @@ const output = noisemake("这是一段测试文本", {
   consume the root package rather than reimplement the core engine.
 - Runtime target: Node.js `>=22`.
 - Build output supports both ESM and CJS from the first release.
-- CLI supports positional text argument or stdin.
+- CLI supports positional text argument, stdin, or `--file`.
+- CLI supports `--out` to write transformed text to a file instead of stdout, creating parent directories if needed.
 - CLI supports long flags only in MVP: `--frequency`, `--seed`, `--types`, and `--help`.
-- CLI also supports `--languages zh,en` for enabling supported language strategies.
-- Do not add short flags in MVP.
-- If both positional text and stdin are provided, CLI exits non-zero with a clear stderr message.
+- CLI also supports `--languages zh,en`, `--file <path>`, and `--out <path>`.
+- Commander also exposes `-h` as an alias for `--help`.
+- If multiple input sources are provided at once, CLI exits non-zero with a clear stderr message.
 - Multiple positional text arguments are joined with a single space.
 - Preserve input formatting: do not trim input and do not append an extra trailing newline. `echo` input keeps its newline; `printf` input stays newline-free.
 - `--types` is strictly validated.

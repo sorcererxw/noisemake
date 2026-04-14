@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import { Command, CommanderError } from "commander";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 import { noisemake } from "./index.js";
 import type { Language, NoiseType } from "./options.js";
 
@@ -8,6 +10,8 @@ type CliOptions = {
   seed?: string;
   types?: string;
   languages?: string;
+  file?: string;
+  out?: string;
 };
 
 async function main(argv: readonly string[]): Promise<number> {
@@ -19,12 +23,30 @@ async function main(argv: readonly string[]): Promise<number> {
     .argument("[text...]", "text to perturb")
     .option(
       "--frequency <n>",
-      "average one perturbation per n eligible tokens",
+      "Average one perturbation per n eligible tokens",
       "200",
     )
-    .option("--seed <seed>", "seed for deterministic output")
-    .option("--types <list>", "enabled noise types: typo,repeat", "typo,repeat")
-    .option("--languages <list>", "enabled languages: zh,en", "zh,en")
+    .option("--seed <seed>", "Seed for deterministic output")
+    .option("--types <list>", "Enabled noise types: typo,repeat", "typo,repeat")
+    .option("--languages <list>", "Enabled languages: zh,en", "zh,en")
+    .option("--file <path>", "Read input text from a UTF-8 file")
+    .option(
+      "--out <path>",
+      "Write output text to a UTF-8 file, creating parent directories if needed",
+    )
+    .helpOption("-h, --help", "Show help")
+    .addHelpText(
+      "after",
+      `
+Notes:
+  Use exactly one input source: positional text, stdin, or --file.
+  When --out is set, output is written to the file instead of stdout.
+
+Examples:
+  noisemake "text" --seed 42
+  echo "text" | noisemake --seed 42
+  noisemake --file ./input.txt --out ./output.txt --seed 42`,
+    )
     .showHelpAfterError()
     .exitOverride();
 
@@ -40,31 +62,48 @@ async function main(argv: readonly string[]): Promise<number> {
 
   const positional = program.args;
   const options = program.opts<CliOptions>();
-  const stdinText = await readMaybePipedStdin();
-  const hasArgumentText = positional.length > 0;
-  const hasStdinText = stdinText.length > 0;
-
-  if (hasArgumentText && hasStdinText) {
-    process.stderr.write(
-      "error: provide text either as an argument or through stdin, not both\n",
-    );
-    return 1;
-  }
-
-  if (!hasArgumentText && !hasStdinText) {
-    process.stderr.write("error: provide text as an argument or through stdin\n");
-    return 1;
-  }
 
   try {
-    const output = noisemake(hasArgumentText ? positional.join(" ") : stdinText, {
+    const stdinText = await readMaybePipedStdin();
+    const hasArgumentText = positional.length > 0;
+    const hasStdinText = stdinText.length > 0;
+    const hasFileInput = options.file !== undefined;
+    const inputSourceCount =
+      Number(hasArgumentText) + Number(hasStdinText) + Number(hasFileInput);
+
+    if (inputSourceCount > 1) {
+      process.stderr.write(
+        "error: provide text either as an argument, through stdin, or with --file, not multiple inputs\n",
+      );
+      return 1;
+    }
+
+    if (inputSourceCount === 0) {
+      process.stderr.write(
+        "error: provide text as an argument, through stdin, or with --file\n",
+      );
+      return 1;
+    }
+
+    const inputText = hasArgumentText
+      ? positional.join(" ")
+      : hasStdinText
+        ? stdinText
+        : await readTextFile(options.file!);
+
+    const output = noisemake(inputText, {
       frequency: parseFrequency(options.frequency),
       seed: options.seed,
       types: parseList<NoiseType>(options.types),
       languages: parseList<Language>(options.languages),
     });
 
-    process.stdout.write(output);
+    if (options.out === undefined) {
+      process.stdout.write(output);
+    } else {
+      await writeTextFile(options.out, output);
+    }
+
     return 0;
   } catch (error) {
     process.stderr.write(`error: ${getErrorMessage(error)}\n`);
@@ -100,6 +139,23 @@ async function readMaybePipedStdin(): Promise<string> {
   }
 
   return Buffer.concat(chunks).toString("utf8");
+}
+
+async function readTextFile(path: string): Promise<string> {
+  try {
+    return await readFile(path, "utf8");
+  } catch (error) {
+    throw new Error(`cannot read input file ${path}: ${getErrorMessage(error)}`);
+  }
+}
+
+async function writeTextFile(path: string, text: string): Promise<void> {
+  try {
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, text, "utf8");
+  } catch (error) {
+    throw new Error(`cannot write output file ${path}: ${getErrorMessage(error)}`);
+  }
 }
 
 function getErrorMessage(error: unknown): string {
