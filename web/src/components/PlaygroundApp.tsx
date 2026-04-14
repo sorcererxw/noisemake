@@ -199,7 +199,7 @@ const NOTICE_URL = "https://github.com/sorcererxw/noisemake/blob/main/NOTICE";
 export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const copy = COPY[lang];
   const [input, setInput] = useState(copy.defaultInput);
-  const [frequency, setFrequency] = useState("200");
+  const [frequency, setFrequency] = useState("5");
   const [seed, setSeed] = useState("42");
   const [randomSeed, setRandomSeed] = useState(false);
   const [types, setTypes] = useState<NoiseType[]>(DEFAULT_TYPES);

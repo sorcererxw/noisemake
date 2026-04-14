@@ -159,7 +159,7 @@ Avoid copy that sounds like detector evasion.
 Default values:
 
 - `input`: prefill with a realistic sample that matches the current UI language.
-- `frequency`: `200`
+- `frequency`: `5`
 - `seed`: `42`
 - `types`: `["typo", "repeat"]`
 - `languages`: `["zh", "en"]`
@@ -180,7 +180,7 @@ Validation:
 
 Helper copy:
 
-- `frequency`: `Higher means less noise. 200 = about 1 change per 200 eligible tokens.`
+- `frequency`: `Higher means less noise.`
 - `seed`: `Same input + same seed = same output.`
 - `typo`: `IME-style Chinese substitutions and keyboard-like English typos.`
 - `repeat`: `Light word or phrase repetition.`

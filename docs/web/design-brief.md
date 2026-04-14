@@ -213,7 +213,7 @@ Interaction model:
 
 Default controls:
 
-- `frequency`: numeric input, default `200`, positive integer only.
+- `frequency`: numeric input, default `5`, positive integer only.
 - `input`: prefilled with a language-matched sample for the current UI route.
 - `seed`: text input, default `42` so first-time users immediately see
   reproducible behavior.
@@ -224,8 +224,7 @@ Default controls:
 
 Control helper copy:
 
-- `frequency`: "Higher means less noise. 200 = about 1 change per 200 eligible
-  tokens."
+- `frequency`: "Higher means less noise."
 - `seed`: "Same input + same seed = same output."
 - `typo`: "IME-style Chinese substitutions and keyboard-like English typos."
 - `repeat`: "Light word or phrase repetition."
