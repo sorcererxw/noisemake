@@ -21,12 +21,13 @@ Protect that promise before optimizing anything else.
 
 Before changing code, read the smallest set of source docs that matches the task:
 
-- `PLAN.md` for product intent, current decisions, package shape, and known scope.
+- `docs/core/plan.md` for product intent, current decisions, package shape, and known scope.
 - `README.md` for public CLI/library usage.
-- `DESIGN.md`, `web-design-brief.md`, and `web-implementation-spec.md` only for web
-  playground or UI work.
-- `NOTICE` and `third_party/rime-luna-pinyin/SOURCE.md` before touching Chinese IME
-  confusion data or package licensing.
+- `docs/web/design-system.md`, `docs/web/design-brief.md`, and
+  `docs/web/implementation-spec.md` only for web playground or UI work.
+- `docs/legal/license-boundary.md`, `NOTICE`, and
+  `third_party/rime-luna-pinyin/SOURCE.md` before touching Chinese IME confusion
+  data or package licensing.
 
 Do not use Claude Code-specific files or gstack skill definitions as repo guidance.
 This repo is being driven from Codex. Prefer this file plus the docs above.
@@ -80,8 +81,8 @@ third_party/
 
 For engine, CLI, option, typo, repeat, span, RNG, or data changes:
 
-1. Read `PLAN.md`, `src/noisemake.ts`, `src/options.ts`, and the directly relevant
-   module.
+1. Read `docs/core/plan.md`, `src/noisemake.ts`, `src/options.ts`, and the directly
+   relevant module.
 2. Read the matching tests under `test/unit/` and any dist tests that cover public
    behavior.
 3. Make the smallest coherent change. Avoid broad refactors unless the task is
@@ -153,7 +154,8 @@ it with approval rather than rewriting the tool.
 
 The web playground is already implemented under `web/`. For web work:
 
-- Read `DESIGN.md`, `web-design-brief.md`, and `web-implementation-spec.md`.
+- Read `docs/web/design-system.md`, `docs/web/design-brief.md`, and
+  `docs/web/implementation-spec.md`.
 - Keep the playground workbench-first. Do not turn it into a generic SaaS landing
   page.
 - Keep `/web` as a separate app boundary. Do not move web code into root `src/`.

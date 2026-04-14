@@ -297,10 +297,11 @@ Long-term relationship:
 
 ## Design System Alignment
 
-Use the design system in `DESIGN.md` as the source of truth for fonts, colors,
-spacing, radius, component behavior, and motion. The web app should start from
-the shadcn token structure already generated in `web/src/styles/global.css`, then
-tune those tokens to match `DESIGN.md`.
+Use the design system in `docs/web/design-system.md` as the source of truth for
+fonts, colors, spacing, radius, component behavior, and motion. The web app
+should start from the shadcn token structure already generated in
+`web/src/styles/global.css`, then tune those tokens to match
+`docs/web/design-system.md`.
 
 The chosen direction is Hugging Face-inspired open research playground: friendly,
 community-native, demo-first, and easy to try, while still precise enough for a
@@ -339,7 +340,8 @@ Visual anchor:
 - The control rail is narrower and denser than the text panes, but should still
   feel approachable and demo-like.
 - Changed output spans should be the most distinctive visual treatment inside
-  the playground, using the warm highlight tokens from `DESIGN.md`.
+  the playground, using the warm highlight tokens from
+  `docs/web/design-system.md`.
 
 Surface and hierarchy:
 

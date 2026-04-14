@@ -1,5 +1,10 @@
 # noisemake Plan
 
+This file is the current-state contract for the root npm package.
+
+It should describe constraints that are still active today. Historical rollout
+notes and superseded assumptions live in [history.md](history.md).
+
 ## Goal
 
 `noisemake` is a TypeScript npm package that is both a CLI and a library.
@@ -54,7 +59,8 @@ const output = noisemake("这是一段测试文本", {
 - Package name: `noisemake`.
 - One npm package, not a monorepo for MVP.
 - Root `src/` is the package source.
-- Future `web/src/` is acceptable as a separate app boundary, but `/web` is not in MVP.
+- `/web` is a separate app boundary for the playground and should continue to
+  consume the root package rather than reimplement the core engine.
 - Runtime target: Node.js `>=22`.
 - Build output supports both ESM and CJS from the first release.
 - CLI supports positional text argument or stdin.
@@ -99,7 +105,8 @@ noisemake/
     └── src/
 ```
 
-Do not create `/web` until the web app work actually starts.
+Keep `/web` separate from the root package source. Do not move playground code
+into root `src/`.
 
 Dependency direction:
 
@@ -650,29 +657,8 @@ Expected package surface:
 }
 ```
 
-## Implementation Order
-
-1. Create package scaffolding: `package.json`, `tsconfig.json`, `tsdown.config.ts`, Vitest config if needed.
-2. Add license/data skeleton:
-   - `NOTICE`
-   - `third_party/rime-luna-pinyin/LICENSE`
-   - `third_party/rime-luna-pinyin/SOURCE.md`
-   - `third_party/rime-luna-pinyin/luna_pinyin.dict.yaml`
-   - `src/data/en-keyboard.ts`
-   - `src/data/zh-ime-confusions.generated.ts`
-   - `tools/build-zh-ime-confusions.ts`
-3. Add data integrity tests for the QWERTY map and generated Chinese confusion map.
-4. Implement `rng.ts`, `options.ts`, and `spans.ts`.
-5. Implement `typo.ts` and `repeat.ts`.
-6. Implement `candidates.ts` and orchestration in `noisemake.ts`.
-7. Implement `index.ts` public exports.
-8. Implement `cli.ts` with Commander.
-9. Add dist-level CLI/package tests.
-10. Add README usage examples and publish notes.
-
 ## Not In Scope For MVP
 
-- `/web` app.
 - JSON report output.
 - Batch directory processing.
 - LLM rewriting.

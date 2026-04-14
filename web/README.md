@@ -1,43 +1,40 @@
-# Astro Starter Kit: Minimal
+# noisemake web
 
-```sh
-pnpm create astro@latest -- --template minimal
+This package is the Astro-based playground for `noisemake`.
+
+It is intentionally a separate app boundary under [`/web`](.) while reusing the
+root package through `noisemake: "workspace:*"`.
+
+## Read First
+
+Before changing UI or routing behavior, read:
+
+1. [../docs/web/README.md](../docs/web/README.md)
+2. [../docs/web/plan.md](../docs/web/plan.md)
+3. [../docs/web/design-system.md](../docs/web/design-system.md)
+4. [../docs/web/design-brief.md](../docs/web/design-brief.md)
+5. [../docs/web/implementation-spec.md](../docs/web/implementation-spec.md)
+
+## Commands
+
+Run these from the repo root:
+
+```bash
+pnpm --dir web run dev
+pnpm --dir web run build
+pnpm --dir web run preview
+pnpm --dir web run generate-types
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Package Shape
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+web/
+  public/        static assets
+  src/pages/     route entrypoints
+  src/components UI and workbench pieces
+  src/lib/       web-only helpers
+  src/styles/    global tokens and styling
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The canonical live domain is `https://noisemake.xyz`.

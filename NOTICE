@@ -2,12 +2,19 @@ noisemake
 
 Project source code is licensed under MIT.
 
-Chinese IME dictionary data is derived from rime-luna-pinyin data, which is licensed under LGPL-3.0. Generated confusion maps derived from that data are treated as LGPL-covered data.
+Bundled generated Chinese IME confusion data is derived from third-party Rime
+dictionaries. Because that derived data is shipped with the package, the package
+must not be described as pure MIT.
+
+Chinese IME dictionary data is derived from rime-luna-pinyin data, which is
+licensed under LGPL-3.0. Generated confusion maps derived from that data are
+treated as LGPL-covered data.
 
 Rime luna-pinyin source:
 https://github.com/rime/rime-luna-pinyin
 
-Simplified Chinese dictionary data is derived from rime-pinyin-simp data, which is licensed under Apache-2.0.
+Simplified Chinese dictionary data is derived from rime-pinyin-simp data, which
+is licensed under Apache-2.0.
 
 Rime pinyin-simp source:
 https://github.com/rime/rime-pinyin-simp

@@ -4,12 +4,15 @@
 
 Read these first:
 
-- `DESIGN.md`
-- `web-design-brief.md`
+- `docs/web/plan.md`
+- `docs/web/design-system.md`
+- `docs/web/design-brief.md`
 - `web/src/styles/global.css`
 - root package exports from `src/index.ts`
 
-This spec is the engineering handoff. `DESIGN.md` is the design system. `web-design-brief.md` is the product/interaction brief.
+This spec is the engineering handoff. `docs/web/plan.md` defines the package
+boundary and scope. `docs/web/design-system.md` is the design system.
+`docs/web/design-brief.md` is the product and interaction brief.
 
 ## Repo Setup Note
 
@@ -232,7 +235,7 @@ Required token changes:
 - Stop applying mono to all `html`; use body font globally.
 - Keep `JetBrains Mono Variable` for seed, frequency, CLI snippets, and compact metadata.
 - Add `--changed-bg` and `--changed-border` to `:root` and `.dark`.
-- Tune primary/accent toward warm yellow from `DESIGN.md`.
+- Tune primary/accent toward warm yellow from `docs/web/design-system.md`.
 - Avoid purple/indigo accents and dark-blue dashboard surfaces.
 - Keep default radius at `8px` or below for normal controls; outer workbench may be `10px`.
 
