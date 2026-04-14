@@ -18,7 +18,7 @@ const description = lang === "zh"
   : "Add small mistakes to text, and make it feel less polished.";
 ---
 
-<html lang={lang} class="theme-boot">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -27,119 +27,6 @@ const description = lang === "zh"
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
-    <style is:inline>
-      .site-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        padding: 18px 0 8px;
-      }
-
-      .brand-lockup {
-        display: inline-flex;
-        width: 135px;
-        align-items: center;
-        gap: 8px;
-        color: inherit;
-        font-size: 1.25rem;
-        font-weight: 600;
-        text-decoration: none;
-      }
-
-      .noise-face {
-        display: block;
-        width: 24px;
-        height: 24px;
-        flex: 0 0 auto;
-      }
-
-      .switches {
-        display: flex;
-        min-width: 0;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 8px;
-      }
-
-      .language-trigger,
-      .theme-switch-control {
-        min-height: 44px;
-        color: inherit;
-        font: inherit;
-      }
-
-      .language-trigger {
-        display: inline-flex;
-        width: 38px;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        border: 0;
-        border-radius: 8px;
-        background: transparent;
-        padding: 0 4px;
-      }
-
-      .control-divider {
-        width: 1px;
-        height: 16px;
-        background: currentColor;
-        opacity: 0.2;
-      }
-
-      .theme-switch-control {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .theme-toggle-button {
-        display: inline-flex;
-        width: 36px;
-        height: 36px;
-        align-items: center;
-        justify-content: center;
-        border: 0;
-        border-radius: 8px;
-        padding: 0;
-        color: inherit;
-      }
-
-      .theme-toggle-button:not(:hover) {
-        background-color: transparent;
-      }
-
-      .theme-icon {
-        display: block;
-      }
-
-      .theme-icon-moon {
-        display: none;
-      }
-
-      .dark .theme-icon-sun {
-        display: none;
-      }
-
-      .dark .theme-icon-moon {
-        display: block;
-      }
-
-      @media (max-width: 767px) {
-        .site-header {
-          align-items: flex-start;
-          flex-direction: column;
-          padding-top: 16px;
-        }
-
-        .switches {
-          justify-content: flex-start;
-          gap: 4px 8px;
-        }
-      }
-    </style>
     <script is:inline>
       (() => {
         const storedTheme = localStorage.getItem("noisemake-theme");
@@ -154,7 +41,7 @@ const description = lang === "zh"
       })();
     </script>
   </head>
-  <body>
+  <body class="min-w-80 bg-background text-foreground">
     <PlaygroundApp lang={lang} client:load />
   </body>
 </html>

@@ -167,6 +167,26 @@ const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
 const HERO_CLI_COMMAND = 'npx noisemake "The quick brown fox jumps over the lazy dog"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
+const PANEL_BASE_CLASSES = "flex min-w-0 flex-col gap-3 p-3 sm:p-4";
+const PANEL_HEADER_CLASSES = "flex min-h-7 items-center justify-between gap-3";
+const PANEL_TITLE_CLASSES = "text-sm font-semibold leading-5";
+const FORM_ITEM_CLASSES = "flex flex-col gap-1.5";
+const FORM_ITEM_HEADER_CLASSES = "flex min-h-5 items-center justify-between gap-2.5";
+const FORM_ITEM_HEADING_CLASSES = "inline-flex min-w-0 items-center gap-1.5";
+const FORM_ITEM_TITLE_CLASSES = "m-0 p-0 text-xs font-semibold leading-none text-foreground";
+const CONTROL_INPUT_CLASSES =
+  "h-11 w-full rounded-lg border border-input bg-card px-3 text-foreground transition-colors outline-none";
+const MONO_CONTROL_INPUT_CLASSES = `${CONTROL_INPUT_CLASSES} font-mono`;
+const SURFACE_TEXTAREA_CLASSES =
+  "min-h-64 flex-1 resize-y rounded-lg border border-input bg-card p-4 leading-7 text-foreground transition-colors outline-none md:min-h-80 lg:min-h-96";
+const OUTPUT_REGION_CLASSES =
+  "min-h-64 flex-1 overflow-auto rounded-lg border border-input bg-muted/40 p-4 leading-7 text-foreground whitespace-pre-wrap md:min-h-80 lg:min-h-96";
+const TAG_INPUT_CLASSES =
+  "flex min-h-10 flex-wrap gap-1.5 rounded-lg border border-input bg-card p-1.5 transition-colors";
+const TAG_BUTTON_BASE_CLASSES =
+  "flex min-w-0 items-center gap-1 rounded-md border px-2 py-1 text-left text-muted-foreground transition-all hover:-translate-y-px";
+const TAG_INDICATOR_BASE_CLASSES =
+  "size-2.5 shrink-0 rounded-full border border-muted-foreground/50 opacity-70 transition-all";
 
 export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const copy = COPY[lang];
@@ -298,18 +318,32 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-4">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
         <HeaderBar lang={lang} />
         <Hero copy={copy} copyCliCommand={copyCliCommand} />
 
-        <section className="playground-section" id="playground" aria-labelledby="playground-label">
-          <div className="playground-heading">
-            <h2 id="playground-label">{copy.playgroundLabel}</h2>
-            <p>{copy.playgroundIntro}</p>
+        <section
+          className="flex scroll-mt-4 flex-col gap-3"
+          id="playground"
+          aria-labelledby="playground-label"
+        >
+          <div className="max-w-2xl pt-1">
+            <h2
+              id="playground-label"
+              className="font-display text-2xl font-semibold leading-tight"
+            >
+              {copy.playgroundLabel}
+            </h2>
+            <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+              {copy.playgroundIntro}
+            </p>
           </div>
 
-          <section className="workbench" aria-label={copy.playgroundLabel}>
-            <div className="workbench-grid">
+          <section
+            className="overflow-hidden rounded-xl border bg-card shadow-sm"
+            aria-label={copy.playgroundLabel}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
               <InputPanel
                 copy={copy}
                 input={input}
@@ -359,8 +393,16 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
         <SiteFooter copy={copy} />
       </div>
 
-      <div className="toast-region" aria-live="polite" aria-atomic="true">
-        {toast ? <div className="toast">{toast}</div> : null}
+      <div
+        className="pointer-events-none fixed right-4 bottom-4 z-40"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {toast ? (
+          <div className="max-w-xs rounded-lg border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-lg">
+            {toast}
+          </div>
+        ) : null}
       </div>
     </main>
   );
@@ -368,9 +410,14 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 
 function SiteFooter({ copy }: { copy: Copy }) {
   return (
-    <footer className="site-footer">
-      <div className="footer-links">
-        <a href={SOURCE_URL} target="_blank" rel="noreferrer">
+    <footer className="mt-1 flex flex-col items-start justify-between gap-2 border-t py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:gap-4">
+      <div className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+        <a
+          className="inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4 decoration-foreground/35 hover:decoration-primary"
+          href={SOURCE_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
           {copy.footerOpenSource}
         </a>
       </div>
@@ -380,14 +427,18 @@ function SiteFooter({ copy }: { copy: Copy }) {
 
 function HeaderBar({ lang }: { lang: UiLang }) {
   return (
-    <header className="site-header">
-      <a className="brand-lockup" href={`/${lang}`} aria-label="noisemake">
-        <img className="noise-face" src="/noise-face.svg" alt="" width="24" height="24" />
+    <header className="flex flex-col items-start justify-between gap-4 pt-4 pb-2 sm:flex-row sm:items-center">
+      <a
+        className="inline-flex items-center gap-2 font-display text-xl font-semibold text-foreground no-underline"
+        href={`/${lang}`}
+        aria-label="noisemake"
+      >
+        <img className="block size-6 shrink-0" src="/noise-face.svg" alt="" width="24" height="24" />
         <span>noisemake</span>
       </a>
-      <div className="switches">
+      <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-2 gap-y-1 sm:justify-end">
         <LanguageSwitch lang={lang} copy={COPY[lang]} />
-        <span className="control-divider" aria-hidden="true" />
+        <span className="h-4 w-px bg-border/80" aria-hidden="true" />
         <ThemeSwitch copy={COPY[lang]} />
       </div>
     </header>
@@ -402,12 +453,20 @@ function Hero({
   copyCliCommand: () => void;
 }) {
   return (
-    <section className="hero-section" aria-labelledby="hero-title">
-      <div className="hero-copy">
-        <h1 id="hero-title" className="hero-headline">
+    <section
+      className="grid items-center gap-6 py-6 md:gap-8 md:py-8 lg:grid-cols-12 lg:py-10"
+      aria-labelledby="hero-title"
+    >
+      <div className="min-w-0 lg:col-span-7">
+        <h1
+          id="hero-title"
+          className="max-w-3xl font-display text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl lg:leading-none"
+        >
           {copy.headline}
         </h1>
-        <p className="hero-proof">{copy.proof}</p>
+        <p className="mt-3 max-w-2xl break-words text-base leading-7 text-muted-foreground sm:text-lg">
+          {copy.proof}
+        </p>
       </div>
       <CliUsagePanel copy={copy} copyCliCommand={copyCliCommand} />
     </section>
@@ -422,11 +481,11 @@ function CliUsagePanel({
   copyCliCommand: () => void;
 }) {
   return (
-    <aside className="cli-panel" aria-label={copy.cliLabel}>
-      <div className="cli-panel-header">
+    <aside className="overflow-hidden rounded-lg border bg-card shadow-sm lg:col-span-5" aria-label={copy.cliLabel}>
+      <div className="flex items-center justify-between gap-3 border-b px-3 py-2 text-xs font-semibold text-muted-foreground">
         <span>{copy.cliLabel}</span>
         <Button
-          className="cli-copy-button"
+          className="size-8 rounded-md text-muted-foreground hover:text-foreground"
           type="button"
           variant="ghost"
           size="icon"
@@ -437,7 +496,7 @@ function CliUsagePanel({
           <Copy aria-hidden="true" size={14} />
         </Button>
       </div>
-      <pre className="cli-command">
+      <pre className="m-0 overflow-x-auto p-4 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
         <code>
           <span aria-hidden="true">$ </span>
           {HERO_CLI_COMMAND}
@@ -504,7 +563,7 @@ function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
     <DropdownMenu open={languageOpen} onOpenChange={setLanguageOpen} modal={false}>
       <DropdownMenuTrigger asChild>
         <button
-          className="language-trigger"
+          className="inline-flex min-h-11 items-center gap-1 rounded-md px-1 text-xs font-medium text-muted-foreground transition-colors data-[state=open]:text-foreground"
           type="button"
           aria-label={copy.languageLabel}
           onPointerEnter={() => {
@@ -543,13 +602,13 @@ function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
             }
           }}
         >
-          <Languages aria-hidden="true" size={15} />
-          <ChevronDown className="language-chevron" aria-hidden="true" size={12} />
+          <Languages className="size-4" aria-hidden="true" size={15} />
+          <ChevronDown className="size-3" aria-hidden="true" size={12} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="language-menu"
+        className="min-w-20"
         onPointerEnter={() => {
           if (supportsHover) {
             openLanguageMenu();
@@ -593,7 +652,10 @@ function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
           <DropdownMenuItem
             key={item}
             asChild
-            className={cn("language-menu-item", item === lang && "is-active")}
+            className={cn(
+              "justify-between text-muted-foreground",
+              item === lang && "bg-muted font-semibold text-foreground",
+            )}
           >
             <a href={`/${item}`} onClick={() => storeLang(item)}>
               <span>{label}</span>
@@ -633,9 +695,9 @@ function ThemeSwitch({ copy }: { copy: Copy }) {
   }
 
   return (
-    <div className="theme-switch-control">
+    <div className="inline-flex items-center justify-center">
       <Button
-        className="theme-toggle-button"
+        className="text-muted-foreground aria-pressed:text-foreground"
         type="button"
         variant="ghost"
         size="icon"
@@ -645,8 +707,8 @@ function ThemeSwitch({ copy }: { copy: Copy }) {
         title={copy.themeLabel}
         onClick={toggleTheme}
       >
-        <Sun className="theme-icon theme-icon-sun" aria-hidden="true" size={16} />
-        <Moon className="theme-icon theme-icon-moon" aria-hidden="true" size={16} />
+        <Sun className="size-4 dark:hidden" aria-hidden="true" size={16} />
+        <Moon className="hidden size-4 dark:block" aria-hidden="true" size={16} />
       </Button>
     </div>
   );
@@ -662,12 +724,14 @@ function InputPanel({
   setInput: (value: string) => void;
 }) {
   return (
-    <section className="panel input-panel" aria-labelledby="input-label">
-      <div className="panel-heading">
-        <h2 id="input-label">{copy.inputLabel}</h2>
+    <section className={cn(PANEL_BASE_CLASSES, "lg:col-span-5")} aria-labelledby="input-label">
+      <div className={PANEL_HEADER_CLASSES}>
+        <h2 id="input-label" className={PANEL_TITLE_CLASSES}>
+          {copy.inputLabel}
+        </h2>
       </div>
       <textarea
-        className="text-field input-textarea"
+        className={SURFACE_TEXTAREA_CLASSES}
         value={input}
         placeholder={copy.inputPlaceholder}
         onChange={(event) => setInput(event.target.value)}
@@ -716,9 +780,17 @@ function ControlRail({
   runDisabled: boolean;
 }) {
   return (
-    <section className="panel control-panel" aria-labelledby="controls-label">
-      <div className="panel-heading">
-        <h2 id="controls-label">{copy.controlsLabel}</h2>
+    <section
+      className={cn(
+        PANEL_BASE_CLASSES,
+        "border-t md:col-span-2 md:row-start-2 md:border-l-0 lg:col-span-2 lg:row-start-auto lg:border-t-0 lg:border-l",
+      )}
+      aria-labelledby="controls-label"
+    >
+      <div className={PANEL_HEADER_CLASSES}>
+        <h2 id="controls-label" className={PANEL_TITLE_CLASSES}>
+          {copy.controlsLabel}
+        </h2>
       </div>
 
       <FormItem
@@ -731,7 +803,7 @@ function ControlRail({
       >
         <input
           ref={frequencyRef}
-          className="control-input mono-value"
+          className={cn(MONO_CONTROL_INPUT_CLASSES, "aria-invalid:border-destructive")}
           id="frequency"
           inputMode="numeric"
           value={frequency}
@@ -747,9 +819,13 @@ function ControlRail({
         helper={copy.seedHelper}
         helperId="seed-helper"
         action={
-          <label className={cn("random-seed-checkbox", randomSeed && "is-active")}>
+          <label
+            className={cn(
+              "inline-flex min-h-6 w-fit items-center gap-1.5 rounded-md px-0.5 text-xs font-semibold text-muted-foreground transition-colors",
+              randomSeed && "text-accent-foreground",
+            )}
+          >
             <Checkbox
-              className="random-seed-input"
               checked={randomSeed}
               onCheckedChange={(checked) => setRandomSeed(checked === true)}
             />
@@ -758,7 +834,10 @@ function ControlRail({
         }
       >
         <input
-          className="control-input mono-value"
+          className={cn(
+            MONO_CONTROL_INPUT_CLASSES,
+            "disabled:cursor-not-allowed disabled:opacity-60",
+          )}
           id="seed"
           value={seed}
           disabled={randomSeed}
@@ -791,8 +870,8 @@ function ControlRail({
         }))}
       />
 
-      <div className="control-actions">
-        <Button className="run-button !px-3" type="button" onClick={run} disabled={runDisabled}>
+      <div className="mt-auto flex flex-wrap gap-2">
+        <Button className="w-full px-3 font-semibold" type="button" size="lg" onClick={run} disabled={runDisabled}>
           {runLabel}
         </Button>
       </div>
@@ -825,20 +904,41 @@ function TagSelectorField({
       asFieldset
       aria-describedby={error ? errorId : undefined}
     >
-      <div className="type-token-input" data-invalid={Boolean(error)}>
+      <div
+        className={cn(
+          TAG_INPUT_CLASSES,
+          error && "border-destructive",
+        )}
+        data-invalid={Boolean(error)}
+      >
         {options.map((option) => (
           <button
             key={option.value}
-            className={cn("type-token", option.active && "is-active")}
+            className={cn(
+              TAG_BUTTON_BASE_CLASSES,
+              option.active
+                ? "border-primary/60 bg-accent/60 text-accent-foreground"
+                : "border-border bg-background",
+            )}
             type="button"
             aria-pressed={option.active}
             aria-describedby={option.helper ? `${legend}-${option.value}-helper` : undefined}
             title={option.helper || undefined}
             onClick={option.toggle}
           >
-            <span className="type-token-indicator" aria-hidden="true" />
-            <span className="type-token-key">{option.value}</span>
-            <span className="type-token-label">{option.label}</span>
+            <span
+              className={cn(
+                TAG_INDICATOR_BASE_CLASSES,
+                option.active && "border-primary bg-primary opacity-100 ring-3 ring-primary/20",
+              )}
+              aria-hidden="true"
+            />
+            <span className="shrink-0 font-mono text-xs font-bold leading-none">
+              {option.value}
+            </span>
+            <span className="max-w-full flex-1 text-xs font-semibold leading-none break-words">
+              {option.label}
+            </span>
             {option.helper ? (
               <span className="sr-only" id={`${legend}-${option.value}-helper`}>
                 {option.helper}
@@ -881,7 +981,7 @@ function FormItem({
   ) : null;
   const helpTip = helper ? <HelpTip text={helper} /> : null;
   const errorText = error ? (
-    <p className="field-error" id={errorId}>
+    <p className="text-sm leading-5 font-medium text-destructive" id={errorId}>
       {error}
     </p>
   ) : null;
@@ -891,14 +991,14 @@ function FormItem({
 
     return (
       <div
-        className="form-item chip-fieldset"
+        className={FORM_ITEM_CLASSES}
         role="group"
         aria-labelledby={titleId}
         {...fieldsetProps}
       >
-        <div className="form-item-header">
-          <span className="form-item-heading">
-            <span className="form-item-title" id={titleId}>
+        <div className={FORM_ITEM_HEADER_CLASSES}>
+          <span className={FORM_ITEM_HEADING_CLASSES}>
+            <span className={FORM_ITEM_TITLE_CLASSES} id={titleId}>
               {title}
             </span>
             {helpTip}
@@ -913,10 +1013,10 @@ function FormItem({
   }
 
   return (
-    <div className="form-item">
-      <div className="form-item-header">
-        <span className="form-item-heading">
-          <label className="form-item-title" htmlFor={htmlFor}>
+    <div className={FORM_ITEM_CLASSES}>
+      <div className={FORM_ITEM_HEADER_CLASSES}>
+        <span className={FORM_ITEM_HEADING_CLASSES}>
+          <label className={FORM_ITEM_TITLE_CLASSES} htmlFor={htmlFor}>
             {title}
           </label>
           {helpTip}
@@ -932,7 +1032,12 @@ function FormItem({
 
 function HelpTip({ text }: { text: string }) {
   return (
-    <button className="form-item-help" type="button" aria-label={text} data-tooltip={text}>
+    <button
+      className="inline-flex size-5 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
+      type="button"
+      aria-label={text}
+      title={text}
+    >
       <CircleHelp aria-hidden="true" size={14} />
     </button>
   );
@@ -956,33 +1061,55 @@ function OutputPanel({
   const showOutput = Boolean(output);
 
   return (
-    <section className="panel output-panel" aria-labelledby="output-label">
-      <div className="panel-heading">
-        <h2 id="output-label">{copy.outputLabel}</h2>
+    <section
+      className={cn(
+        PANEL_BASE_CLASSES,
+        "border-t md:col-start-2 md:row-start-1 md:border-l lg:col-span-5 lg:col-start-auto lg:row-start-auto lg:border-t-0",
+      )}
+      aria-labelledby="output-label"
+    >
+      <div className={PANEL_HEADER_CLASSES}>
+        <h2 id="output-label" className={PANEL_TITLE_CLASSES}>
+          {copy.outputLabel}
+        </h2>
         <Button
-          className="output-copy-button !px-3"
+          className="px-3 text-xs font-semibold"
           type="button"
           variant="outline"
+          size="lg"
           onClick={copyOutput}
           disabled={copyDisabled}
         >
           {copy.copy}
         </Button>
       </div>
-      <div className="output-region" aria-live="polite" aria-atomic="false">
-        {showOutput ? <ChangedTextOutput segments={segments} /> : <p>{copy.outputPlaceholder}</p>}
+      <div
+        className={OUTPUT_REGION_CLASSES}
+        aria-live="polite"
+        aria-atomic="false"
+      >
+        {showOutput ? (
+          <ChangedTextOutput segments={segments} />
+        ) : (
+          <p className="text-muted-foreground">{copy.outputPlaceholder}</p>
+        )}
       </div>
-      {state === "no-change" ? <p className="notice-text">{copy.noChange}</p> : null}
+      {state === "no-change" ? (
+        <p className="text-sm leading-6 text-muted-foreground">{copy.noChange}</p>
+      ) : null}
     </section>
   );
 }
 
 function ChangedTextOutput({ segments }: { segments: Segment[] }) {
   return (
-    <p className="changed-output">
+    <p className="text-foreground">
       {segments.map((segment, index) =>
         segment.changed ? (
-          <mark className="changed-span" key={`${segment.text}-${index}`}>
+          <mark
+            className="rounded-sm bg-primary/20 px-0.5 text-inherit underline decoration-primary/70 underline-offset-2"
+            key={`${segment.text}-${index}`}
+          >
             {segment.text}
           </mark>
         ) : (
