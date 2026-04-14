@@ -276,6 +276,20 @@
     overflow-wrap: anywhere;
   }
 
+  .cli-copy-button {
+    flex: 0 0 auto;
+    min-height: 32px;
+    min-width: 32px;
+    border-radius: 6px;
+    color: inherit;
+  }
+
+  .cli-copy-button:hover,
+  .cli-copy-button:focus-visible {
+    background: color-mix(in oklch, var(--accent) 72%, transparent);
+    color: var(--foreground);
+  }
+
   .cli-command {
     margin: 0;
     padding: 18px;
@@ -946,12 +960,6 @@
       flex: 0 0 auto;
       align-self: stretch;
       white-space: normal;
-    }
-
-    .cli-panel-header {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 4px;
     }
 
     .cli-panel {

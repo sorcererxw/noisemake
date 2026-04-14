@@ -6,7 +6,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { ChevronDown, CircleHelp, Languages, Moon, Sun } from "lucide-react";
+import { ChevronDown, CircleHelp, Copy, Languages, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -41,7 +41,6 @@ type Copy = {
   proof: string;
   framing: string;
   cliLabel: string;
-  cliBadge: string;
   heroPrimaryAction: string;
   heroSecondaryAction: string;
   commandCopied: string;
@@ -89,7 +88,6 @@ const COPY: Record<UiLang, Copy> = {
     proof: "Same input, same seed, same output.",
     framing: "Not an LLM rewrite. Controlled perturbation.",
     cliLabel: "CLI usage",
-    cliBadge: "minimal command",
     heroPrimaryAction: "Copy CLI command",
     heroSecondaryAction: "Try Playground",
     commandCopied: "Copied CLI command.",
@@ -143,7 +141,6 @@ const COPY: Record<UiLang, Copy> = {
     proof: "同一输入、同一种子、同一输出。",
     framing: "不是 LLM 改写，而是可控扰动。",
     cliLabel: "CLI 用法",
-    cliBadge: "最小命令",
     heroPrimaryAction: "复制 CLI 命令",
     heroSecondaryAction: "试试 Playground",
     commandCopied: "已复制 CLI 命令。",
@@ -317,6 +314,14 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
     }
   }
 
+  function updateRandomSeed(nextRandomSeed: boolean) {
+    setRandomSeed(nextRandomSeed);
+    if (nextRandomSeed) {
+      setSeed(createRandomSeed());
+    }
+    markDirty();
+  }
+
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-[1180px] flex-col gap-4">
@@ -354,10 +359,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                   markDirty();
                 }}
                 randomSeed={randomSeed}
-                setRandomSeed={(value) => {
-                  setRandomSeed(value);
-                  markDirty();
-                }}
+                setRandomSeed={updateRandomSeed}
                 types={types}
                 toggleType={updateTypes}
                 frequencyError={validation.frequency}
@@ -453,17 +455,33 @@ function Hero({
           </Button>
         </div>
       </div>
-      <CliUsagePanel copy={copy} />
+      <CliUsagePanel copy={copy} copyCliCommand={copyCliCommand} />
     </section>
   );
 }
 
-function CliUsagePanel({ copy }: { copy: Copy }) {
+function CliUsagePanel({
+  copy,
+  copyCliCommand,
+}: {
+  copy: Copy;
+  copyCliCommand: () => void;
+}) {
   return (
     <aside className="cli-panel" aria-label={copy.cliLabel}>
       <div className="cli-panel-header">
         <span>{copy.cliLabel}</span>
-        <span>{copy.cliBadge}</span>
+        <Button
+          className="cli-copy-button"
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label={copy.heroPrimaryAction}
+          title={copy.heroPrimaryAction}
+          onClick={copyCliCommand}
+        >
+          <Copy aria-hidden="true" size={14} />
+        </Button>
       </div>
       <pre className="cli-command">
         <code>
@@ -1071,7 +1089,7 @@ function createRandomSeed(): string {
     bytes[1] = Math.floor(Math.random() * 0xffffffff);
   }
 
-  return Array.from(bytes, (value) => value.toString(36).padStart(7, "0")).join("-");
+  return ((BigInt(bytes[0]) << 32n) | BigInt(bytes[1])).toString(10);
 }
 
 async function transformText(
