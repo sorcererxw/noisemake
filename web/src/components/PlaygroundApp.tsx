@@ -7,7 +7,6 @@ import {
   type RefObject,
 } from "react";
 import { ChevronDown, CircleHelp, Languages, Moon, Sun } from "lucide-react";
-import { noisemake, type Language, type NoiseType } from "noisemake";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,6 +17,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import {
+  TRANSFORM_ENDPOINT,
+  type Language,
+  type NoiseType,
+  type TransformRequest,
+  type TransformResponse,
+  type TransformSuccessResponse,
+} from "@/lib/transform";
 
 type UiLang = "en" | "zh";
 type ThemeMode = "light" | "dark";
@@ -271,12 +278,14 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
       if (randomSeed) {
         setSeed(runSeed);
       }
-      const nextOutput = noisemake(input, {
+      const result = await transformText({
+        text: input,
         frequency: validation.parsedFrequency,
         seed: runSeed,
         types,
         languages: DEFAULT_LANGUAGES,
       });
+      const nextOutput = result.output;
       setOutput(nextOutput);
       setSegments(diffOutput(input, nextOutput));
       setState(nextOutput === input ? "no-change" : "success");
@@ -1063,4 +1072,23 @@ function createRandomSeed(): string {
   }
 
   return Array.from(bytes, (value) => value.toString(36).padStart(7, "0")).join("-");
+}
+
+async function transformText(
+  payload: TransformRequest,
+): Promise<TransformSuccessResponse> {
+  const response = await fetch(TRANSFORM_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const result = (await response.json()) as TransformResponse;
+  if (!response.ok || "error" in result) {
+    throw new Error("error" in result ? result.error.message : "Transform failed.");
+  }
+
+  return result;
 }
