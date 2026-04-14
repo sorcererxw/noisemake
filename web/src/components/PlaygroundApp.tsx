@@ -39,18 +39,17 @@ type Segment = {
 type Copy = {
   headline: string;
   proof: string;
-  framing: string;
   cliLabel: string;
-  heroPrimaryAction: string;
-  heroSecondaryAction: string;
-  commandCopied: string;
-  commandCopyError: string;
   playgroundLabel: string;
   playgroundIntro: string;
   inputLabel: string;
   controlsLabel: string;
   outputLabel: string;
-  parity: string;
+  frequencyLabel: string;
+  seedLabel: string;
+  randomLabel: string;
+  typesLabel: string;
+  languagesLabel: string;
   run: string;
   running: string;
   copy: string;
@@ -61,161 +60,113 @@ type Copy = {
   noChange: string;
   frequencyHelper: string;
   seedHelper: string;
-  randomSeedLabel: string;
-  randomSeedHelper: string;
   typoHelper: string;
   repeatHelper: string;
-  zhHelper: string;
-  enHelper: string;
   frequencyError: string;
   typeError: string;
   languageError: string;
-  selectionSummary: (count: number) => string;
-  inputRequired: string;
-  runtimeError: string;
-  footerPromise: string;
-  footerLicense: string;
-  footerLinksLabel: string;
-  footerSource: string;
-  footerDocs: string;
-  footerDataNotice: string;
+  footerOpenSource: string;
   languageLabel: string;
   themeLabel: string;
   defaultInput: string;
   labels: Record<NoiseType, string>;
   languageLabels: Record<Language, string>;
-  theme: Record<ThemeMode, string>;
 };
 
 const COPY: Record<UiLang, Copy> = {
   en: {
-    headline: "Deterministic text noise for evals.",
-    proof: "Same input, same seed, same output.",
-    framing: "Not an LLM rewrite. Controlled perturbation.",
+    headline: "Make text less polished.",
+    proof: "Inject small mistakes so text feels more hand-written.",
     cliLabel: "CLI usage",
-    heroPrimaryAction: "Copy CLI command",
-    heroSecondaryAction: "Try Playground",
-    commandCopied: "Copied CLI command.",
-    commandCopyError: "Could not copy. Select the command manually.",
     playgroundLabel: "Playground",
-    playgroundIntro: "Run the same engine in the browser.",
-    inputLabel: "Paste polished text",
-    controlsLabel: "Set deterministic noise",
-    outputLabel: "Reproducible noisy output",
-    parity: "Same engine as the CLI and npm package.",
-    run: "Run noisemake",
+    playgroundIntro: "Try noisemake in the browser.",
+    inputLabel: "Paste your text",
+    controlsLabel: "Noise settings",
+    outputLabel: "Output text",
+    frequencyLabel: "frequency",
+    seedLabel: "seed",
+    randomLabel: "random",
+    typesLabel: "Noise types",
+    languagesLabel: "Languages",
+    run: "Run",
     running: "Running...",
-    copy: "Copy output",
-    copied: "Copied output.",
-    copyError: "Could not copy. Select the output text manually.",
-    inputPlaceholder: "Paste polished text for a deterministic noisy variant.",
-    outputPlaceholder: "Run noisemake to create a reproducible noisy variant.",
+    copy: "Copy",
+    copied: "Copied.",
+    copyError: "Could not copy. Please copy it manually.",
+    inputPlaceholder: "Paste some text here.",
+    outputPlaceholder: "Your output will show up here.",
     noChange:
-      "No eligible mutation was selected for this seed and frequency. Try a lower frequency or a different seed.",
+      "Nothing changed this time. Try a lower frequency or a different seed.",
     frequencyHelper: "Higher = less noise.",
     seedHelper: "Same seed = same output.",
-    randomSeedLabel: "Random seed",
-    randomSeedHelper: "Ignore the seed field and generate a new seed on every run.",
-    typoHelper: "IME-style Chinese substitutions and keyboard-like English typos.",
+    typoHelper: "Typos and misspellings.",
     repeatHelper: "Light word or phrase repetition.",
-    zhHelper: "Apply Chinese strategies.",
-    enHelper: "Apply English strategies.",
     frequencyError: "Use a positive whole number.",
     typeError: "Choose at least one noise type.",
     languageError: "Choose at least one language.",
-    selectionSummary: (count) => `${count} enabled`,
-    inputRequired: "Add text before running.",
-    runtimeError: "Could not run noisemake with these settings.",
-    footerPromise: "Same input. Same seed. Same output.",
-    footerLicense: "MIT code. LGPL-covered Chinese IME data.",
-    footerLinksLabel: "Project links",
-    footerSource: "Source",
-    footerDocs: "CLI docs",
-    footerDataNotice: "Data notice",
+    footerOpenSource: "Open source",
     languageLabel: "Language",
     themeLabel: "Toggle theme",
     defaultInput:
-      "This benchmark needs controlled text noise, not a rewrite, so repeated runs should stay reproducible.",
+      "Every weekday at 3:15 p.m., the small public library on Maple Street changes mood without making any obvious announcement. The front tables still hold the same local history books, the clock above the returns desk still runs two minutes fast, and the pencil cup beside computer terminal 4 is still full of short yellow stubs, but the room feels different as students arrive one by one and then in pairs. A man in a navy coat claims the newspaper chair near the radiator. Two sisters spread notebooks across the long oak table, whisper for ten minutes, then fall quiet. Someone rolls a cart of returned books past the windows, then rolls the same cart back again because a red atlas and a gardening manual were shelved in the wrong order.\n\nThe library follows a pattern that only looks accidental from the door. At 3:20, the copy machine wakes up with a click. At 3:30, the after-school line reaches the checkout counter. At 3:40, the reading room grows steadier, quieter, fuller. The same sounds repeat at low volume: chair legs against linoleum, page turns, soft coughs, the scanner beep at the desk, the scanner beep again. A sign beside the stairs asks visitors to carry drinks with lids, and nearly everyone ignores it in the same polite way, setting paper cups on the windowsill and glancing up only when a librarian walks by. By four o'clock, the building feels less like a room with shelves and more like a shared routine that people briefly help keep in order.",
     labels: {
-      typo: "typos",
-      repeat: "repeats",
+      typo: "typo",
+      repeat: "repeat",
     },
     languageLabels: {
       zh: "Chinese",
       en: "English",
     },
-    theme: {
-      light: "Light",
-      dark: "Dark",
-    },
   },
   zh: {
-    headline: "给评测用的可复现文本噪声。",
-    proof: "同一输入、同一种子、同一输出。",
-    framing: "不是 LLM 改写，而是可控扰动。",
+    headline: "让文本别那么工整。",
+    proof: "给文本注入一些小错误，让它更像手工写出来的。",
     cliLabel: "CLI 用法",
-    heroPrimaryAction: "复制 CLI 命令",
-    heroSecondaryAction: "试试 Playground",
-    commandCopied: "已复制 CLI 命令。",
-    commandCopyError: "复制失败。请手动选中命令。",
     playgroundLabel: "Playground",
-    playgroundIntro: "在浏览器里用同一个引擎试跑。",
-    inputLabel: "粘贴整理好的文本",
-    controlsLabel: "设置确定性扰动",
-    outputLabel: "可复现的扰动输出",
-    parity: "和 CLI、npm package 使用同一个引擎。",
-    run: "运行 noisemake",
+    playgroundIntro: "在浏览器里试试 noisemake。",
+    inputLabel: "粘贴你的文本",
+    controlsLabel: "噪声设置",
+    outputLabel: "输出文本",
+    frequencyLabel: "频率",
+    seedLabel: "种子",
+    randomLabel: "随机",
+    typesLabel: "噪声类型",
+    languagesLabel: "语言",
+    run: "运行",
     running: "运行中...",
-    copy: "复制输出",
-    copied: "已复制输出。",
-    copyError: "复制失败。请手动选中输出文本。",
-    inputPlaceholder: "粘贴一段文本，生成可复现的扰动版本。",
-    outputPlaceholder: "运行 noisemake 后会生成可复现的扰动文本。",
-    noChange: "这个 seed 和 frequency 没有选中可用扰动。可以调低 frequency，或换一个 seed。",
+    copy: "复制",
+    copied: "已复制",
+    copyError: "复制失败，请手动复制",
+    inputPlaceholder: "在这里粘贴一段文本。",
+    outputPlaceholder: "输出结果会显示在这里。",
+    noChange: "这次没变化。试试调低频率，或者换个种子",
     frequencyHelper: "数值越高，噪声越少。",
-    seedHelper: "同 seed，同输出。",
-    randomSeedLabel: "随机 seed",
-    randomSeedHelper: "开启后会忽略 seed 输入框，每次运行都生成一个新的 seed。",
-    typoHelper: "中文使用输入法式替换，英文使用键盘式 typo。",
-    repeatHelper: "轻微重复词或短语。",
-    zhHelper: "应用中文策略。",
-    enHelper: "应用英文策略。",
+    seedHelper: "同一种子，同一输出。",
+    typoHelper: "错别字",
+    repeatHelper: "词语轻微重复",
     frequencyError: "请输入正整数。",
     typeError: "至少选择一种噪声类型。",
     languageError: "至少选择一种语言。",
-    selectionSummary: (count) => `${count} 已启用`,
-    inputRequired: "运行前请先输入文本。",
-    runtimeError: "当前设置无法运行 noisemake。",
-    footerPromise: "同一输入。同一种子。同一输出。",
-    footerLicense: "代码 MIT。中文输入法混淆数据保持 LGPL 覆盖。",
-    footerLinksLabel: "项目链接",
-    footerSource: "源码",
-    footerDocs: "CLI 文档",
-    footerDataNotice: "数据许可",
+    footerOpenSource: "开源",
     languageLabel: "语言",
     themeLabel: "切换主题",
-    defaultInput: "这个工具用于构造评测样本，帮助我们观察模型在轻微文本扰动下是否仍然稳定。",
+    defaultInput:
+      "每到下午三点一刻，城北那间不算大的图书馆都会慢慢换一种节奏。门口的公告栏还是贴着上周的活动海报，借还书台上那只蓝色圆珠笔还是总被人顺手拿走又放回，靠窗的四号座位还是最先坐满，可房间里的空气会一点一点变得更紧、更满，也更安静。先是两个背书包的学生进来，把练习册和水杯平码在长桌上；接着是一位穿深灰外套的老人，照旧去翻当天的报纸；再过几分钟，管理员推着小车从东侧书架走到西侧书架，又因为一本地方志和一本植物图鉴放错了位置，原路折回来。\n\n这里几乎没有显眼的事情发生，正因为没有显眼的事情，人才会注意到那些细小而重复的秩序：复印机在三点二十发出第一声轻响，借书扫码器在三点半以后开始连续地滴两三下，楼梯口那块“饮料请加盖”的提示牌每天都被看见，也几乎每天都被轻轻忽略。儿童区的矮书架前常常有人把书抽出来又塞回去，顺序乱一点，又被下一位读者顺手理齐一点。到了四点，整间图书馆不像一个单纯放书的地方，更像一套被许多人短暂共享的日常安排。",
     labels: {
-      typo: "错字",
-      repeat: "重复",
+      typo: "错别字",
+      repeat: "口吃",
     },
     languageLabels: {
       zh: "中文",
       en: "英文",
-    },
-    theme: {
-      light: "浅",
-      dark: "深",
     },
   },
 };
 
 const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
-const HERO_CLI_COMMAND = 'npx noisemake "这是一段测试文本"';
+const HERO_CLI_COMMAND = 'npx noisemake "The quick brown fox jumps over the lazy dog"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
-const README_URL = "https://github.com/sorcererxw/noisemake#readme";
-const NOTICE_URL = "https://github.com/sorcererxw/noisemake/blob/main/NOTICE";
 
 export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const copy = COPY[lang];
@@ -229,7 +180,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const [segments, setSegments] = useState<Segment[]>([]);
   const [state, setState] = useState<WorkbenchState>("idle");
   const [toast, setToast] = useState<ToastState>(null);
-  const [runError, setRunError] = useState("");
   const frequencyRef = useRef<HTMLInputElement>(null);
 
   const validation = useMemo(() => {
@@ -237,17 +187,14 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 
     return {
       parsedFrequency,
-      input: input.trim().length > 0 ? "" : copy.inputRequired,
       frequency:
         Number.isInteger(parsedFrequency) && parsedFrequency > 0 ? "" : copy.frequencyError,
       types: types.length > 0 ? "" : copy.typeError,
       languages: languages.length > 0 ? "" : copy.languageError,
     };
-  }, [copy, frequency, input, languages.length, types.length]);
+  }, [copy, frequency, languages.length, types.length]);
 
-  const hasValidationError = Boolean(
-    validation.input || validation.frequency || validation.types || validation.languages,
-  );
+  const hasValidationError = Boolean(validation.frequency || validation.types || validation.languages);
   const runDisabled = state === "running" || hasValidationError;
   const canCopy =
     Boolean(output) && (state === "success" || state === "no-change" || state === "dirty");
@@ -262,7 +209,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   }, [toast]);
 
   function markDirty() {
-    setRunError("");
     setState((current) =>
       current === "success" || current === "no-change" || current === "dirty"
         ? "dirty"
@@ -298,7 +244,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
     }
 
     setState("running");
-    setRunError("");
 
     await new Promise((resolve) => window.setTimeout(resolve, 120));
 
@@ -318,9 +263,9 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
       setOutput(nextOutput);
       setSegments(diffOutput(input, nextOutput));
       setState(nextOutput === input ? "no-change" : "success");
-    } catch {
-      setRunError(copy.runtimeError);
-      setState("invalid");
+    } catch (error) {
+      console.error(error);
+      setState(output ? "dirty" : "idle");
     }
   }
 
@@ -340,9 +285,9 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   async function copyCliCommand() {
     try {
       await navigator.clipboard.writeText(HERO_CLI_COMMAND);
-      setToast(copy.commandCopied);
+      setToast(copy.copied);
     } catch {
-      setToast(copy.commandCopyError);
+      setToast(copy.copyError);
     }
   }
 
@@ -372,7 +317,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                   setInput(value);
                   markDirty();
                 }}
-                error={validation.input}
               />
               <ControlRail
                 copy={copy}
@@ -405,7 +349,6 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                 state={state}
                 output={output}
                 segments={segments}
-                runError={runError}
                 copyOutput={copyOutput}
                 copyDisabled={!canCopy}
               />
@@ -426,21 +369,11 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 function SiteFooter({ copy }: { copy: Copy }) {
   return (
     <footer className="site-footer">
-      <div className="footer-copy">
-        <p>{copy.footerPromise}</p>
-        <p>{copy.footerLicense}</p>
-      </div>
-      <nav className="footer-links" aria-label={copy.footerLinksLabel}>
+      <div className="footer-links">
         <a href={SOURCE_URL} target="_blank" rel="noreferrer">
-          {copy.footerSource}
+          {copy.footerOpenSource}
         </a>
-        <a href={README_URL} target="_blank" rel="noreferrer">
-          {copy.footerDocs}
-        </a>
-        <a href={NOTICE_URL} target="_blank" rel="noreferrer">
-          {copy.footerDataNotice}
-        </a>
-      </nav>
+      </div>
     </footer>
   );
 }
@@ -452,7 +385,7 @@ function HeaderBar({ lang }: { lang: UiLang }) {
         <img className="noise-face" src="/noise-face.svg" alt="" width="24" height="24" />
         <span>noisemake</span>
       </a>
-      <div className="switches" aria-label="Page controls">
+      <div className="switches">
         <LanguageSwitch lang={lang} copy={COPY[lang]} />
         <span className="control-divider" aria-hidden="true" />
         <ThemeSwitch copy={COPY[lang]} />
@@ -471,21 +404,10 @@ function Hero({
   return (
     <section className="hero-section" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <p className="section-kicker">{copy.parity}</p>
         <h1 id="hero-title" className="hero-headline">
           {copy.headline}
         </h1>
-        <p className="hero-proof">
-          {copy.proof} <span>{copy.framing}</span>
-        </p>
-        <div className="hero-actions">
-          <Button className="hero-primary" type="button" onClick={copyCliCommand}>
-            {copy.heroPrimaryAction}
-          </Button>
-          <Button className="hero-secondary" variant="outline" asChild>
-            <a href="#playground">{copy.heroSecondaryAction}</a>
-          </Button>
-        </div>
+        <p className="hero-proof">{copy.proof}</p>
       </div>
       <CliUsagePanel copy={copy} copyCliCommand={copyCliCommand} />
     </section>
@@ -508,8 +430,8 @@ function CliUsagePanel({
           type="button"
           variant="ghost"
           size="icon"
-          aria-label={copy.heroPrimaryAction}
-          title={copy.heroPrimaryAction}
+          aria-label={copy.copy}
+          title={copy.copy}
           onClick={copyCliCommand}
         >
           <Copy aria-hidden="true" size={14} />
@@ -664,14 +586,17 @@ function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
         onEscapeKeyDown={() => setLanguageOpen(false)}
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
-        {(["zh", "en"] as const).map((item) => (
+        {([
+          ["zh", "中文"],
+          ["en", "English"],
+        ] as const).map(([item, label]) => (
           <DropdownMenuItem
             key={item}
             asChild
             className={cn("language-menu-item", item === lang && "is-active")}
           >
             <a href={`/${item}`} onClick={() => storeLang(item)}>
-              <span>{item}</span>
+              <span>{label}</span>
             </a>
           </DropdownMenuItem>
         ))}
@@ -708,7 +633,7 @@ function ThemeSwitch({ copy }: { copy: Copy }) {
   }
 
   return (
-    <div className="theme-switch-control" aria-label="Theme">
+    <div className="theme-switch-control">
       <Button
         className="theme-toggle-button"
         type="button"
@@ -731,12 +656,10 @@ function InputPanel({
   copy,
   input,
   setInput,
-  error,
 }: {
   copy: Copy;
   input: string;
   setInput: (value: string) => void;
-  error: string;
 }) {
   return (
     <section className="panel input-panel" aria-labelledby="input-label">
@@ -746,16 +669,9 @@ function InputPanel({
       <textarea
         className="text-field input-textarea"
         value={input}
-        aria-describedby={error ? "input-error" : undefined}
-        aria-invalid={Boolean(error)}
         placeholder={copy.inputPlaceholder}
         onChange={(event) => setInput(event.target.value)}
       />
-      {error ? (
-        <p className="field-error" id="input-error">
-          {error}
-        </p>
-      ) : null}
     </section>
   );
 }
@@ -806,7 +722,7 @@ function ControlRail({
       </div>
 
       <FormItem
-        title="frequency"
+        title={copy.frequencyLabel}
         htmlFor="frequency"
         helper={copy.frequencyHelper}
         helperId="frequency-helper"
@@ -826,7 +742,7 @@ function ControlRail({
       </FormItem>
 
       <FormItem
-        title="seed"
+        title={copy.seedLabel}
         htmlFor="seed"
         helper={copy.seedHelper}
         helperId="seed-helper"
@@ -835,10 +751,9 @@ function ControlRail({
             <Checkbox
               className="random-seed-input"
               checked={randomSeed}
-              title={copy.randomSeedHelper}
               onCheckedChange={(checked) => setRandomSeed(checked === true)}
             />
-            <span>{copy.randomSeedLabel}</span>
+            <span>{copy.randomLabel}</span>
           </label>
         }
       >
@@ -853,8 +768,7 @@ function ControlRail({
       </FormItem>
 
       <TagSelectorField
-        copy={copy}
-        legend="types"
+        legend={copy.typesLabel}
         error={typeError}
         options={(["typo", "repeat"] as const).map((value) => ({
           value,
@@ -866,13 +780,12 @@ function ControlRail({
       />
 
       <TagSelectorField
-        copy={copy}
-        legend="languages"
+        legend={copy.languagesLabel}
         error={languageError}
         options={(["zh", "en"] as const).map((value) => ({
           value,
           label: copy.languageLabels[value],
-          helper: value === "zh" ? copy.zhHelper : copy.enHelper,
+          helper: "",
           active: languages.includes(value),
           toggle: () => toggleLanguage(value),
         }))}
@@ -888,12 +801,10 @@ function ControlRail({
 }
 
 function TagSelectorField({
-  copy,
   legend,
   error,
   options,
 }: {
-  copy: Pick<Copy, "selectionSummary">;
   legend: string;
   error: string;
   options: Array<{
@@ -905,12 +816,10 @@ function TagSelectorField({
   }>;
 }) {
   const errorId = `${legend}-error`;
-  const activeCount = options.filter((option) => option.active).length;
 
   return (
     <FormItem
       title={legend}
-      action={<span className="type-summary">{copy.selectionSummary(activeCount)}</span>}
       error={error}
       errorId={errorId}
       asFieldset
@@ -923,16 +832,18 @@ function TagSelectorField({
             className={cn("type-token", option.active && "is-active")}
             type="button"
             aria-pressed={option.active}
-            aria-describedby={`${legend}-${option.value}-helper`}
-            title={option.helper}
+            aria-describedby={option.helper ? `${legend}-${option.value}-helper` : undefined}
+            title={option.helper || undefined}
             onClick={option.toggle}
           >
             <span className="type-token-indicator" aria-hidden="true" />
             <span className="type-token-key">{option.value}</span>
             <span className="type-token-label">{option.label}</span>
-            <span className="sr-only" id={`${legend}-${option.value}-helper`}>
-              {option.helper}
-            </span>
+            {option.helper ? (
+              <span className="sr-only" id={`${legend}-${option.value}-helper`}>
+                {option.helper}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>
@@ -1032,7 +943,6 @@ function OutputPanel({
   state,
   output,
   segments,
-  runError,
   copyOutput,
   copyDisabled,
 }: {
@@ -1040,7 +950,6 @@ function OutputPanel({
   state: WorkbenchState;
   output: string;
   segments: Segment[];
-  runError: string;
   copyOutput: () => void;
   copyDisabled: boolean;
 }) {
@@ -1064,7 +973,6 @@ function OutputPanel({
         {showOutput ? <ChangedTextOutput segments={segments} /> : <p>{copy.outputPlaceholder}</p>}
       </div>
       {state === "no-change" ? <p className="notice-text">{copy.noChange}</p> : null}
-      {runError ? <p className="field-error">{runError}</p> : null}
     </section>
   );
 }
