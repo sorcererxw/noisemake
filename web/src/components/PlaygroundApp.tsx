@@ -65,8 +65,12 @@ type Copy = {
   randomSeedHelper: string;
   typoHelper: string;
   repeatHelper: string;
+  zhHelper: string;
+  enHelper: string;
   frequencyError: string;
   typeError: string;
+  languageError: string;
+  selectionSummary: (count: number) => string;
   inputRequired: string;
   runtimeError: string;
   footerPromise: string;
@@ -79,6 +83,7 @@ type Copy = {
   themeLabel: string;
   defaultInput: string;
   labels: Record<NoiseType, string>;
+  languageLabels: Record<Language, string>;
   theme: Record<ThemeMode, string>;
 };
 
@@ -113,8 +118,12 @@ const COPY: Record<UiLang, Copy> = {
     randomSeedHelper: "Ignore the seed field and generate a new seed on every run.",
     typoHelper: "IME-style Chinese substitutions and keyboard-like English typos.",
     repeatHelper: "Light word or phrase repetition.",
+    zhHelper: "Apply Chinese strategies.",
+    enHelper: "Apply English strategies.",
     frequencyError: "Use a positive whole number.",
     typeError: "Choose at least one noise type.",
+    languageError: "Choose at least one language.",
+    selectionSummary: (count) => `${count} enabled`,
     inputRequired: "Add text before running.",
     runtimeError: "Could not run noisemake with these settings.",
     footerPromise: "Same input. Same seed. Same output.",
@@ -130,6 +139,10 @@ const COPY: Record<UiLang, Copy> = {
     labels: {
       typo: "typos",
       repeat: "repeats",
+    },
+    languageLabels: {
+      zh: "Chinese",
+      en: "English",
     },
     theme: {
       light: "Light",
@@ -165,8 +178,12 @@ const COPY: Record<UiLang, Copy> = {
     randomSeedHelper: "开启后会忽略 seed 输入框，每次运行都生成一个新的 seed。",
     typoHelper: "中文使用输入法式替换，英文使用键盘式 typo。",
     repeatHelper: "轻微重复词或短语。",
+    zhHelper: "应用中文策略。",
+    enHelper: "应用英文策略。",
     frequencyError: "请输入正整数。",
     typeError: "至少选择一种噪声类型。",
+    languageError: "至少选择一种语言。",
+    selectionSummary: (count) => `${count} 已启用`,
     inputRequired: "运行前请先输入文本。",
     runtimeError: "当前设置无法运行 noisemake。",
     footerPromise: "同一输入。同一种子。同一输出。",
@@ -181,6 +198,10 @@ const COPY: Record<UiLang, Copy> = {
     labels: {
       typo: "错字",
       repeat: "重复",
+    },
+    languageLabels: {
+      zh: "中文",
+      en: "英文",
     },
     theme: {
       light: "浅",
@@ -203,6 +224,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const [seed, setSeed] = useState("42");
   const [randomSeed, setRandomSeed] = useState(false);
   const [types, setTypes] = useState<NoiseType[]>(DEFAULT_TYPES);
+  const [languages, setLanguages] = useState<Language[]>(DEFAULT_LANGUAGES);
   const [output, setOutput] = useState("");
   const [segments, setSegments] = useState<Segment[]>([]);
   const [state, setState] = useState<WorkbenchState>("idle");
@@ -219,11 +241,12 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
       frequency:
         Number.isInteger(parsedFrequency) && parsedFrequency > 0 ? "" : copy.frequencyError,
       types: types.length > 0 ? "" : copy.typeError,
+      languages: languages.length > 0 ? "" : copy.languageError,
     };
-  }, [copy, frequency, input, types.length]);
+  }, [copy, frequency, input, languages.length, types.length]);
 
   const hasValidationError = Boolean(
-    validation.input || validation.frequency || validation.types,
+    validation.input || validation.frequency || validation.types || validation.languages,
   );
   const runDisabled = state === "running" || hasValidationError;
   const canCopy =
@@ -256,6 +279,15 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
     markDirty();
   }
 
+  function updateLanguages(language: Language) {
+    setLanguages((current) =>
+      current.includes(language)
+        ? current.filter((value) => value !== language)
+        : [...current, language],
+    );
+    markDirty();
+  }
+
   async function run() {
     if (hasValidationError) {
       setState("invalid");
@@ -280,7 +312,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
         frequency: validation.parsedFrequency,
         seed: runSeed,
         types,
-        languages: DEFAULT_LANGUAGES,
+        languages,
       });
       const nextOutput = result.output;
       setOutput(nextOutput);
@@ -359,8 +391,11 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                 setRandomSeed={updateRandomSeed}
                 types={types}
                 toggleType={updateTypes}
+                languages={languages}
+                toggleLanguage={updateLanguages}
                 frequencyError={validation.frequency}
                 typeError={validation.types}
+                languageError={validation.languages}
                 runLabel={state === "running" ? copy.running : copy.run}
                 run={run}
                 runDisabled={runDisabled}
@@ -736,8 +771,11 @@ function ControlRail({
   setRandomSeed,
   types,
   toggleType,
+  languages,
+  toggleLanguage,
   frequencyError,
   typeError,
+  languageError,
   runLabel,
   run,
   runDisabled,
@@ -752,8 +790,11 @@ function ControlRail({
   setRandomSeed: (value: boolean) => void;
   types: NoiseType[];
   toggleType: (type: NoiseType) => void;
+  languages: Language[];
+  toggleLanguage: (language: Language) => void;
   frequencyError: string;
   typeError: string;
+  languageError: string;
   runLabel: string;
   run: () => void;
   runDisabled: boolean;
@@ -811,7 +852,8 @@ function ControlRail({
         />
       </FormItem>
 
-      <ChipGroup
+      <TagSelectorField
+        copy={copy}
         legend="types"
         error={typeError}
         options={(["typo", "repeat"] as const).map((value) => ({
@@ -820,6 +862,19 @@ function ControlRail({
           helper: value === "typo" ? copy.typoHelper : copy.repeatHelper,
           active: types.includes(value),
           toggle: () => toggleType(value),
+        }))}
+      />
+
+      <TagSelectorField
+        copy={copy}
+        legend="languages"
+        error={languageError}
+        options={(["zh", "en"] as const).map((value) => ({
+          value,
+          label: copy.languageLabels[value],
+          helper: value === "zh" ? copy.zhHelper : copy.enHelper,
+          active: languages.includes(value),
+          toggle: () => toggleLanguage(value),
         }))}
       />
 
@@ -832,11 +887,13 @@ function ControlRail({
   );
 }
 
-function ChipGroup({
+function TagSelectorField({
+  copy,
   legend,
   error,
   options,
 }: {
+  copy: Pick<Copy, "selectionSummary">;
   legend: string;
   error: string;
   options: Array<{
@@ -848,29 +905,31 @@ function ChipGroup({
   }>;
 }) {
   const errorId = `${legend}-error`;
+  const activeCount = options.filter((option) => option.active).length;
 
   return (
     <FormItem
       title={legend}
+      action={<span className="type-summary">{copy.selectionSummary(activeCount)}</span>}
       error={error}
       errorId={errorId}
       asFieldset
       aria-describedby={error ? errorId : undefined}
     >
-      <div className="chip-row">
+      <div className="type-token-input" data-invalid={Boolean(error)}>
         {options.map((option) => (
           <button
             key={option.value}
-            className={cn("choice-chip", option.active && "is-active")}
+            className={cn("type-token", option.active && "is-active")}
             type="button"
             aria-pressed={option.active}
             aria-describedby={`${legend}-${option.value}-helper`}
             title={option.helper}
             onClick={option.toggle}
           >
-            <span className="choice-chip-mark" aria-hidden="true" />
-            <span className="choice-chip-value">{option.value}</span>
-            <span className="choice-chip-label">{option.label}</span>
+            <span className="type-token-indicator" aria-hidden="true" />
+            <span className="type-token-key">{option.value}</span>
+            <span className="type-token-label">{option.label}</span>
             <span className="sr-only" id={`${legend}-${option.value}-helper`}>
               {option.helper}
             </span>
