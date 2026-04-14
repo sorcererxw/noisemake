@@ -22,6 +22,72 @@ const ENGLISH_OPERATION_WEIGHTS: Readonly<Record<EnglishTypoOperation, number>> 
   delete: 0.1,
 };
 
+const ENGLISH_IGNORED_WORDS = new Set([
+  "four",
+  "five",
+  "nine",
+  "zero",
+  "seven",
+  "eight",
+  "three",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+  "twenty",
+  "thirty",
+  "forty",
+  "fifty",
+  "sixty",
+  "seventy",
+  "eighty",
+  "ninety",
+  "hundred",
+  "thousand",
+  "million",
+  "billion",
+]);
+
+const CHINESE_NUMERIC_CHARS = new Set([
+  "零",
+  "〇",
+  "一",
+  "二",
+  "两",
+  "三",
+  "四",
+  "五",
+  "六",
+  "七",
+  "八",
+  "九",
+  "十",
+  "百",
+  "千",
+  "万",
+  "亿",
+  "兆",
+  "壹",
+  "贰",
+  "叁",
+  "肆",
+  "伍",
+  "陆",
+  "柒",
+  "捌",
+  "玖",
+  "拾",
+  "佰",
+  "仟",
+  "萬",
+  "億",
+]);
+
 const ZH_HOMOPHONE_FALLBACKS: Readonly<
   Record<string, readonly ZhImeReplacement[]>
 > = {
@@ -75,6 +141,11 @@ export function buildZhImeTypoCandidates(
 
       for (let length = maxLength; length >= 2; length -= 1) {
         const source = chars.slice(index, index + length).join("");
+
+        if (isProtectedZhNumericPhrase(source)) {
+          continue;
+        }
+
         const replacements = mergeZhImeReplacements(
           ZH_IME_CONFUSIONS[source],
           ZH_HOMOPHONE_FALLBACKS[source],
@@ -116,7 +187,8 @@ export function buildEnKeyboardTypoCandidates(
   chars: readonly string[],
 ): MutationCandidate[] {
   return findLatinSpans(chars)
-    .filter((span) => span.text.length >= 3)
+    .filter((span) => span.text.length >= 4)
+    .filter((span) => !ENGLISH_IGNORED_WORDS.has(span.text.toLowerCase()))
     .map((span) => ({
       type: "typo" as const,
       subtype: "en-keyboard" as const,
@@ -136,7 +208,10 @@ export function materializeTypo(
       type: "typo",
       start: candidate.start,
       end: candidate.end,
-      replacement: rng.pick(candidate.replacements).text,
+      replacement: rng.pickWeighted(
+        candidate.replacements,
+        (replacement) => replacement.score,
+      ).text,
     };
   }
 
@@ -178,6 +253,7 @@ function substituteAdjacentKey(token: string, rng: Rng): string {
   const chars = Array.from(token);
   const indices = chars
     .map((char, index) => ({ char, index }))
+    .filter(({ char, index }) => isInternalCharacterIndex(index, chars.length))
     .filter(({ char }) => QWERTY_ADJACENT[char.toLowerCase()]);
 
   if (indices.length === 0) {
@@ -193,7 +269,16 @@ function substituteAdjacentKey(token: string, rng: Rng): string {
 
 function transposeAdjacentCharacters(token: string, rng: Rng): string {
   const chars = Array.from(token);
-  const index = rng.int(chars.length - 1);
+  const indices = Array.from(
+    { length: Math.max(0, chars.length - 3) },
+    (_, index) => index + 1,
+  );
+
+  if (indices.length === 0) {
+    return token;
+  }
+
+  const index = rng.pick(indices);
   const current = chars[index] as string;
   chars[index] = chars[index + 1] as string;
   chars[index + 1] = current;
@@ -203,7 +288,13 @@ function transposeAdjacentCharacters(token: string, rng: Rng): string {
 
 function duplicateCharacter(token: string, rng: Rng): string {
   const chars = Array.from(token);
-  const index = rng.int(chars.length);
+  const indices = getInternalCharacterIndices(chars.length);
+
+  if (indices.length === 0) {
+    return token;
+  }
+
+  const index = rng.pick(indices);
   chars.splice(index, 0, chars[index] as string);
 
   return chars.join("");
@@ -211,7 +302,13 @@ function duplicateCharacter(token: string, rng: Rng): string {
 
 function deleteCharacter(token: string, rng: Rng): string {
   const chars = Array.from(token);
-  chars.splice(rng.int(chars.length), 1);
+  const indices = getInternalCharacterIndices(chars.length);
+
+  if (indices.length === 0) {
+    return token;
+  }
+
+  chars.splice(rng.pick(indices), 1);
 
   return chars.join("");
 }
@@ -243,6 +340,18 @@ function preserveCase(source: string, replacement: string): string {
   return replacement;
 }
 
+function getInternalCharacterIndices(length: number): number[] {
+  if (length < 3) {
+    return [];
+  }
+
+  return Array.from({ length: length - 2 }, (_, index) => index + 1);
+}
+
+function isInternalCharacterIndex(index: number, length: number): boolean {
+  return index > 0 && index < length - 1;
+}
+
 function buildZhHomophoneFallbackCandidates(
   text: string,
   phraseRanges: readonly (readonly [number, number])[],
@@ -254,6 +363,7 @@ function buildZhHomophoneFallbackCandidates(
       !token.isWordLike ||
       !isAllHan(token.text) ||
       Array.from(token.text).length < 2 ||
+      isProtectedZhNumericPhrase(token.text) ||
       overlapsAny(token.start, token.end, phraseRanges)
     ) {
       continue;
@@ -315,4 +425,11 @@ function mergeZhImeReplacements(
   }
 
   return deduped;
+}
+
+function isProtectedZhNumericPhrase(value: string): boolean {
+  return (
+    value.length > 0 &&
+    Array.from(value).every((char) => CHINESE_NUMERIC_CHARS.has(char))
+  );
 }

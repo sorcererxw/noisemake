@@ -2,6 +2,7 @@ export interface Rng {
   next(): number;
   int(maxExclusive: number): number;
   pick<T>(values: readonly T[]): T;
+  pickWeighted<T>(values: readonly T[], weightOf: (value: T) => number): T;
 }
 
 export function createRng(seed?: string | number): Rng {
@@ -47,6 +48,39 @@ function createMulberry32(seed: number): Rng {
       }
 
       return values[rng.int(values.length)] as T;
+    },
+    pickWeighted<T>(values: readonly T[], weightOf: (value: T) => number): T {
+      if (values.length === 0) {
+        throw new RangeError("cannot pick from an empty list");
+      }
+
+      let total = 0;
+      const weights = values.map((value) => {
+        const weight = weightOf(value);
+
+        if (!Number.isFinite(weight) || weight < 0) {
+          throw new RangeError("weights must be finite numbers greater than or equal to 0");
+        }
+
+        total += weight;
+        return weight;
+      });
+
+      if (total <= 0) {
+        throw new RangeError("weighted picks require at least one positive weight");
+      }
+
+      let cursor = rng.next() * total;
+
+      for (let index = 0; index < values.length; index += 1) {
+        cursor -= weights[index] as number;
+
+        if (cursor < 0) {
+          return values[index] as T;
+        }
+      }
+
+      return values[values.length - 1] as T;
     },
   };
 

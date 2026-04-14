@@ -76,6 +76,8 @@ const output = noisemake("这是一段测试文本", {
 - `typo` supports two MVP strategies:
   - Chinese word/phrase-level IME confusion using a vendored third-party confusion set after license and quality review.
   - English keyboard typo simulation using deterministic local rules.
+- English keyboard typo candidates should prefer content words: ignore short words below length `4`, keep a small built-in ignore set for number words, and preserve the first and last character when materializing edits.
+- Chinese IME typo materialization should use deterministic weighted selection from replacement `score` values, rather than uniform random choice.
 - No runtime data downloads.
 - Core modules stay pure TypeScript and avoid Node-only APIs. Only `src/cli.ts` may use Node runtime APIs.
 - MVP does not expose reports or operation logs, but internally uses `MutationCandidate -> AppliedMutation` so overlap handling, deterministic materialization, and application order stay explicit.

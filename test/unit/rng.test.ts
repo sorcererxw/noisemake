@@ -23,4 +23,17 @@ describe("rng", () => {
 
     expect(["a", "b", "c"]).toContain(rng.pick(["a", "b", "c"]));
   });
+
+  it("can pick from weighted values deterministically", () => {
+    const left = createRng("weighted");
+    const right = createRng("weighted");
+    const values = [
+      { label: "low", weight: 0.1 },
+      { label: "high", weight: 0.9 },
+    ];
+
+    expect(
+      left.pickWeighted(values, (value) => value.weight),
+    ).toEqual(right.pickWeighted(values, (value) => value.weight));
+  });
 });

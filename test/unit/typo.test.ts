@@ -79,12 +79,14 @@ describe("typo", () => {
     );
   });
 
-  it("builds English keyboard candidates for words with length >= 3", () => {
-    const candidates = buildEnKeyboardTypoCandidates(Array.from("to stable CLI"));
+  it("builds English keyboard candidates for content words with length >= 4", () => {
+    const candidates = buildEnKeyboardTypoCandidates(
+      Array.from("to stable CLI seven parser"),
+    );
 
     expect(candidates.map((candidate) => candidate.token)).toEqual([
       "stable",
-      "CLI",
+      "parser",
     ]);
   });
 
@@ -98,5 +100,51 @@ describe("typo", () => {
 
     expect(left).toEqual(right);
     expect(left.replacement).not.toBe("stable");
+  });
+
+  it("keeps English typo edits away from the first and last character", () => {
+    const [candidate] = buildEnKeyboardTypoCandidates(Array.from("stable"));
+
+    expect(candidate).toBeDefined();
+
+    for (const seed of ["a", "b", "c", "d", "e", "f", "g", "h"]) {
+      const mutation = materializeTypo(candidate!, createRng(seed));
+      expect(mutation.replacement[0]).toBe("s");
+      expect(mutation.replacement.at(-1)).toBe("e");
+    }
+  });
+
+  it("uses Chinese replacement scores for deterministic weighted selection", () => {
+    const candidate = {
+      type: "typo" as const,
+      subtype: "zh-ime" as const,
+      start: 0,
+      end: 2,
+      weight: 1,
+      replacements: [
+        { text: "低分", reason: "homophone" as const, score: 0.1 },
+        { text: "高分", reason: "homophone" as const, score: 0.9 },
+      ],
+    };
+    const rng = {
+      next: () => 0.8,
+      int: () => 0,
+      pick: <T>(values: readonly T[]) => values[0] as T,
+      pickWeighted: <T>(values: readonly T[], weightOf: (value: T) => number) => {
+        let cursor = 0.8 * values.reduce((sum, value) => sum + weightOf(value), 0);
+
+        for (const value of values) {
+          cursor -= weightOf(value);
+
+          if (cursor < 0) {
+            return value;
+          }
+        }
+
+        return values[values.length - 1] as T;
+      },
+    };
+
+    expect(materializeTypo(candidate, rng).replacement).toBe("高分");
   });
 });
