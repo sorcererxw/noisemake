@@ -410,8 +410,8 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 
 function SiteFooter({ copy }: { copy: Copy }) {
   return (
-    <footer className="mt-1 flex flex-col items-start justify-between gap-2 border-t py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:gap-4">
-      <div className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+    <footer className="mt-1 flex flex-col items-start justify-end gap-2 py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center">
+      <div className="flex w-full flex-wrap justify-start gap-x-3 gap-y-1 sm:justify-end">
         <a
           className="inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4 decoration-foreground/35 hover:decoration-primary"
           href={SOURCE_URL}
