@@ -178,9 +178,9 @@ const CONTROL_INPUT_CLASSES =
   "h-11 w-full rounded-lg border border-input bg-card px-3 text-foreground transition-colors outline-none";
 const MONO_CONTROL_INPUT_CLASSES = `${CONTROL_INPUT_CLASSES} font-mono`;
 const SURFACE_TEXTAREA_CLASSES =
-  "min-h-64 flex-1 resize-y rounded-lg border border-input bg-card p-4 leading-7 text-foreground transition-colors outline-none md:min-h-80 lg:min-h-96";
+  "min-h-64 max-h-[32rem] flex-1 resize-y overflow-y-auto rounded-lg border border-input bg-card p-4 leading-7 text-foreground transition-colors outline-none md:min-h-80 lg:min-h-96";
 const OUTPUT_REGION_CLASSES =
-  "min-h-64 flex-1 overflow-auto rounded-lg border border-input bg-muted/40 p-4 leading-7 text-foreground whitespace-pre-wrap md:min-h-80 lg:min-h-96";
+  "min-h-64 max-h-[32rem] flex-1 overflow-y-auto rounded-lg border border-input bg-muted/40 p-4 leading-7 text-foreground whitespace-pre-wrap md:min-h-80 lg:min-h-96";
 const TAG_INPUT_CLASSES =
   "flex min-h-10 flex-wrap gap-1.5 rounded-lg border border-input bg-card p-1.5 transition-colors";
 const TAG_BUTTON_BASE_CLASSES =
@@ -343,7 +343,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
             className="overflow-hidden rounded-xl border bg-card shadow-sm"
             aria-label={copy.playgroundLabel}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8">
               <InputPanel
                 copy={copy}
                 input={input}
@@ -498,7 +498,7 @@ function CliUsagePanel({
       </div>
       <pre className="m-0 overflow-x-auto p-4 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
         <code>
-          <span aria-hidden="true">$ </span>
+          <span className="text-muted-foreground select-none" aria-hidden="true">$ </span>
           {HERO_CLI_COMMAND}
         </code>
       </pre>
@@ -724,7 +724,7 @@ function InputPanel({
   setInput: (value: string) => void;
 }) {
   return (
-    <section className={cn(PANEL_BASE_CLASSES, "lg:col-span-5")} aria-labelledby="input-label">
+    <section className={cn(PANEL_BASE_CLASSES, "lg:col-span-3")} aria-labelledby="input-label">
       <div className={PANEL_HEADER_CLASSES}>
         <h2 id="input-label" className={PANEL_TITLE_CLASSES}>
           {copy.inputLabel}
@@ -1064,7 +1064,7 @@ function OutputPanel({
     <section
       className={cn(
         PANEL_BASE_CLASSES,
-        "border-t md:col-start-2 md:row-start-1 md:border-l lg:col-span-5 lg:col-start-auto lg:row-start-auto lg:border-t-0",
+        "border-t md:col-start-2 md:row-start-1 md:border-l lg:col-span-3 lg:col-start-auto lg:row-start-auto lg:border-t-0",
       )}
       aria-labelledby="output-label"
     >
