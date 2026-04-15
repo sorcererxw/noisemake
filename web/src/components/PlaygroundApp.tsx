@@ -508,51 +508,6 @@ function CliUsagePanel({
 
 function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
   const [languageOpen, setLanguageOpen] = useState(false);
-  const closeTimerRef = useRef<number | null>(null);
-  const [supportsHover, setSupportsHover] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
-
-    function syncHoverSupport() {
-      setSupportsHover(mediaQuery.matches);
-    }
-
-    syncHoverSupport();
-    mediaQuery.addEventListener("change", syncHoverSupport);
-
-    return () => {
-      mediaQuery.removeEventListener("change", syncHoverSupport);
-    };
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (closeTimerRef.current !== null) {
-        window.clearTimeout(closeTimerRef.current);
-      }
-    };
-  }, []);
-
-  function cancelLanguageClose() {
-    if (closeTimerRef.current !== null) {
-      window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  }
-
-  function openLanguageMenu() {
-    cancelLanguageClose();
-    setLanguageOpen(true);
-  }
-
-  function closeLanguageMenu() {
-    cancelLanguageClose();
-    closeTimerRef.current = window.setTimeout(() => {
-      setLanguageOpen(false);
-      closeTimerRef.current = null;
-    }, 120);
-  }
 
   function storeLang(nextLang: UiLang) {
     localStorage.setItem("noisemake-lang", nextLang);
@@ -566,41 +521,6 @@ function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
           className="inline-flex min-h-11 items-center gap-1 rounded-md px-1 text-xs font-medium text-muted-foreground transition-colors data-[state=open]:text-foreground"
           type="button"
           aria-label={copy.languageLabel}
-          onPointerEnter={() => {
-            if (supportsHover) {
-              openLanguageMenu();
-            }
-          }}
-          onPointerLeave={() => {
-            if (supportsHover) {
-              closeLanguageMenu();
-            }
-          }}
-          onMouseEnter={() => {
-            if (supportsHover) {
-              openLanguageMenu();
-            }
-          }}
-          onMouseLeave={() => {
-            if (supportsHover) {
-              closeLanguageMenu();
-            }
-          }}
-          onPointerDown={(event) => {
-            if (supportsHover) {
-              event.preventDefault();
-            }
-          }}
-          onFocus={() => {
-            if (supportsHover) {
-              openLanguageMenu();
-            }
-          }}
-          onBlur={() => {
-            if (supportsHover) {
-              closeLanguageMenu();
-            }
-          }}
         >
           <Languages className="size-4" aria-hidden="true" size={15} />
           <ChevronDown className="size-3" aria-hidden="true" size={12} />
@@ -609,39 +529,6 @@ function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
       <DropdownMenuContent
         align="end"
         className="min-w-20"
-        onPointerEnter={() => {
-          if (supportsHover) {
-            openLanguageMenu();
-          }
-        }}
-        onPointerLeave={() => {
-          if (supportsHover) {
-            closeLanguageMenu();
-          }
-        }}
-        onMouseEnter={() => {
-          if (supportsHover) {
-            openLanguageMenu();
-          }
-        }}
-        onMouseLeave={() => {
-          if (supportsHover) {
-            closeLanguageMenu();
-          }
-        }}
-        onFocusCapture={() => {
-          if (supportsHover) {
-            openLanguageMenu();
-          }
-        }}
-        onBlurCapture={(event) => {
-          if (
-            supportsHover &&
-            !event.currentTarget.contains(event.relatedTarget as Node | null)
-          ) {
-            closeLanguageMenu();
-          }
-        }}
         onEscapeKeyDown={() => setLanguageOpen(false)}
         onCloseAutoFocus={(event) => event.preventDefault()}
       >
