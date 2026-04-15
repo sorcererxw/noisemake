@@ -210,7 +210,7 @@ const OUTPUT_REGION_CLASSES =
 const TAG_INPUT_CLASSES =
   "flex min-h-10 flex-wrap gap-1.5 rounded-lg border border-input bg-card p-1.5 transition-colors";
 const TAG_BUTTON_BASE_CLASSES =
-  "flex min-w-0 items-center gap-1 rounded-md border px-2 py-1 text-left text-muted-foreground transition-all hover:-translate-y-px";
+  "flex h-8 min-w-0 items-center gap-1 rounded-md border px-2 py-1 text-left text-muted-foreground transition-all hover:-translate-y-px";
 const TAG_INDICATOR_BASE_CLASSES =
   "size-2.5 shrink-0 rounded-full border border-muted-foreground/50 opacity-70 transition-all";
 
@@ -912,7 +912,7 @@ function MultiTagSelectorField<T extends string>({
                   {value}
                 </span>
               ) : null}
-              <span className="max-w-full flex-1 text-xs font-semibold leading-none break-words">
+              <span className="max-w-full flex-1 truncate text-xs font-semibold leading-none whitespace-nowrap">
                 {labels[value]}
               </span>
               {helper ? (
