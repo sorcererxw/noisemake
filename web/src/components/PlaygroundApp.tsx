@@ -66,10 +66,6 @@ type Copy = {
   noChange: string;
   frequencyHelper: string;
   seedHelper: string;
-  typoHelper: string;
-  repeatHelper: string;
-  spacingHelper: string;
-  punctHelper: string;
   frequencyError: string;
   typeError: string;
   languageError: string;
@@ -78,7 +74,9 @@ type Copy = {
   themeLabel: string;
   defaultInput: string;
   labels: Record<NoiseType, string>;
+  typeHelpers: Record<NoiseType, string>;
   languageLabels: Record<Language, string>;
+  languageHelpers: Record<Language, string>;
 };
 
 const COPY: Record<UiLang, Copy> = {
@@ -107,10 +105,6 @@ const COPY: Record<UiLang, Copy> = {
       "Nothing changed this time. Try a lower frequency or a different seed.",
     frequencyHelper: "Higher = less noise.",
     seedHelper: "Same seed = same output.",
-    typoHelper: "Typos and misspellings.",
-    repeatHelper: "Light word or phrase repetition.",
-    spacingHelper: "Whitespace glitches across words, punctuation, and mixed-script boundaries.",
-    punctHelper: "Normalize full-width Chinese punctuation into ASCII marks.",
     frequencyError: "Use a positive whole number.",
     typeError: "Choose at least one noise type.",
     languageError: "Choose at least one language.",
@@ -125,9 +119,19 @@ const COPY: Record<UiLang, Copy> = {
       spacing: "spacing",
       punct: "punct",
     },
+    typeHelpers: {
+      typo: "Typos and misspellings.",
+      repeat: "Light word or phrase repetition.",
+      spacing: "Whitespace glitches across words, punctuation, and mixed-script boundaries.",
+      punct: "Normalize full-width Chinese punctuation into ASCII marks.",
+    },
     languageLabels: {
       zh: "Chinese",
       en: "English",
+    },
+    languageHelpers: {
+      zh: "",
+      en: "",
     },
   },
   zh: {
@@ -154,10 +158,6 @@ const COPY: Record<UiLang, Copy> = {
     noChange: "这次没变化。试试调低频率，或者换个种子",
     frequencyHelper: "数值越高，噪声越少。",
     seedHelper: "同一种子，同一输出。",
-    typoHelper: "错别字",
-    repeatHelper: "词语轻微重复",
-    spacingHelper: "词间空格、标点后空格和中英边界空格扰动。",
-    punctHelper: "把全角中文标点变成半角英文标点。",
     frequencyError: "请输入正整数。",
     typeError: "至少选择一种噪声类型。",
     languageError: "至少选择一种语言。",
@@ -172,9 +172,19 @@ const COPY: Record<UiLang, Copy> = {
       spacing: "空格",
       punct: "标点",
     },
+    typeHelpers: {
+      typo: "错别字",
+      repeat: "词语轻微重复",
+      spacing: "词间空格、标点后空格和中英边界空格扰动。",
+      punct: "把全角中文标点变成半角英文标点。",
+    },
     languageLabels: {
       zh: "中文",
       en: "英文",
+    },
+    languageHelpers: {
+      zh: "",
+      en: "",
     },
   },
 };
@@ -805,37 +815,26 @@ function ControlRail({
           />
         </FormItem>
 
-        <TagSelectorField
+        <MultiTagSelectorField
           legend={copy.typesLabel}
           error={typeError}
           showValue={false}
-          options={(["typo", "repeat", "spacing", "punct"] as const).map((value) => ({
-            value,
-            label: copy.labels[value],
-            helper:
-              value === "typo"
-                ? copy.typoHelper
-                : value === "repeat"
-                  ? copy.repeatHelper
-                  : value === "spacing"
-                    ? copy.spacingHelper
-                    : copy.punctHelper,
-            active: types.includes(value),
-            toggle: () => toggleType(value),
-          }))}
+          values={["typo", "repeat", "spacing", "punct"] as const}
+          selectedValues={types}
+          labels={copy.labels}
+          helpers={copy.typeHelpers}
+          onToggle={toggleType}
         />
 
-        <TagSelectorField
+        <MultiTagSelectorField
           legend={copy.languagesLabel}
           error={languageError}
           showValue={false}
-          options={(["zh", "en"] as const).map((value) => ({
-            value,
-            label: copy.languageLabels[value],
-            helper: "",
-            active: languages.includes(value),
-            toggle: () => toggleLanguage(value),
-          }))}
+          values={["zh", "en"] as const}
+          selectedValues={languages}
+          labels={copy.languageLabels}
+          helpers={copy.languageHelpers}
+          onToggle={toggleLanguage}
         />
       </div>
 
@@ -848,22 +847,24 @@ function ControlRail({
   );
 }
 
-function TagSelectorField({
+function MultiTagSelectorField<T extends string>({
   legend,
   error,
   showValue = true,
-  options,
+  values,
+  selectedValues,
+  labels,
+  helpers,
+  onToggle,
 }: {
   legend: string;
   error: string;
   showValue?: boolean;
-  options: Array<{
-    value: string;
-    label: string;
-    helper: string;
-    active: boolean;
-    toggle: () => void;
-  }>;
+  values: readonly T[];
+  selectedValues: readonly T[];
+  labels: Record<T, string>;
+  helpers: Record<T, string>;
+  onToggle: (value: T) => void;
 }) {
   const errorId = `${legend}-error`;
 
@@ -882,54 +883,56 @@ function TagSelectorField({
         )}
         data-invalid={Boolean(error)}
       >
-        {options.map((option) => {
+        {values.map((value) => {
+          const helper = helpers[value];
+          const active = selectedValues.includes(value);
           const button = (
             <button
-              key={option.value}
+              key={value}
               className={cn(
                 TAG_BUTTON_BASE_CLASSES,
-                option.active
+                active
                   ? "border-primary/60 bg-accent/60 text-accent-foreground"
                   : "border-border bg-background",
               )}
               type="button"
-              aria-pressed={option.active}
-              aria-describedby={option.helper ? `${legend}-${option.value}-helper` : undefined}
-              onClick={option.toggle}
+              aria-pressed={active}
+              aria-describedby={helper ? `${legend}-${value}-helper` : undefined}
+              onClick={() => onToggle(value)}
             >
               <span
                 className={cn(
                   TAG_INDICATOR_BASE_CLASSES,
-                  option.active && "border-primary bg-primary opacity-100 ring-3 ring-primary/20",
+                  active && "border-primary bg-primary opacity-100 ring-3 ring-primary/20",
                 )}
                 aria-hidden="true"
               />
               {showValue ? (
                 <span className="shrink-0 font-mono text-xs font-bold leading-none">
-                  {option.value}
+                  {value}
                 </span>
               ) : null}
               <span className="max-w-full flex-1 text-xs font-semibold leading-none break-words">
-                {option.label}
+                {labels[value]}
               </span>
-              {option.helper ? (
-                <span className="sr-only" id={`${legend}-${option.value}-helper`}>
-                  {option.helper}
+              {helper ? (
+                <span className="sr-only" id={`${legend}-${value}-helper`}>
+                  {helper}
                 </span>
               ) : null}
             </button>
           );
 
-          if (!option.helper) {
+          if (!helper) {
             return button;
           }
 
           return (
-            <TooltipProvider key={option.value} delayDuration={120}>
+            <TooltipProvider key={value} delayDuration={120}>
               <Tooltip>
                 <TooltipTrigger asChild>{button}</TooltipTrigger>
                 <TooltipContent>
-                  <p>{option.helper}</p>
+                  <p>{helper}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
