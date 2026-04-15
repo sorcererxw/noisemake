@@ -863,43 +863,59 @@ function TagSelectorField({
         )}
         data-invalid={Boolean(error)}
       >
-        {options.map((option) => (
-          <button
-            key={option.value}
-            className={cn(
-              TAG_BUTTON_BASE_CLASSES,
-              option.active
-                ? "border-primary/60 bg-accent/60 text-accent-foreground"
-                : "border-border bg-background",
-            )}
-            type="button"
-            aria-pressed={option.active}
-            aria-describedby={option.helper ? `${legend}-${option.value}-helper` : undefined}
-            title={option.helper || undefined}
-            onClick={option.toggle}
-          >
-            <span
+        {options.map((option) => {
+          const button = (
+            <button
+              key={option.value}
               className={cn(
-                TAG_INDICATOR_BASE_CLASSES,
-                option.active && "border-primary bg-primary opacity-100 ring-3 ring-primary/20",
+                TAG_BUTTON_BASE_CLASSES,
+                option.active
+                  ? "border-primary/60 bg-accent/60 text-accent-foreground"
+                  : "border-border bg-background",
               )}
-              aria-hidden="true"
-            />
-            {showValue ? (
-              <span className="shrink-0 font-mono text-xs font-bold leading-none">
-                {option.value}
+              type="button"
+              aria-pressed={option.active}
+              aria-describedby={option.helper ? `${legend}-${option.value}-helper` : undefined}
+              onClick={option.toggle}
+            >
+              <span
+                className={cn(
+                  TAG_INDICATOR_BASE_CLASSES,
+                  option.active && "border-primary bg-primary opacity-100 ring-3 ring-primary/20",
+                )}
+                aria-hidden="true"
+              />
+              {showValue ? (
+                <span className="shrink-0 font-mono text-xs font-bold leading-none">
+                  {option.value}
+                </span>
+              ) : null}
+              <span className="max-w-full flex-1 text-xs font-semibold leading-none break-words">
+                {option.label}
               </span>
-            ) : null}
-            <span className="max-w-full flex-1 text-xs font-semibold leading-none break-words">
-              {option.label}
-            </span>
-            {option.helper ? (
-              <span className="sr-only" id={`${legend}-${option.value}-helper`}>
-                {option.helper}
-              </span>
-            ) : null}
-          </button>
-        ))}
+              {option.helper ? (
+                <span className="sr-only" id={`${legend}-${option.value}-helper`}>
+                  {option.helper}
+                </span>
+              ) : null}
+            </button>
+          );
+
+          if (!option.helper) {
+            return button;
+          }
+
+          return (
+            <TooltipProvider key={option.value} delayDuration={120}>
+              <Tooltip>
+                <TooltipTrigger asChild>{button}</TooltipTrigger>
+                <TooltipContent>
+                  <p>{option.helper}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        })}
       </div>
     </FormItem>
   );
