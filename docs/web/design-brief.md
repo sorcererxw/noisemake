@@ -24,7 +24,7 @@ reproducible imperfections into text. It supports:
 - Deterministic output with `seed`.
 - Noise density with `frequency`.
 - Language filters: `zh`, `en`.
-- Noise type filters: `typo`, `repeat`.
+- Noise type filters: `typo`, `repeat`, `spacing`, `punct`.
 
 The first users are researchers and agent workflows that need reproducible noisy
 text fixtures, not vague LLM rewriting.
@@ -144,7 +144,7 @@ Suggested top-level layout:
 |                        | noise                | noisy output  |
 |                        | - frequency          |               |
 |                        | - seed               |               |
-|                        | - typo/repeat        |               |
+|                        | - typo/repeat/spacing/punct |               |
 |                        | - zh/en              |               |
 |                        | - run/copy           |               |
 +--------------------------------------------------------------+
@@ -198,7 +198,7 @@ The playground should include:
 - Output textarea.
 - Frequency input.
 - Seed input.
-- Noise type checkboxes: `typo`, `repeat`.
+- Noise type checkboxes: `typo`, `repeat`, `spacing`, `punct`.
 - Language checkboxes: `zh`, `en`.
 - Run button.
 - Copy output button.
@@ -217,7 +217,7 @@ Default controls:
 - `input`: prefilled with a language-matched sample for the current UI route.
 - `seed`: text input, default `42` so first-time users immediately see
   reproducible behavior.
-- Noise types: `typo` and `repeat` both checked by default; at least one must
+- Noise types: `typo`, `repeat`, `spacing`, and `punct` all checked by default; at least one must
   remain checked.
 - Languages: `zh` and `en` both checked by default; at least one must remain
   checked.
@@ -228,6 +228,8 @@ Control helper copy:
 - `seed`: "Same input + same seed = same output."
 - `typo`: "IME-style Chinese substitutions and keyboard-like English typos."
 - `repeat`: "Light word or phrase repetition."
+- `spacing`: "Whitespace glitches across words, punctuation, and mixed Chinese-English boundaries."
+- `punct`: "Normalize full-width Chinese punctuation into ASCII marks."
 - `zh`: "Apply Chinese strategies."
 - `en`: "Apply English strategies."
 

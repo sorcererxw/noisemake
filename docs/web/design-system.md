@@ -121,7 +121,7 @@ Dark mode target:
 
 - **Hero CLI panel:** Use a compact terminal-like code surface that shows actual commands, such as `npx noisemake "..." --seed 42 --frequency 200`, and a short reproducibility note. This surface earns its frame because it teaches usage.
 - **Buttons:** Run is the primary warm-yellow action. Copy is secondary.
-- **Checkboxes:** Prefer shadcn checkbox or toggle-like chips for `typo`, `repeat`, `zh`, and `en`. Active state uses the yellow accent, not blue or purple.
+- **Checkboxes:** Prefer shadcn checkbox or toggle-like chips for `typo`, `repeat`, `spacing`, `punct`, `zh`, and `en`. Active state uses the yellow accent, not blue or purple.
 - **Textareas:** Large, calm, and resizable only if it does not break the workbench. Use clear labels above each pane.
 - **Output highlights:** Changed spans should use `--changed-bg` and `--changed-border`. This is the page's main visual event.
 - **Toasts:** Use for copy success/failure only. Do not use toasts for validation that should live next to the field.

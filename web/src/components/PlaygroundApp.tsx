@@ -68,6 +68,8 @@ type Copy = {
   seedHelper: string;
   typoHelper: string;
   repeatHelper: string;
+  spacingHelper: string;
+  punctHelper: string;
   frequencyError: string;
   typeError: string;
   languageError: string;
@@ -107,6 +109,8 @@ const COPY: Record<UiLang, Copy> = {
     seedHelper: "Same seed = same output.",
     typoHelper: "Typos and misspellings.",
     repeatHelper: "Light word or phrase repetition.",
+    spacingHelper: "Whitespace glitches across words, punctuation, and mixed-script boundaries.",
+    punctHelper: "Normalize full-width Chinese punctuation into ASCII marks.",
     frequencyError: "Use a positive whole number.",
     typeError: "Choose at least one noise type.",
     languageError: "Choose at least one language.",
@@ -118,6 +122,8 @@ const COPY: Record<UiLang, Copy> = {
     labels: {
       typo: "typo",
       repeat: "repeat",
+      spacing: "spacing",
+      punct: "punct",
     },
     languageLabels: {
       zh: "Chinese",
@@ -150,6 +156,8 @@ const COPY: Record<UiLang, Copy> = {
     seedHelper: "同一种子，同一输出。",
     typoHelper: "错别字",
     repeatHelper: "词语轻微重复",
+    spacingHelper: "词间空格、标点后空格和中英边界空格扰动。",
+    punctHelper: "把全角中文标点变成半角英文标点。",
     frequencyError: "请输入正整数。",
     typeError: "至少选择一种噪声类型。",
     languageError: "至少选择一种语言。",
@@ -161,6 +169,8 @@ const COPY: Record<UiLang, Copy> = {
     labels: {
       typo: "错别字",
       repeat: "口吃",
+      spacing: "空格",
+      punct: "标点",
     },
     languageLabels: {
       zh: "中文",
@@ -169,7 +179,7 @@ const COPY: Record<UiLang, Copy> = {
   },
 };
 
-const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat"];
+const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat", "spacing", "punct"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
 const HERO_CLI_COMMAND = 'npx noisemake "The quick brown fox jumps over the lazy dog"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
@@ -799,10 +809,17 @@ function ControlRail({
           legend={copy.typesLabel}
           error={typeError}
           showValue={false}
-          options={(["typo", "repeat"] as const).map((value) => ({
+          options={(["typo", "repeat", "spacing", "punct"] as const).map((value) => ({
             value,
             label: copy.labels[value],
-            helper: value === "typo" ? copy.typoHelper : copy.repeatHelper,
+            helper:
+              value === "typo"
+                ? copy.typoHelper
+                : value === "repeat"
+                  ? copy.repeatHelper
+                  : value === "spacing"
+                    ? copy.spacingHelper
+                    : copy.punctHelper,
             active: types.includes(value),
             toggle: () => toggleType(value),
           }))}

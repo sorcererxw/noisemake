@@ -161,7 +161,7 @@ Default values:
 - `input`: prefill with a realistic sample that matches the current UI language.
 - `frequency`: `5`
 - `seed`: `42`
-- `types`: `["typo", "repeat"]`
+- `types`: `["typo", "repeat", "spacing", "punct"]`
 - `languages`: `["zh", "en"]`
 
 Control behavior:
@@ -184,6 +184,8 @@ Helper copy:
 - `seed`: `Same input + same seed = same output.`
 - `typo`: `IME-style Chinese substitutions and keyboard-like English typos.`
 - `repeat`: `Light word or phrase repetition.`
+- `spacing`: `Whitespace glitches across words, punctuation, and mixed Chinese-English boundaries.`
+- `punct`: `Normalize full-width Chinese punctuation into ASCII marks.`
 - `zh`: `Apply Chinese strategies.`
 - `en`: `Apply English strategies.`
 

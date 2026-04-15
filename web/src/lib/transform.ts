@@ -1,6 +1,6 @@
 export const TRANSFORM_ENDPOINT = "/v1/transform";
 
-export type NoiseType = "typo" | "repeat";
+export type NoiseType = "typo" | "repeat" | "spacing" | "punct";
 export type Language = "zh" | "en";
 
 export interface TransformRequest {
