@@ -75,8 +75,8 @@ type Copy = {
 
 const COPY: Record<UiLang, Copy> = {
   en: {
-    headline: "Make text less polished.",
-    proof: "Inject small mistakes so text feels more hand-written.",
+    headline: "Make text less polished",
+    proof: "Inject small mistakes so text feels more hand-written",
     cliLabel: "CLI usage",
     playgroundLabel: "Playground",
     playgroundIntro: "Try noisemake in the browser.",
@@ -119,8 +119,8 @@ const COPY: Record<UiLang, Copy> = {
     },
   },
   zh: {
-    headline: "让文本别那么工整。",
-    proof: "给文本注入一些小错误，让它更像手工写出来的。",
+    headline: "让文本别那么工整",
+    proof: "给文本注入一些小错误，让它更像手工写出来的",
     cliLabel: "CLI 用法",
     playgroundLabel: "Playground",
     playgroundIntro: "在浏览器里试试 noisemake。",
