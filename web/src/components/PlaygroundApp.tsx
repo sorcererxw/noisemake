@@ -16,6 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
   TRANSFORM_ENDPOINT,
@@ -980,14 +986,22 @@ function FormItem({
 
 function HelpTip({ text }: { text: string }) {
   return (
-    <button
-      className="inline-flex size-5 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
-      type="button"
-      aria-label={text}
-      title={text}
-    >
-      <CircleHelp aria-hidden="true" size={14} />
-    </button>
+    <TooltipProvider delayDuration={120}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            className="inline-flex size-5 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
+            type="button"
+            aria-label={text}
+          >
+            <CircleHelp aria-hidden="true" size={14} />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{text}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
