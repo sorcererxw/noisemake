@@ -11,8 +11,8 @@ if (lang !== "zh" && lang !== "en") {
 }
 
 const title = lang === "zh"
-  ? "noisemake - 让文本别那么工整"
-  : "noisemake - Make text less polished";
+  ? "noisemake - 错别字生成器"
+  : "noisemake - the typo generator";
 const description = lang === "zh"
   ? "给文本加入一些小错误，让它别那么工整。"
   : "Add small mistakes to text, and make it feel less polished.";
@@ -26,6 +26,10 @@ const description = lang === "zh"
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <title>{title}</title>
     <script is:inline>
       (() => {
