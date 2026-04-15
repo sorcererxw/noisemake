@@ -512,7 +512,7 @@ function Hero({
       <div className="min-w-0 lg:col-span-7">
         <h1
           id="hero-title"
-          className="max-w-3xl font-display text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl lg:leading-none"
+          className="max-w-3xl font-display text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl lg:leading-none"
         >
           {copy.headline}
         </h1>
