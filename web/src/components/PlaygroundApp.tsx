@@ -200,7 +200,10 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const [segments, setSegments] = useState<Segment[]>([]);
   const [state, setState] = useState<WorkbenchState>("idle");
   const [toast, setToast] = useState<ToastState>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [controlPanelHeight, setControlPanelHeight] = useState<number | null>(null);
   const frequencyRef = useRef<HTMLInputElement>(null);
+  const controlPanelRef = useRef<HTMLElement>(null);
 
   const validation = useMemo(() => {
     const parsedFrequency = Number(frequency);
@@ -227,6 +230,46 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
     const timeout = window.setTimeout(() => setToast(null), 2200);
     return () => window.clearTimeout(timeout);
   }, [toast]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    function syncIsDesktop() {
+      setIsDesktop(mediaQuery.matches);
+    }
+
+    syncIsDesktop();
+    mediaQuery.addEventListener("change", syncIsDesktop);
+
+    return () => {
+      mediaQuery.removeEventListener("change", syncIsDesktop);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop || !controlPanelRef.current) {
+      setControlPanelHeight(null);
+      return;
+    }
+
+    const element = controlPanelRef.current;
+
+    function updateHeight() {
+      setControlPanelHeight(Math.ceil(element.getBoundingClientRect().height));
+    }
+
+    updateHeight();
+
+    const observer = new ResizeObserver(() => {
+      updateHeight();
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isDesktop]);
 
   function markDirty() {
     setState((current) =>
@@ -347,6 +390,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
               <InputPanel
                 copy={copy}
                 input={input}
+                panelHeight={isDesktop ? controlPanelHeight : null}
                 setInput={(value) => {
                   setInput(value);
                   markDirty();
@@ -354,6 +398,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
               />
               <ControlRail
                 copy={copy}
+                panelRef={controlPanelRef}
                 frequency={frequency}
                 frequencyRef={frequencyRef}
                 setFrequency={(value) => {
@@ -383,6 +428,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
                 state={state}
                 output={output}
                 segments={segments}
+                panelHeight={isDesktop ? controlPanelHeight : null}
                 copyOutput={copyOutput}
                 copyDisabled={!canCopy}
               />
@@ -604,14 +650,20 @@ function ThemeSwitch({ copy }: { copy: Copy }) {
 function InputPanel({
   copy,
   input,
+  panelHeight,
   setInput,
 }: {
   copy: Copy;
   input: string;
+  panelHeight: number | null;
   setInput: (value: string) => void;
 }) {
   return (
-    <section className={cn(PANEL_BASE_CLASSES, "lg:col-span-3")} aria-labelledby="input-label">
+    <section
+      className={cn(PANEL_BASE_CLASSES, "overflow-hidden lg:col-span-3")}
+      style={panelHeight ? { height: `${panelHeight}px` } : undefined}
+      aria-labelledby="input-label"
+    >
       <div className={PANEL_HEADER_CLASSES}>
         <h2 id="input-label" className={PANEL_TITLE_CLASSES}>
           {copy.inputLabel}
@@ -629,6 +681,7 @@ function InputPanel({
 
 function ControlRail({
   copy,
+  panelRef,
   frequency,
   frequencyRef,
   setFrequency,
@@ -648,6 +701,7 @@ function ControlRail({
   runDisabled,
 }: {
   copy: Copy;
+  panelRef: RefObject<HTMLElement | null>;
   frequency: string;
   frequencyRef: RefObject<HTMLInputElement | null>;
   setFrequency: (value: string) => void;
@@ -668,6 +722,7 @@ function ControlRail({
 }) {
   return (
     <section
+      ref={panelRef}
       className={cn(
         PANEL_BASE_CLASSES,
         "border-t md:col-span-2 md:row-start-2 md:border-l-0 lg:col-span-2 lg:row-start-auto lg:border-t-0 lg:border-l",
@@ -749,6 +804,7 @@ function ControlRail({
       <TagSelectorField
         legend={copy.languagesLabel}
         error={languageError}
+        showValue={false}
         options={(["zh", "en"] as const).map((value) => ({
           value,
           label: copy.languageLabels[value],
@@ -940,6 +996,7 @@ function OutputPanel({
   state,
   output,
   segments,
+  panelHeight,
   copyOutput,
   copyDisabled,
 }: {
@@ -947,6 +1004,7 @@ function OutputPanel({
   state: WorkbenchState;
   output: string;
   segments: Segment[];
+  panelHeight: number | null;
   copyOutput: () => void;
   copyDisabled: boolean;
 }) {
@@ -956,8 +1014,9 @@ function OutputPanel({
     <section
       className={cn(
         PANEL_BASE_CLASSES,
-        "border-t md:col-start-2 md:row-start-1 md:border-l lg:col-span-3 lg:col-start-auto lg:row-start-auto lg:border-t-0",
+        "overflow-hidden border-t md:col-start-2 md:row-start-1 md:border-l lg:col-span-3 lg:col-start-auto lg:row-start-auto lg:border-t-0",
       )}
+      style={panelHeight ? { height: `${panelHeight}px` } : undefined}
       aria-labelledby="output-label"
     >
       <div className={PANEL_HEADER_CLASSES}>
