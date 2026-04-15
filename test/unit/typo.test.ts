@@ -114,6 +114,43 @@ describe("typo", () => {
     }
   });
 
+  it("supports deterministic internal insertion for English typo materialization", () => {
+    const [candidate] = buildEnKeyboardTypoCandidates(Array.from("stable"));
+
+    expect(candidate).toBeDefined();
+
+    let nextCalls = 0;
+    const rng = {
+      next: () => {
+        nextCalls += 1;
+        return 0.7;
+      },
+      int: () => 0,
+      pick: <T>(values: readonly T[]) => values[0] as T,
+      pickWeighted: <T>(values: readonly T[], weightOf: (value: T) => number) => {
+        let cursor = 0.7 * values.reduce((sum, value) => sum + weightOf(value), 0);
+
+        for (const value of values) {
+          cursor -= weightOf(value);
+
+          if (cursor < 0) {
+            return value;
+          }
+        }
+
+        return values[values.length - 1] as T;
+      },
+    };
+
+    const mutation = materializeTypo(candidate!, rng);
+
+    expect(nextCalls).toBe(1);
+    expect(mutation.replacement).not.toBe("stable");
+    expect(mutation.replacement[0]).toBe("s");
+    expect(mutation.replacement.at(-1)).toBe("e");
+    expect(Array.from(mutation.replacement)).toHaveLength(7);
+  });
+
   it("uses Chinese replacement scores for deterministic weighted selection", () => {
     const candidate = {
       type: "typo" as const,

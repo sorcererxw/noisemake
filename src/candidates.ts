@@ -26,6 +26,20 @@ export type MutationCandidate =
       token: string;
       separator: "" | " ";
       weight: number;
+    }
+  | {
+      type: "spacing";
+      start: number;
+      end: number;
+      replacement: "" | " " | "  ";
+      weight: number;
+    }
+  | {
+      type: "punct";
+      start: number;
+      end: number;
+      replacement: string;
+      weight: number;
     };
 
 export interface AppliedMutation {
@@ -63,10 +77,6 @@ export function selectMutations(
     }
 
     const mutation = materialize(candidate, rng);
-
-    if (mutation.replacement === "") {
-      continue;
-    }
 
     selected.push(mutation);
     occupied.push([mutation.start, mutation.end]);

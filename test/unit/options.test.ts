@@ -6,7 +6,7 @@ describe("normalizeOptions", () => {
     const options = normalizeOptions();
 
     expect(options.frequency).toBe(200);
-    expect([...options.types]).toEqual(["typo", "repeat"]);
+    expect([...options.types]).toEqual(["typo", "repeat", "spacing", "punct"]);
     expect([...options.languages]).toEqual(["zh", "en"]);
   });
 
@@ -27,6 +27,12 @@ describe("normalizeOptions", () => {
       options.typeMultipliers.repeat,
     );
     expect(options.typeMultipliers.repeat).toBeLessThanOrEqual(0.05);
+    expect(options.typeMultipliers.spacing).toBeGreaterThan(
+      options.typeMultipliers.repeat,
+    );
+    expect(options.typeMultipliers.punct).toBeGreaterThan(
+      options.typeMultipliers.repeat,
+    );
   });
 
   it("rejects invalid frequency", () => {

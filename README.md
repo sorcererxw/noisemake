@@ -8,7 +8,9 @@ LLM rewriting tool. Same input, same seed, same options, same output.
 The current package supports:
 
 - Chinese IME-style wrong-word substitutions
-- English keyboard typos
+- English keyboard typos, including insertion-like slips
+- Spacing glitches in English words, after punctuation, and across Chinese-English boundaries
+- Punctuation normalization from full-width Chinese marks to ASCII marks
 - Light repetition
 
 ## Quick Start
@@ -27,7 +29,7 @@ Options:
 ```text
 --frequency <n>     Average one perturbation per n eligible tokens (default: "200")
 --seed <seed>       Seed for deterministic output
---types <list>      Enabled noise types: typo,repeat (default: "typo,repeat")
+--types <list>      Enabled noise types: typo,repeat,spacing,punct (default: "typo,repeat,spacing,punct")
 --languages <list>  Enabled languages: zh,en (default: "zh,en")
 --file <path>       Read input text from a UTF-8 file
 --out <path>        Write output text to a UTF-8 file, creating parent directories if needed

@@ -94,4 +94,76 @@ describe("noisemake", () => {
       }),
     ).toBe("短文本");
   });
+
+  it("can produce deterministic spacing noise for English text", () => {
+    const left = noisemake("this parser should stay stable", {
+      frequency: 1,
+      seed: "spacing-en",
+      types: ["spacing"],
+      languages: ["en"],
+    });
+    const right = noisemake("this parser should stay stable", {
+      frequency: 1,
+      seed: "spacing-en",
+      types: ["spacing"],
+      languages: ["en"],
+    });
+
+    expect(left).toBe(right);
+    expect(left).toContain("  ");
+  });
+
+  it("can remove mixed-script spacing when both languages are enabled", () => {
+    const text = "这个 parser 这个 parser 这个 parser 这个 parser";
+
+    expect(
+      noisemake(text, {
+        frequency: 1,
+        seed: "spacing-mixed",
+        types: ["spacing"],
+        languages: ["zh", "en"],
+      }),
+    ).not.toBe(text);
+  });
+
+  it("can insert mixed-script spacing when boundaries are collapsed", () => {
+    expect(
+      noisemake("这个parser这个parser这个parser这个parser", {
+        frequency: 1,
+        seed: "seed-0",
+        types: ["spacing"],
+        languages: ["zh", "en"],
+      }),
+    ).toContain("这个 parser");
+  });
+
+  it("can add extra spacing after punctuation", () => {
+    expect(
+      noisemake("hello, world. hello, world. hello, world.", {
+        frequency: 1,
+        seed: "seed-0",
+        types: ["spacing"],
+        languages: ["en"],
+      }),
+    ).toContain(",  world");
+  });
+
+  it("can produce deterministic punctuation noise for Chinese text", () => {
+    const text = "你好，世界。你好，世界。你好，世界。";
+    const left = noisemake(text, {
+      frequency: 1,
+      seed: "seed-0",
+      types: ["punct"],
+      languages: ["zh"],
+    });
+    const right = noisemake(text, {
+      frequency: 1,
+      seed: "seed-0",
+      types: ["punct"],
+      languages: ["zh"],
+    });
+
+    expect(left).toBe(right);
+    expect(left).not.toBe(text);
+  });
 });

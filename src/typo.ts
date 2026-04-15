@@ -13,12 +13,18 @@ import {
   ZH_IME_CONFUSIONS,
 } from "./data/zh-ime-confusions.generated.js";
 
-type EnglishTypoOperation = "substitute" | "transpose" | "duplicate" | "delete";
+type EnglishTypoOperation =
+  | "substitute"
+  | "transpose"
+  | "insert"
+  | "duplicate"
+  | "delete";
 
 const ENGLISH_OPERATION_WEIGHTS: Readonly<Record<EnglishTypoOperation, number>> = {
-  substitute: 0.4,
+  substitute: 0.35,
   transpose: 0.3,
-  duplicate: 0.2,
+  insert: 0.15,
+  duplicate: 0.1,
   delete: 0.1,
 };
 
@@ -232,6 +238,8 @@ function applyEnglishKeyboardTypo(token: string, rng: Rng): string {
       return substituteAdjacentKey(token, rng);
     case "transpose":
       return transposeAdjacentCharacters(token, rng);
+    case "insert":
+      return insertAdjacentKey(token, rng);
     case "duplicate":
       return duplicateCharacter(token, rng);
     case "delete":
@@ -240,7 +248,12 @@ function applyEnglishKeyboardTypo(token: string, rng: Rng): string {
 }
 
 function getAvailableEnglishOperations(token: string): EnglishTypoOperation[] {
-  const operations: EnglishTypoOperation[] = ["substitute", "transpose", "duplicate"];
+  const operations: EnglishTypoOperation[] = [
+    "substitute",
+    "transpose",
+    "insert",
+    "duplicate",
+  ];
 
   if (token.length >= 4) {
     operations.push("delete");
@@ -251,18 +264,30 @@ function getAvailableEnglishOperations(token: string): EnglishTypoOperation[] {
 
 function substituteAdjacentKey(token: string, rng: Rng): string {
   const chars = Array.from(token);
-  const indices = chars
-    .map((char, index) => ({ char, index }))
-    .filter(({ char, index }) => isInternalCharacterIndex(index, chars.length))
-    .filter(({ char }) => QWERTY_ADJACENT[char.toLowerCase()]);
+  const choices = getInternalAdjacentKeyChoices(chars);
 
-  if (indices.length === 0) {
+  if (choices.length === 0) {
     return token;
   }
 
-  const { char, index } = rng.pick(indices);
-  const replacement = rng.pick(QWERTY_ADJACENT[char.toLowerCase()] ?? []);
+  const { char, index, replacements } = rng.pick(choices);
+  const replacement = rng.pick(replacements);
   chars[index] = preserveCase(char, replacement);
+
+  return chars.join("");
+}
+
+function insertAdjacentKey(token: string, rng: Rng): string {
+  const chars = Array.from(token);
+  const choices = getInternalAdjacentKeyChoices(chars);
+
+  if (choices.length === 0) {
+    return token;
+  }
+
+  const { char, index, replacements } = rng.pick(choices);
+  const insertion = preserveCase(char, rng.pick(replacements));
+  chars.splice(index + 1, 0, insertion);
 
   return chars.join("");
 }
@@ -338,6 +363,19 @@ function preserveCase(source: string, replacement: string): string {
   }
 
   return replacement;
+}
+
+function getInternalAdjacentKeyChoices(
+  chars: readonly string[],
+): Array<{ char: string; index: number; replacements: readonly string[] }> {
+  return chars
+    .map((char, index) => ({
+      char,
+      index,
+      replacements: QWERTY_ADJACENT[char.toLowerCase()] ?? [],
+    }))
+    .filter(({ index }) => isInternalCharacterIndex(index, chars.length))
+    .filter(({ replacements }) => replacements.length > 0);
 }
 
 function getInternalCharacterIndices(length: number): number[] {

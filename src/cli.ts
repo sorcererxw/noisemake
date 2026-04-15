@@ -27,7 +27,11 @@ async function main(argv: readonly string[]): Promise<number> {
       "200",
     )
     .option("--seed <seed>", "Seed for deterministic output")
-    .option("--types <list>", "Enabled noise types: typo,repeat", "typo,repeat")
+    .option(
+      "--types <list>",
+      "Enabled noise types: typo,repeat,spacing,punct",
+      "typo,repeat,spacing,punct",
+    )
     .option("--languages <list>", "Enabled languages: zh,en", "zh,en")
     .option("--file <path>", "Read input text from a UTF-8 file")
     .option(

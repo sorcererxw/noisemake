@@ -38,7 +38,7 @@ Usage:
 Options:
   --frequency <n>   Average one perturbation per n eligible tokens (default: "200")
   --seed <seed>     Seed for deterministic output
-  --types <list>    Enabled noise types: typo,repeat (default: "typo,repeat")
+  --types <list>    Enabled noise types: typo,repeat,spacing,punct (default: "typo,repeat,spacing,punct")
   --languages <list> Enabled languages: zh,en (default: zh,en)
   --file <path>     Read input text from a UTF-8 file
   --out <path>      Write output text to a UTF-8 file, creating parent directories if needed
@@ -185,7 +185,7 @@ export function materializeRepeat(
 ## MVP API
 
 ```ts
-export type NoiseType = "typo" | "repeat";
+export type NoiseType = "typo" | "repeat" | "spacing" | "punct";
 export type Language = "zh" | "en";
 
 export interface NoisemakeOptions {
@@ -218,7 +218,15 @@ Frequency behavior:
 - If `frequency` is omitted, default to `200`.
 - Each token/range can be perturbed at most once.
 - Type weighting is implemented as an effective probability multiplier, not as a grouped type picker.
-- Initial default type multipliers: `typo = 1.0`, `repeat = 0.2`.
+- Initial default type multipliers: `typo = 1.0`, `repeat = 0.2`, `spacing = 0.15`, `punct = 0.12`.
+- `spacing` should cover low-cost whitespace errors that are visibly noisy but still deterministic:
+  - English single space -> double space between words.
+  - Punctuation-following single space -> double space.
+  - Chinese-English boundary space removal, for example `这个 parser` -> `这个parser`.
+  - Chinese-English boundary space insertion, for example `这个parser` -> `这个 parser`.
+- `punct` should cover low-cost punctuation normalization that is visibly noisy but still deterministic:
+  - Full-width Chinese punctuation -> ASCII punctuation, for example `你好，世界。` -> `你好,世界.`.
+  - Do not support ASCII punctuation -> full-width Chinese punctuation.
 - Candidate trigger probability is `1 / frequency * typeMultiplier[type]`.
 - User-provided `types` order does not affect these multipliers. Future custom weights should use a separate option rather than overloading order.
 - More generally, each character range can be covered by at most one mutation.
@@ -397,6 +405,7 @@ English typo data:
 Supported MVP operations:
 - adjacent-key substitution, for example `a` can become nearby QWERTY keys.
 - adjacent character transposition, for example `the` -> `teh`.
+- adjacent-key insertion inside the word, for example `stable` -> `stqable`.
 - duplicate character, for example `hello` -> `helllo`.
 - delete character, for example `because` -> `becuse`.
 
@@ -404,9 +413,10 @@ Default operation weights:
 
 ```ts
 {
-  substitute: 0.4,
+  substitute: 0.35,
   transpose: 0.3,
-  duplicate: 0.2,
+  insert: 0.15,
+  duplicate: 0.1,
   delete: 0.1,
 }
 ```
