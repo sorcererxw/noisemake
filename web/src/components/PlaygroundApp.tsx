@@ -731,7 +731,7 @@ function ControlRail({
       ref={panelRef}
       className={cn(
         PANEL_BASE_CLASSES,
-        "border-t md:col-span-2 md:row-start-2 md:border-l-0 lg:col-span-2 lg:row-start-auto lg:border-t-0 lg:border-l",
+        "border-t md:col-span-2 md:row-start-2 md:border-l-0 lg:col-span-2 lg:h-[36rem] lg:row-start-auto lg:border-t-0 lg:border-l",
       )}
       aria-labelledby="controls-label"
     >
@@ -741,86 +741,88 @@ function ControlRail({
         </h2>
       </div>
 
-      <FormItem
-        title={copy.frequencyLabel}
-        htmlFor="frequency"
-        helper={copy.frequencyHelper}
-        helperId="frequency-helper"
-        error={frequencyError}
-        errorId="frequency-error"
-      >
-        <input
-          ref={frequencyRef}
-          className={cn(MONO_CONTROL_INPUT_CLASSES, "aria-invalid:border-destructive")}
-          id="frequency"
-          inputMode="numeric"
-          value={frequency}
-          aria-describedby="frequency-helper frequency-error"
-          aria-invalid={Boolean(frequencyError)}
-          onChange={(event) => setFrequency(event.target.value)}
-        />
-      </FormItem>
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto lg:pr-1">
+        <FormItem
+          title={copy.frequencyLabel}
+          htmlFor="frequency"
+          helper={copy.frequencyHelper}
+          helperId="frequency-helper"
+          error={frequencyError}
+          errorId="frequency-error"
+        >
+          <input
+            ref={frequencyRef}
+            className={cn(MONO_CONTROL_INPUT_CLASSES, "aria-invalid:border-destructive")}
+            id="frequency"
+            inputMode="numeric"
+            value={frequency}
+            aria-describedby="frequency-helper frequency-error"
+            aria-invalid={Boolean(frequencyError)}
+            onChange={(event) => setFrequency(event.target.value)}
+          />
+        </FormItem>
 
-      <FormItem
-        title={copy.seedLabel}
-        htmlFor="seed"
-        helper={copy.seedHelper}
-        helperId="seed-helper"
-        action={
-          <label
+        <FormItem
+          title={copy.seedLabel}
+          htmlFor="seed"
+          helper={copy.seedHelper}
+          helperId="seed-helper"
+          action={
+            <label
+              className={cn(
+                "inline-flex min-h-6 w-fit items-center gap-1.5 rounded-md px-0.5 text-xs font-semibold text-muted-foreground transition-colors",
+                randomSeed && "text-accent-foreground",
+              )}
+            >
+              <Checkbox
+                checked={randomSeed}
+                onCheckedChange={(checked) => setRandomSeed(checked === true)}
+              />
+              <span>{copy.randomLabel}</span>
+            </label>
+          }
+        >
+          <input
             className={cn(
-              "inline-flex min-h-6 w-fit items-center gap-1.5 rounded-md px-0.5 text-xs font-semibold text-muted-foreground transition-colors",
-              randomSeed && "text-accent-foreground",
+              MONO_CONTROL_INPUT_CLASSES,
+              "disabled:cursor-not-allowed disabled:opacity-60",
             )}
-          >
-            <Checkbox
-              checked={randomSeed}
-              onCheckedChange={(checked) => setRandomSeed(checked === true)}
-            />
-            <span>{copy.randomLabel}</span>
-          </label>
-        }
-      >
-        <input
-          className={cn(
-            MONO_CONTROL_INPUT_CLASSES,
-            "disabled:cursor-not-allowed disabled:opacity-60",
-          )}
-          id="seed"
-          value={seed}
-          disabled={randomSeed}
-          aria-describedby="seed-helper"
-          onChange={(event) => setSeed(event.target.value)}
+            id="seed"
+            value={seed}
+            disabled={randomSeed}
+            aria-describedby="seed-helper"
+            onChange={(event) => setSeed(event.target.value)}
+          />
+        </FormItem>
+
+        <TagSelectorField
+          legend={copy.typesLabel}
+          error={typeError}
+          showValue={false}
+          options={(["typo", "repeat"] as const).map((value) => ({
+            value,
+            label: copy.labels[value],
+            helper: value === "typo" ? copy.typoHelper : copy.repeatHelper,
+            active: types.includes(value),
+            toggle: () => toggleType(value),
+          }))}
         />
-      </FormItem>
 
-      <TagSelectorField
-        legend={copy.typesLabel}
-        error={typeError}
-        showValue={false}
-        options={(["typo", "repeat"] as const).map((value) => ({
-          value,
-          label: copy.labels[value],
-          helper: value === "typo" ? copy.typoHelper : copy.repeatHelper,
-          active: types.includes(value),
-          toggle: () => toggleType(value),
-        }))}
-      />
+        <TagSelectorField
+          legend={copy.languagesLabel}
+          error={languageError}
+          showValue={false}
+          options={(["zh", "en"] as const).map((value) => ({
+            value,
+            label: copy.languageLabels[value],
+            helper: "",
+            active: languages.includes(value),
+            toggle: () => toggleLanguage(value),
+          }))}
+        />
+      </div>
 
-      <TagSelectorField
-        legend={copy.languagesLabel}
-        error={languageError}
-        showValue={false}
-        options={(["zh", "en"] as const).map((value) => ({
-          value,
-          label: copy.languageLabels[value],
-          helper: "",
-          active: languages.includes(value),
-          toggle: () => toggleLanguage(value),
-        }))}
-      />
-
-      <div className="mt-auto flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 pt-4 lg:pt-6">
         <Button className="w-full px-3 font-semibold" type="button" size="lg" onClick={run} disabled={runDisabled}>
           {runLabel}
         </Button>
