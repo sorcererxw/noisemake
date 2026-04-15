@@ -167,7 +167,7 @@ const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
 const HERO_CLI_COMMAND = 'npx noisemake "The quick brown fox jumps over the lazy dog"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
-const PANEL_BASE_CLASSES = "flex min-w-0 flex-col gap-3 p-3 sm:p-4";
+const PANEL_BASE_CLASSES = "flex min-w-0 flex-col gap-3 p-3 sm:p-4 lg:h-full";
 const PANEL_HEADER_CLASSES = "flex min-h-7 items-center justify-between gap-3";
 const PANEL_TITLE_CLASSES = "text-sm font-semibold leading-5";
 const FORM_ITEM_CLASSES = "flex flex-col gap-1.5";
@@ -178,9 +178,9 @@ const CONTROL_INPUT_CLASSES =
   "h-11 w-full rounded-lg border border-input bg-card px-3 text-foreground transition-colors outline-none";
 const MONO_CONTROL_INPUT_CLASSES = `${CONTROL_INPUT_CLASSES} font-mono`;
 const SURFACE_TEXTAREA_CLASSES =
-  "min-h-64 max-h-[32rem] flex-1 resize-y overflow-y-auto rounded-lg border border-input bg-card p-4 leading-7 text-foreground transition-colors outline-none md:min-h-80 lg:min-h-96";
+  "min-h-64 max-h-96 flex-1 resize-none overflow-y-auto rounded-lg border border-input bg-card p-4 leading-7 text-foreground transition-colors outline-none md:min-h-80 lg:min-h-0 lg:max-h-none";
 const OUTPUT_REGION_CLASSES =
-  "min-h-64 max-h-[32rem] flex-1 overflow-y-auto rounded-lg border border-input bg-muted/40 p-4 leading-7 text-foreground whitespace-pre-wrap md:min-h-80 lg:min-h-96";
+  "min-h-64 max-h-96 flex-1 overflow-y-auto rounded-lg border border-input bg-muted/40 p-4 leading-7 text-foreground whitespace-pre-wrap md:min-h-80 lg:min-h-0 lg:max-h-none";
 const TAG_INPUT_CLASSES =
   "flex min-h-10 flex-wrap gap-1.5 rounded-lg border border-input bg-card p-1.5 transition-colors";
 const TAG_BUTTON_BASE_CLASSES =
@@ -343,7 +343,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
             className="overflow-hidden rounded-xl border bg-card shadow-sm"
             aria-label={copy.playgroundLabel}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-8 lg:items-stretch">
               <InputPanel
                 copy={copy}
                 input={input}
@@ -849,6 +849,7 @@ function ControlRail({
       <TagSelectorField
         legend={copy.typesLabel}
         error={typeError}
+        showValue={false}
         options={(["typo", "repeat"] as const).map((value) => ({
           value,
           label: copy.labels[value],
@@ -882,10 +883,12 @@ function ControlRail({
 function TagSelectorField({
   legend,
   error,
+  showValue = true,
   options,
 }: {
   legend: string;
   error: string;
+  showValue?: boolean;
   options: Array<{
     value: string;
     label: string;
@@ -933,9 +936,11 @@ function TagSelectorField({
               )}
               aria-hidden="true"
             />
-            <span className="shrink-0 font-mono text-xs font-bold leading-none">
-              {option.value}
-            </span>
+            {showValue ? (
+              <span className="shrink-0 font-mono text-xs font-bold leading-none">
+                {option.value}
+              </span>
+            ) : null}
             <span className="max-w-full flex-1 text-xs font-semibold leading-none break-words">
               {option.label}
             </span>
