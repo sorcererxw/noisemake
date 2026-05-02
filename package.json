@@ -4,6 +4,13 @@
   "description": "Controlled text perturbations that make polished text less obviously AI-generated.",
   "type": "module",
   "license": "MIT AND LGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sorcererxw/noisemake.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "packageManager": "pnpm@10.33.0",
   "bin": {
     "noisemake": "./dist/cli.js"
