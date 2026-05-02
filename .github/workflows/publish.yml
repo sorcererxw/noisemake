@@ -90,7 +90,7 @@ jobs:
 
       - name: Publish package
         if: steps.npm.outputs.published == 'false'
-        run: npm publish --provenance
+        run: npm publish --provenance --access public
 
       - name: Create GitHub release
         if: steps.npm.outputs.published == 'false'
