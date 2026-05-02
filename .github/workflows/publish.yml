@@ -1,22 +1,28 @@
-name: Publish npm package
+name: Release npm package
 
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - main
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
+concurrency:
+  group: npm-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  publish:
-    name: Publish to npm
+  release:
+    name: Release to npm
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -30,20 +36,68 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run checks
-        run: pnpm run check
-
-      - name: Verify release tag
+      - name: Read package metadata
+        id: package
         run: |
+          package_name="$(node -p "require('./package.json').name")"
           package_version="$(node -p "require('./package.json').version")"
-          expected_tag="v${package_version}"
-          if [ "${GITHUB_REF_NAME}" != "${expected_tag}" ]; then
-            echo "Release tag ${GITHUB_REF_NAME} does not match package version ${package_version}; expected ${expected_tag}." >&2
+          {
+            echo "name=${package_name}"
+            echo "version=${package_version}"
+            echo "tag=v${package_version}"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Check npm package version
+        id: npm
+        run: |
+          package_spec="${{ steps.package.outputs.name }}@${{ steps.package.outputs.version }}"
+          set +e
+          npm view "${package_spec}" version --registry "https://registry.npmjs.org" > /tmp/npm-version.txt 2> /tmp/npm-error.txt
+          npm_status="$?"
+          set -e
+
+          if [ "${npm_status}" -eq 0 ]; then
+            echo "published=true" >> "${GITHUB_OUTPUT}"
+            echo "::notice::${package_spec} is already published; skipping release."
+          elif grep -q "E404" /tmp/npm-error.txt; then
+            echo "published=false" >> "${GITHUB_OUTPUT}"
+            echo "::notice::${package_spec} is not published yet; continuing release."
+          else
+            cat /tmp/npm-error.txt >&2
+            exit "${npm_status}"
+          fi
+
+      - name: Verify release tag is available
+        if: steps.npm.outputs.published == 'false'
+        run: |
+          release_tag="${{ steps.package.outputs.tag }}"
+          if git rev-parse -q --verify "refs/tags/${release_tag}" > /dev/null; then
+            echo "Release tag ${release_tag} already exists locally." >&2
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/${release_tag}" > /dev/null 2>&1; then
+            echo "Release tag ${release_tag} already exists on origin." >&2
             exit 1
           fi
 
+      - name: Install dependencies
+        if: steps.npm.outputs.published == 'false'
+        run: pnpm install --frozen-lockfile
+
+      - name: Run checks
+        if: steps.npm.outputs.published == 'false'
+        run: pnpm run check
+
       - name: Publish package
-        run: npm publish
+        if: steps.npm.outputs.published == 'false'
+        run: npm publish --provenance
+
+      - name: Create GitHub release
+        if: steps.npm.outputs.published == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.package.outputs.tag }}" \
+            --target "${GITHUB_SHA}" \
+            --title "${{ steps.package.outputs.tag }}" \
+            --generate-notes
