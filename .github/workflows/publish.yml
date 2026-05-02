@@ -88,8 +88,20 @@ jobs:
         if: steps.npm.outputs.published == 'false'
         run: pnpm run check
 
+      - name: Verify npm token
+        if: steps.npm.outputs.published == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            echo "Missing NPM_TOKEN repository secret. Create an npm automation token with publish access and add it as GitHub secret NPM_TOKEN." >&2
+            exit 1
+          fi
+
       - name: Publish package
         if: steps.npm.outputs.published == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --provenance --access public
 
       - name: Create GitHub release
