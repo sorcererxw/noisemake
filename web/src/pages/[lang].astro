@@ -1,35 +1,82 @@
 ---
 import PlaygroundApp from "@/components/PlaygroundApp";
+import { SEO_COPY, isUiLang } from "@/lib/i18n";
 import "../styles/global.css";
 
 export const prerender = false;
 
 const lang = Astro.params.lang;
 
-if (lang !== "zh" && lang !== "en") {
+if (!isUiLang(lang)) {
   return Astro.redirect("/en", 302);
 }
 
-const title = lang === "zh"
-  ? "noisemake - 错别字生成器"
-  : "noisemake - the typo generator";
-const description = lang === "zh"
-  ? "给文本加入一些小错误，让它别那么工整。"
-  : "Add small mistakes to text, and make it feel less polished.";
+const seoCopy = SEO_COPY[lang];
+const title = seoCopy.title;
+const description = seoCopy.description;
+const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://noisemake.xyz";
+const canonicalUrl = `${siteUrl}/${lang}`;
+const alternateUrl = lang === "zh" ? `${siteUrl}/en` : `${siteUrl}/zh`;
+const ogImageUrl = `${siteUrl}/og/${lang}.svg`;
+const ogLocale = lang === "zh" ? "zh_CN" : "en_US";
+const alternateLocale = lang === "zh" ? "en_US" : "zh_CN";
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "noisemake",
+  url: canonicalUrl,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Web",
+  inLanguage: lang,
+  description,
+  image: ogImageUrl,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  softwareHelp: {
+    "@type": "CreativeWork",
+    url: "https://github.com/sorcererxw/noisemake",
+  },
+  sameAs: ["https://github.com/sorcererxw/noisemake"],
+};
 ---
 
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#f9c74f" />
+    <meta name="application-name" content="noisemake" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang={lang} href={canonicalUrl} />
+    <link rel="alternate" hreflang={lang === "zh" ? "en" : "zh"} href={alternateUrl} />
+    <link rel="alternate" hreflang="x-default" href={`${siteUrl}/en`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="noisemake" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={alternateLocale} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={title} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
     <title>{title}</title>
     <script is:inline>
       (() => {

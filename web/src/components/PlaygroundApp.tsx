@@ -32,162 +32,15 @@ import {
   type TransformResponse,
   type TransformSuccessResponse,
 } from "@/lib/transform";
+import { UI_COPY, type UiCopy, type UiLang } from "@/lib/i18n";
 
-type UiLang = "en" | "zh";
 type ThemeMode = "light" | "dark";
 type WorkbenchState = "idle" | "dirty" | "invalid" | "running" | "success" | "no-change";
 type ToastState = string | null;
 
-type Copy = {
-  headline: string;
-  proof: string;
-  cliLabel: string;
-  playgroundLabel: string;
-  playgroundIntro: string;
-  inputLabel: string;
-  controlsLabel: string;
-  outputLabel: string;
-  frequencyLabel: string;
-  seedLabel: string;
-  randomLabel: string;
-  typesLabel: string;
-  languagesLabel: string;
-  run: string;
-  running: string;
-  copy: string;
-  copied: string;
-  copyError: string;
-  inputPlaceholder: string;
-  outputPlaceholder: string;
-  noChange: string;
-  frequencyHelper: string;
-  seedHelper: string;
-  frequencyError: string;
-  typeError: string;
-  languageError: string;
-  footerOpenSource: string;
-  languageLabel: string;
-  themeLabel: string;
-  defaultInput: string;
-  labels: Record<NoiseType, string>;
-  typeHelpers: Record<NoiseType, string>;
-  languageLabels: Record<Language, string>;
-  languageHelpers: Record<Language, string>;
-};
-
-const COPY: Record<UiLang, Copy> = {
-  en: {
-    headline: "Make text less polished",
-    proof: "Inject small mistakes so text feels more hand-written",
-    cliLabel: "CLI usage",
-    playgroundLabel: "Playground",
-    playgroundIntro: "Try noisemake in the browser",
-    inputLabel: "Paste your text",
-    controlsLabel: "Noise settings",
-    outputLabel: "Output text",
-    frequencyLabel: "frequency",
-    seedLabel: "seed",
-    randomLabel: "random",
-    typesLabel: "Noise types",
-    languagesLabel: "Languages",
-    run: "Run",
-    running: "Running...",
-    copy: "Copy",
-    copied: "Copied.",
-    copyError: "Could not copy. Please copy it manually.",
-    inputPlaceholder: "Paste some text here.",
-    outputPlaceholder: "Your output will show up here.",
-    noChange:
-      "Nothing changed this time. Try a lower frequency or a different seed.",
-    frequencyHelper: "Higher = less noise.",
-    seedHelper: "Same seed = same output.",
-    frequencyError: "Use a positive whole number.",
-    typeError: "Choose at least one noise type.",
-    languageError: "Choose at least one language.",
-    footerOpenSource: "Open source",
-    languageLabel: "Language",
-    themeLabel: "Toggle theme",
-    defaultInput:
-      "Every weekday at 3:15 p.m., the small public library on Maple Street changes mood without making any obvious announcement. The front tables still hold the same local history books, the clock above the returns desk still runs two minutes fast, and the pencil cup beside computer terminal 4 is still full of short yellow stubs, but the room feels different as students arrive one by one and then in pairs. A man in a navy coat claims the newspaper chair near the radiator. Two sisters spread notebooks across the long oak table, whisper for ten minutes, then fall quiet. Someone rolls a cart of returned books past the windows, then rolls the same cart back again because a red atlas and a gardening manual were shelved in the wrong order.\n\nThe library follows a pattern that only looks accidental from the door. At 3:20, the copy machine wakes up with a click. At 3:30, the after-school line reaches the checkout counter. At 3:40, the reading room grows steadier, quieter, fuller. The same sounds repeat at low volume: chair legs against linoleum, page turns, soft coughs, the scanner beep at the desk, the scanner beep again. A sign beside the stairs asks visitors to carry drinks with lids, and nearly everyone ignores it in the same polite way, setting paper cups on the windowsill and glancing up only when a librarian walks by. By four o'clock, the building feels less like a room with shelves and more like a shared routine that people briefly help keep in order.",
-    labels: {
-      typo: "typo",
-      repeat: "repeat",
-      spacing: "spacing",
-      punct: "punct",
-    },
-    typeHelpers: {
-      typo: "Typos and misspellings.",
-      repeat: "Light word or phrase repetition.",
-      spacing: "Whitespace glitches across words, punctuation, and mixed-script boundaries.",
-      punct: "Normalize full-width Chinese punctuation into ASCII marks.",
-    },
-    languageLabels: {
-      zh: "Chinese",
-      en: "English",
-    },
-    languageHelpers: {
-      zh: "",
-      en: "",
-    },
-  },
-  zh: {
-    headline: "让文本别那么工整",
-    proof: "给文本注入一些小错误，让它更像手工写出来的",
-    cliLabel: "CLI 用法",
-    playgroundLabel: "Playground",
-    playgroundIntro: "在浏览器里试试 noisemake",
-    inputLabel: "粘贴你的文本",
-    controlsLabel: "噪声设置",
-    outputLabel: "输出文本",
-    frequencyLabel: "频率",
-    seedLabel: "种子",
-    randomLabel: "随机",
-    typesLabel: "噪声类型",
-    languagesLabel: "语言",
-    run: "运行",
-    running: "运行中...",
-    copy: "复制",
-    copied: "已复制",
-    copyError: "复制失败，请手动复制",
-    inputPlaceholder: "在这里粘贴一段文本。",
-    outputPlaceholder: "输出结果会显示在这里。",
-    noChange: "这次没变化。试试调低频率，或者换个种子",
-    frequencyHelper: "数值越高，噪声越少。",
-    seedHelper: "同一种子，同一输出。",
-    frequencyError: "请输入正整数。",
-    typeError: "至少选择一种噪声类型。",
-    languageError: "至少选择一种语言。",
-    footerOpenSource: "开源",
-    languageLabel: "语言",
-    themeLabel: "切换主题",
-    defaultInput:
-      "每到下午三点一刻，城北那间不算大的图书馆都会慢慢换一种节奏。门口的公告栏还是贴着上周的活动海报，借还书台上那只蓝色圆珠笔还是总被人顺手拿走又放回，靠窗的四号座位还是最先坐满，可房间里的空气会一点一点变得更紧、更满，也更安静。先是两个背书包的学生进来，把练习册和水杯平码在长桌上；接着是一位穿深灰外套的老人，照旧去翻当天的报纸；再过几分钟，管理员推着小车从东侧书架走到西侧书架，又因为一本地方志和一本植物图鉴放错了位置，原路折回来。\n\n这里几乎没有显眼的事情发生，正因为没有显眼的事情，人才会注意到那些细小而重复的秩序：复印机在三点二十发出第一声轻响，借书扫码器在三点半以后开始连续地滴两三下，楼梯口那块“饮料请加盖”的提示牌每天都被看见，也几乎每天都被轻轻忽略。儿童区的矮书架前常常有人把书抽出来又塞回去，顺序乱一点，又被下一位读者顺手理齐一点。到了四点，整间图书馆不像一个单纯放书的地方，更像一套被许多人短暂共享的日常安排。",
-    labels: {
-      typo: "错别字",
-      repeat: "口吃",
-      spacing: "空格",
-      punct: "标点",
-    },
-    typeHelpers: {
-      typo: "错别字",
-      repeat: "词语轻微重复",
-      spacing: "词间空格、标点后空格和中英边界空格扰动。",
-      punct: "把全角中文标点变成半角英文标点。",
-    },
-    languageLabels: {
-      zh: "中文",
-      en: "英文",
-    },
-    languageHelpers: {
-      zh: "",
-      en: "",
-    },
-  },
-};
-
 const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat", "spacing", "punct"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
-const HERO_CLI_COMMAND = 'npx noisemake "The quick brown fox jumps over the lazy dog"';
+const HERO_CLI_COMMAND = 'npx noisemake "这是一段测试文本"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
 const PANEL_BASE_CLASSES = "flex min-w-0 flex-col gap-3 p-3 sm:p-4 lg:h-full";
 const PANEL_HEADER_CLASSES = "flex min-h-7 items-center justify-between gap-3";
@@ -211,7 +64,7 @@ const TAG_INDICATOR_BASE_CLASSES =
   "size-2.5 shrink-0 rounded-full border border-muted-foreground/50 opacity-70 transition-all";
 
 export default function PlaygroundApp({ lang }: { lang: UiLang }) {
-  const copy = COPY[lang];
+  const copy = UI_COPY[lang];
   const [input, setInput] = useState(copy.defaultInput);
   const [frequency, setFrequency] = useState("5");
   const [seed, setSeed] = useState("42");
@@ -476,7 +329,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   );
 }
 
-function SiteFooter({ copy }: { copy: Copy }) {
+function SiteFooter({ copy }: { copy: UiCopy }) {
   return (
     <footer className="mt-1 flex flex-col items-start justify-end gap-2 py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center">
       <div className="flex w-full flex-wrap justify-start gap-x-3 gap-y-1 sm:justify-end">
@@ -505,9 +358,9 @@ function HeaderBar({ lang }: { lang: UiLang }) {
         <span>noisemake</span>
       </a>
       <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-2 gap-y-1 sm:justify-end">
-        <LanguageSwitch lang={lang} copy={COPY[lang]} />
+        <LanguageSwitch lang={lang} copy={UI_COPY[lang]} />
         <span className="h-4 w-px bg-border/80" aria-hidden="true" />
-        <ThemeSwitch copy={COPY[lang]} />
+        <ThemeSwitch copy={UI_COPY[lang]} />
       </div>
     </header>
   );
@@ -517,7 +370,7 @@ function Hero({
   copy,
   copyCliCommand,
 }: {
-  copy: Copy;
+  copy: UiCopy;
   copyCliCommand: () => void;
 }) {
   return (
@@ -545,7 +398,7 @@ function CliUsagePanel({
   copy,
   copyCliCommand,
 }: {
-  copy: Copy;
+  copy: UiCopy;
   copyCliCommand: () => void;
 }) {
   return (
@@ -574,7 +427,7 @@ function CliUsagePanel({
   );
 }
 
-function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
+function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: UiCopy }) {
   const [languageOpen, setLanguageOpen] = useState(false);
 
   function storeLang(nextLang: UiLang) {
@@ -622,7 +475,7 @@ function LanguageSwitch({ lang, copy }: { lang: UiLang; copy: Copy }) {
   );
 }
 
-function ThemeSwitch({ copy }: { copy: Copy }) {
+function ThemeSwitch({ copy }: { copy: UiCopy }) {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(() => {
     if (typeof window === "undefined") {
@@ -675,7 +528,7 @@ function InputPanel({
   panelHeight,
   setInput,
 }: {
-  copy: Copy;
+  copy: UiCopy;
   input: string;
   panelHeight: number | null;
   setInput: (value: string) => void;
@@ -722,7 +575,7 @@ function ControlRail({
   run,
   runDisabled,
 }: {
-  copy: Copy;
+  copy: UiCopy;
   panelRef: RefObject<HTMLElement | null>;
   frequency: string;
   frequencyRef: RefObject<HTMLInputElement | null>;
@@ -1048,7 +901,7 @@ function OutputPanel({
   copyOutput,
   copyDisabled,
 }: {
-  copy: Copy;
+  copy: UiCopy;
   state: WorkbenchState;
   output: string;
   segments: Segment[];
