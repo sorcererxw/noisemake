@@ -7,6 +7,7 @@ export type UiCopy = {
   headline: string;
   proof: string;
   cliLabel: string;
+  cliCommand: string;
   tryPlayground: string;
   playgroundLabel: string;
   playgroundIntro: string;
@@ -52,6 +53,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     headline: "Make text less polished",
     proof: "Inject small mistakes so text feels more hand-written",
     cliLabel: "CLI usage",
+    cliCommand: 'npx noisemake "This parser stays stable"',
     tryPlayground: "Try Playground",
     playgroundLabel: "Playground",
     playgroundIntro: "Paste polished text, set deterministic options, and reproduce the same noisy output.",
@@ -121,6 +123,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     headline: "让文本别那么工整",
     proof: "给文本注入一些小错误，让它更像手工写出来的",
     cliLabel: "CLI 用法",
+    cliCommand: 'npx noisemake "这是一段测试文本"',
     tryPlayground: "尝试一下",
     playgroundLabel: "Playground",
     playgroundIntro: "粘贴干净文本，设置确定性选项，复现同一份噪声输出。",

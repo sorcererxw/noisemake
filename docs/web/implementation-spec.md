@@ -131,7 +131,7 @@ English:
 - Proof line: `Same input, same seed, same output.`
 - Framing: `Not an LLM rewrite. Controlled perturbation.`
 - Hero CLI label: `CLI usage`
-- Hero CLI command: `npx noisemake "这是一段测试文本"`
+- Hero CLI command: `npx noisemake "This parser stays stable"`
 - Hero primary action: `Copy CLI command`
 - Hero secondary action: `Try Playground`
 - Playground label: `Playground`
@@ -149,6 +149,7 @@ Chinese:
 - Proof line: `同一输入、同一种子、同一输出。`
 - Framing: `不是 LLM 改写，而是可控扰动。`
 - Hero CLI label: `CLI 用法`
+- Hero CLI command: `npx noisemake "这是一段测试文本"`
 - Hero primary action: `复制 CLI 命令`
 - Hero secondary action: `试试 Playground`
 - Playground label: `Playground`
@@ -306,7 +307,8 @@ Output must appear immediately after Run. Do not hide output behind tabs, drawer
 - Manual language switch persists and navigates correctly.
 - Theme switch supports light, dark, and system, and persists explicit choice.
 - Same input + same seed + same options returns same output after repeated runs.
-- Hero shows exactly one flagless CLI command: `npx noisemake "这是一段测试文本"`.
+- Hero shows exactly one flagless CLI command, localized by route:
+  `/en` uses `npx noisemake "This parser stays stable"` and `/zh` uses `npx noisemake "这是一段测试文本"`.
 - Hero primary action copies the hero CLI command; secondary action moves to the
   `Playground` section.
 - Playground appears directly below the hero and is not presented as a decorative embedded preview.

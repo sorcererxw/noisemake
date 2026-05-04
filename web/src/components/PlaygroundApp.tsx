@@ -40,7 +40,6 @@ type ToastState = string | null;
 
 const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat", "spacing", "punct", "swap"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
-const HERO_CLI_COMMAND = 'npx noisemake "这是一段测试文本"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
 const NPM_URL = "https://www.npmjs.com/package/noisemake";
 const PANEL_BASE_CLASSES = "flex min-w-0 flex-col gap-3 p-3 sm:p-4 lg:h-full";
@@ -269,7 +268,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   }
 
   async function copyCliCommand() {
-    if (await copyTextToClipboard(HERO_CLI_COMMAND)) {
+    if (await copyTextToClipboard(copy.cliCommand)) {
       setToast(copy.copied);
     } else {
       setToast(copy.copyError);
@@ -509,7 +508,7 @@ function CliUsagePanel({
       <pre className="m-0 overflow-x-auto p-4 font-mono text-sm leading-7 text-foreground whitespace-pre-wrap break-words">
         <code>
           <span className="text-muted-foreground select-none" aria-hidden="true">$ </span>
-          {HERO_CLI_COMMAND}
+          {copy.cliCommand}
         </code>
       </pre>
     </aside>
