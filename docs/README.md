@@ -21,6 +21,7 @@ Read these when changing the engine, CLI, options, tests, or package shape:
 
 Read these only for work under [`web/`](../web):
 
+- [Live playground](https://noisemake.xyz): production web surface
 - [docs/web/README.md](web/README.md): reading order for web work
 - [docs/web/plan.md](web/plan.md): web-package scope and boundaries
 - [docs/web/design-system.md](web/design-system.md): visual system and design rules

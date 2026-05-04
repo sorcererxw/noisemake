@@ -29,6 +29,9 @@ src/spans.ts        text span helpers
 src/candidates.ts   candidate selection and mutation application
 src/typo.ts         typo candidate generation
 src/repeat.ts       repetition candidate generation
+src/spacing.ts      whitespace perturbation candidates
+src/punct.ts        punctuation normalization candidates
+src/swap.ts         adjacent word-swap candidates
 src/data/           generated or static data
 ```
 
@@ -38,6 +41,7 @@ src/data/           generated or static data
 test/unit/          pure module tests
 test/cli.test.ts    built CLI behavior
 test/package.test.ts dist package import/require behavior
+test/unit/web-diff-output.test.ts web-side diff helper coverage
 ```
 
 ## Important Boundaries

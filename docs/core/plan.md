@@ -29,20 +29,20 @@ npx noisemake "这个 parser 很 stable" --languages zh,en
 npx noisemake "这个 parser 很 stable" --languages zh
 ```
 
-CLI help draft:
+CLI help shape:
 
 ```text
 Usage:
   noisemake [options] [text...]
 
 Options:
-  --frequency <n>   Average one perturbation per n eligible tokens (default: "200")
-  --seed <seed>     Seed for deterministic output
-  --types <list>    Enabled noise types: typo,repeat,spacing,punct,swap (default: "typo,repeat,spacing,punct,swap")
-  --languages <list> Enabled languages: zh,en (default: zh,en)
-  --file <path>     Read input text from a UTF-8 file
-  --out <path>      Write output text to a UTF-8 file, creating parent directories if needed
-  -h, --help        Show help
+  --frequency <n>    Average one perturbation per n eligible tokens (default: "200")
+  --seed <seed>      Seed for deterministic output
+  --types <list>     Enabled noise types: typo,repeat,spacing,punct,swap (default: "typo,repeat,spacing,punct,swap")
+  --languages <list> Enabled languages: zh,en (default: "zh,en")
+  --file <path>      Read input text from a UTF-8 file
+  --out <path>       Write output text to a UTF-8 file, creating parent directories if needed
+  -h, --help         Show help
 ```
 
 Library:
@@ -61,7 +61,8 @@ const output = noisemake("这是一段测试文本", {
 ## Current Decisions
 
 - Package name: `noisemake`.
-- One npm package, not a monorepo for MVP.
+- The root npm package owns the CLI and library. The repo also contains a `web`
+  workspace package for the browser playground.
 - Root `src/` is the package source.
 - `/web` is a separate app boundary for the playground and should continue to
   consume the root package rather than reimplement the core engine.
@@ -69,8 +70,8 @@ const output = noisemake("这是一段测试文本", {
 - Build output supports both ESM and CJS from the first release.
 - CLI supports positional text argument, stdin, or `--file`.
 - CLI supports `--out` to write transformed text to a file instead of stdout, creating parent directories if needed.
-- CLI supports long flags only in MVP: `--frequency`, `--seed`, `--types`, and `--help`.
-- CLI also supports `--languages zh,en`, `--file <path>`, and `--out <path>`.
+- CLI supports long flags: `--frequency`, `--seed`, `--types`, `--languages`,
+  `--file`, `--out`, and `--help`.
 - Commander also exposes `-h` as an alias for `--help`.
 - If multiple input sources are provided at once, CLI exits non-zero with a clear stderr message.
 - Multiple positional text arguments are joined with a single space.
@@ -78,14 +79,17 @@ const output = noisemake("这是一段测试文本", {
 - `--types` is strictly validated.
 - `types` order does not affect behavior; it is an enabled-type set, not a priority list.
 - `languages` order does not affect behavior; it is an enabled-language set, not a priority list.
-- `typo` supports two MVP strategies:
+- `typo` supports two current strategies:
   - Chinese word/phrase-level IME confusion using a vendored third-party confusion set after license and quality review.
   - English keyboard typo simulation using deterministic local rules.
-- English keyboard typo candidates should prefer content words: ignore short words below length `4`, keep a small built-in ignore set for number words, and preserve the first and last character when materializing edits.
+- English keyboard typo candidates operate on ASCII alphabetic words with length
+  `>= 3`; delete operations require length `>= 4`.
 - Chinese IME typo materialization should use deterministic weighted selection from replacement `score` values, rather than uniform random choice.
 - No runtime data downloads.
 - Core modules stay pure TypeScript and avoid Node-only APIs. Only `src/cli.ts` may use Node runtime APIs.
-- MVP does not expose reports or operation logs, but internally uses `MutationCandidate -> AppliedMutation` so overlap handling, deterministic materialization, and application order stay explicit.
+- The library does not expose reports or operation logs, but internally uses
+  `MutationCandidate -> AppliedMutation` so overlap handling, deterministic
+  materialization, and application order stay explicit.
 - License boundary: project code can be MIT, while vendored LGPL dictionary data and generated data derived from it remain LGPL. Do not present the npm package as pure MIT if LGPL data is bundled.
 
 ## Proposed Structure
@@ -102,6 +106,9 @@ noisemake/
 │   ├── candidates.ts
 │   ├── typo.ts
 │   ├── repeat.ts
+│   ├── spacing.ts
+│   ├── punct.ts
+│   ├── swap.ts
 │   └── data/
 │       ├── zh-ime-confusions.generated.ts
 │       └── en-keyboard.ts
@@ -178,11 +185,31 @@ export function buildRepeatCandidates(text: string, chars: readonly string[]): M
 export function materializeRepeat(
   candidate: Extract<MutationCandidate, { type: "repeat" }>,
 ): AppliedMutation;
+
+// src/spacing.ts
+export function buildSpacingCandidates(
+  chars: readonly string[],
+  languages: ReadonlySet<Language>,
+): MutationCandidate[];
+
+// src/punct.ts
+export function buildPunctCandidates(
+  chars: readonly string[],
+  languages: ReadonlySet<Language>,
+): MutationCandidate[];
+
+// src/swap.ts
+export function buildSwapCandidates(
+  text: string,
+  languages: ReadonlySet<Language>,
+): MutationCandidate[];
 ```
 
-`MutationCandidate` and `AppliedMutation` live in `src/candidates.ts`; `typo.ts` and `repeat.ts` import them. Keep `src/noisemake.ts` as orchestration, not a type dumping ground.
+`MutationCandidate` and `AppliedMutation` live in `src/candidates.ts`;
+strategy modules import them. Keep `src/noisemake.ts` as orchestration, not a
+type dumping ground.
 
-## MVP API
+## Current API
 
 ```ts
 export type NoiseType = "typo" | "repeat" | "spacing" | "punct" | "swap";
@@ -218,7 +245,7 @@ Frequency behavior:
 - If `frequency` is omitted, default to `200`.
 - Each token/range can be perturbed at most once.
 - Type weighting is implemented as an effective probability multiplier, not as a grouped type picker.
-- Initial default type multipliers: `typo = 1.0`, `repeat = 0.2`, `spacing = 0.15`, `punct = 0.12`, `swap = 0.08`.
+- Initial default type multipliers: `typo = 2.0`, `repeat = 0.05`, `spacing = 0.15`, `punct = 0.12`, `swap = 0.08`.
 - `spacing` should cover low-cost whitespace errors that are visibly noisy but still deterministic:
   - English single space -> double space between words.
   - Punctuation-following single space -> double space.
@@ -242,17 +269,17 @@ Seed behavior:
 - If `seed` is provided, the same input plus same options must produce the same output.
 - If `seed` is omitted, generate a random seed so normal CLI usage can vary between runs.
 - String seeds are allowed for named experiments, for example `--seed baseline-zh-v1`.
-- Do not add `--show-seed` in MVP. Research and agent workflows should pass `--seed` explicitly when reproducibility matters.
+- Do not add `--show-seed` in the current CLI. Research and agent workflows should pass `--seed` explicitly when reproducibility matters.
 
 Language strategy:
 - Default `languages = ["zh", "en"]`.
-- Supported MVP values: `zh`, `en`.
+- Supported values: `zh`, `en`.
 - Invalid or empty `languages` fails.
 - Language order does not affect behavior.
 - `languages: ["zh"]` disables English keyboard typo and English repeat candidates.
 - `languages: ["en"]` disables Chinese IME typo and Chinese repeat candidates.
 - Disabled-language spans are skipped, not treated as errors.
-- Internally use a small strategy registry, but do not expose a plugin or custom dictionary API in MVP.
+- Internally use a small strategy registry, but do not expose a plugin or custom dictionary API in the current package.
 
 ## Engine Sketch
 
@@ -269,13 +296,16 @@ normalize seed to uint32
 mulberry32 RNG
     |
     v
-apply typo and repeat perturbations directly
+build candidates for enabled typo, repeat, spacing, punct, and swap strategies
+    |
+    v
+select and materialize non-overlapping mutations
     |
     v
 return transformed text
 ```
 
-MVP does not emit JSON reports or operation logs. Add those later if reportability becomes important.
+The library does not emit JSON reports or operation logs. Add those later if reportability becomes important.
 
 Internal mutation model:
 
@@ -303,6 +333,29 @@ type MutationCandidate =
       end: number;
       token: string;
       separator: "" | " ";
+      weight: number;
+    }
+  | {
+      type: "spacing";
+      start: number;
+      end: number;
+      replacement: "" | " " | "  ";
+      weight: number;
+    }
+  | {
+      type: "punct";
+      start: number;
+      end: number;
+      replacement: string;
+      weight: number;
+    }
+  | {
+      type: "swap";
+      start: number;
+      end: number;
+      firstToken: string;
+      secondToken: string;
+      separator: string;
       weight: number;
     };
 
@@ -379,22 +432,22 @@ interface ZhImeReplacement {
 type ZhImeConfusionMap = Record<string, readonly ZhImeReplacement[]>;
 ```
 
-Keep `ZhImeReplacement` and `ZhImeConfusionMap` internal in MVP. Do not export custom dictionary APIs from `src/index.ts` until the data format has survived real use.
+Keep `ZhImeReplacement` and `ZhImeConfusionMap` internal. Do not export custom dictionary APIs from `src/index.ts` until the data format has survived real use.
 
 Rules:
 - Prefer deriving Chinese IME confusion candidates from an input-method dictionary, such as an LGPL Rime dictionary, instead of hand-authoring a typo table.
 - Keep source dictionary files, source URLs, license text, and transformation notes in the repo.
 - Treat generated confusion maps derived from LGPL dictionary data as LGPL-covered data.
-- Do not use GPL-only dictionary data in MVP.
+- Do not use GPL-only dictionary data.
 - Prefer replacements that are homophones or near-homophones.
 - Prefer replacements that are common enough to look like an input-method mistake.
 - Prefer replacements with at least one shared character or visually similar character when available.
 - Reject low-frequency or low-score candidates. Default threshold: `score >= 0.75`.
 - Do not use rare cold words just because they are homophones.
-- Use longest-match scanning rather than adding a tokenizer dependency in MVP.
+- Use longest-match scanning rather than adding a tokenizer dependency for Chinese typo matching.
 - If multiple sources match at the same position, choose the longest source phrase first.
 - Chinese typo matching runs over continuous Chinese spans, not only over `Intl.Segmenter` token boundaries. This allows confusion entries such as multi-token phrases to match.
-- Chinese typo sources must be at least 2 characters long in MVP. Do not perturb single-character Chinese words by default.
+- Chinese typo sources must be at least 2 characters long. Do not perturb single-character Chinese words by default.
 
 ### English Keyboard Typo
 
@@ -402,11 +455,11 @@ English `typo` simulates mechanical keyboard mistakes only.
 
 English typo data:
 - Use a self-maintained QWERTY adjacency map in `src/data/en-keyboard.ts`.
-- Do not use a common-misspellings dictionary in MVP.
-- Do not add a `keyboardLayout` option in MVP. QWERTY is the only supported layout.
+- Do not use a common-misspellings dictionary.
+- Do not add a `keyboardLayout` option yet. QWERTY is the only supported layout.
 - Future layouts, such as AZERTY or Dvorak, can be added as a separate option later if there is demand.
 
-Supported MVP operations:
+Supported operations:
 - adjacent-key substitution, for example `a` can become nearby QWERTY keys.
 - adjacent character transposition, for example `the` -> `teh`.
 - adjacent-key insertion inside the word, for example `stable` -> `stqable`.
@@ -430,7 +483,7 @@ Rules:
 - Only operate on words with length `>= 3`.
 - Only allow delete operations on words with length `>= 4`.
 - Preserve case where practical.
-- Do not implement semantic confusions like `their/there`, `your/you're`, or `its/it's` in MVP.
+- Do not implement semantic confusions like `their/there`, `your/you're`, or `its/it's`.
 - Do not run English typo logic on Chinese characters, punctuation, emoji, or numbers.
 - Use deterministic RNG for operation choice, position choice, and replacement choice.
 - Mixed-script tokens should be split into Chinese spans and ASCII alphabetic spans before typo candidate generation. Chinese spans use IME confusion; ASCII alphabetic spans use keyboard typo logic.
@@ -440,7 +493,7 @@ Rules:
 
 `repeat` repeats words or short phrases, not arbitrary single Chinese characters.
 
-MVP should use real tokenization for repeat candidates:
+Repeat candidates use real tokenization:
 - Chinese repeat candidates come from tokenizer output, then pass a quality filter.
 - English repeat candidates come from ASCII word spans.
 - Do not repeat punctuation, whitespace, numbers, emoji, or arbitrary single Chinese characters.
@@ -450,15 +503,15 @@ MVP should use real tokenization for repeat candidates:
   - English: `token + " " + token`, preserving the original token text.
 
 Tokenizer decision:
-- Use `Intl.Segmenter` as the default tokenizer for MVP.
-- Do not add a native tokenizer such as jieba in MVP.
+- Use `Intl.Segmenter` as the default tokenizer.
+- Do not add a native tokenizer such as jieba.
 - Validate `Intl.Segmenter` quality with sample Chinese sentences before relying on repeat output quality.
 - If `Intl.Segmenter` is unavailable in a supported runtime, disable Chinese repeat candidates with a clear internal fallback rather than guessing from single characters.
 
 Observed on local Node during planning:
 - `这个方案可以先做 CLI` segments into `这个`, `方案`, `可以`, `先`, `做`, `CLI`.
 - `我觉得这个实现路径比较稳定` segments into `我`, `觉得`, `这个`, `实现`, `路径`, `比较`, `稳定`.
-- `网页版` may segment as `网页`, `版`; acceptable for MVP, but tests should capture this boundary.
+- `网页版` may segment as `网页`, `版`; acceptable for the current implementation, but tests should capture this boundary.
 
 ## Required Tests
 
@@ -471,6 +524,10 @@ test/
 │   ├── rng.test.ts
 │   ├── typo.test.ts
 │   ├── repeat.test.ts
+│   ├── spacing.test.ts
+│   ├── punct.test.ts
+│   ├── swap.test.ts
+│   ├── data.test.ts
 │   └── noisemake.test.ts
 ├── cli.test.ts
 ├── package.test.ts
@@ -489,9 +546,9 @@ Test command split:
     "build": "tsdown",
     "test": "vitest run",
     "test:unit": "vitest run test/unit",
-    "test:dist": "npm run build && vitest run test/cli.test.ts test/package.test.ts",
-    "check": "npm run test:unit && npm run test:dist",
-    "prepublishOnly": "npm run check"
+    "test:dist": "pnpm run build && vitest run test/cli.test.ts test/package.test.ts",
+    "check": "pnpm run test:unit && pnpm run test:dist",
+    "prepublishOnly": "pnpm run check"
   }
 }
 ```
@@ -515,7 +572,7 @@ Unit tests exercise source modules. CLI and package import tests exercise built 
 - Built package can be imported from ESM.
 - Built package can be required from CJS.
 - Vendored Chinese word/phrase confusion-set data has source/license attribution and automated shape validation.
-- English keyboard typo uses a local adjacency map and does not include semantic English confusions such as `their/there` in MVP.
+- English keyboard typo uses a local adjacency map and does not include semantic English confusions such as `their/there`.
 - Runtime-neutral core modules do not import `process`, `fs`, or other Node-only APIs.
 
 Suggested data/license layout:
@@ -602,7 +659,7 @@ for each source word:
 
 Source filtering:
 - Source words only need to pass the base filters: all-Han, length `>= 2`, pinyin present, normalized pinyin present.
-- Do not require a minimum source frequency in MVP.
+- Do not require a minimum source frequency.
 - Candidate quality is controlled by score filtering.
 
 Initial score:
@@ -631,7 +688,7 @@ Do not infer shape similarity unless the selected data source contains reliable 
 
 Do not require shared characters between source and candidate. Shared characters improve score, but high-frequency same-pinyin candidates without shared characters may still pass if their total score is high enough.
 
-Generate the full confusion map from the selected source in MVP. Do not add package-size warnings or hard output-size limits until the first real generation result is inspected.
+Generate the full confusion map from the selected source. Do not add package-size warnings or hard output-size limits until the first real generation result is inspected.
 
 Pinyin normalization:
 - Lowercase.
@@ -647,7 +704,7 @@ Dependencies:
 - TypeScript.
 - Vitest for tests.
 - `tsdown` for build output.
-- No native tokenizer in MVP.
+- No native tokenizer.
 - Commander for CLI parsing. Keep it isolated to `src/cli.ts`; runtime-neutral core modules must not depend on it.
 
 Build strategy:
@@ -678,7 +735,7 @@ Expected package surface:
 }
 ```
 
-## Not In Scope For MVP
+## Not In Scope
 
 - JSON report output.
 - Batch directory processing.
@@ -687,4 +744,3 @@ Expected package surface:
 - Streaming multi-GB corpora.
 - `filler` / discourse marker insertion. Natural placement for words like `其实`, `就是`, `感觉`, and `所以` requires semantic context; random insertion is more likely to look fake than useful.
 - Weighted `--types`, such as `typo:0.8,repeat:0.2`.
-- Independent `packages/*` workspace layout.

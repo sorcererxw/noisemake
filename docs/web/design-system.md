@@ -110,7 +110,7 @@ Dark mode target:
 - **Approach:** Tool-first page with a larger CLI-led hero and the playground directly below it.
 - **First viewport:** Product identity, deterministic proof, CLI usage, and the top edge of the playground. The page may ask for a short scroll before the full playground, but it must not feel like the playground is buried under marketing.
 - **Hero structure:** Brand and page controls in a compact nav row, then a generous hero band with the headline/proof on one side and a real CLI usage panel on the other. The CLI panel is the hero's visual anchor; do not replace it with decorative art.
-- **Playground position:** The current editor/workbench becomes a section named `Playground` below the hero. It stays a real usable tool, not an embedded preview.
+- **Playground position:** The workbench lives in a section named `Playground` below the hero. It stays a real usable tool, not an embedded preview.
 - **Desktop playground grid:** Input pane, compact controls, output pane. Text panes dominate; control rail is narrower.
 - **Mobile order:** Header controls, hero copy, CLI usage, input, controls, Run, output.
 - **Max width:** 1180px for the workbench, centered with 24px page padding.
@@ -138,8 +138,10 @@ Dark mode target:
 ## Copy
 
 - Keep the research/eval framing.
-- English anchor: "Deterministic text noise for evals."
-- Chinese anchor: "给评测用的可复现文本噪声。"
+- English hero headline: "Make text less polished".
+- English hero proof line: "Inject small mistakes so text feels more hand-written".
+- Chinese hero headline: "让文本别那么工整".
+- Chinese hero proof line: "给文本注入一些小错误，让它更像手工写出来的".
 - Chinese product name: "造声".
 - Use "playground", "seed", "frequency", and "same engine as the CLI/package" language.
 - Avoid detector-evasion wording. "Less mechanically polished" is acceptable only when the surrounding copy makes the research/eval use case clear.
@@ -167,10 +169,11 @@ Dark mode target:
 |------|----------|-----------|
 | 2026-04-13 | Use Hugging Face-inspired open research playground direction | User prefers the friendly community demo feel over a colder instrument panel. |
 | 2026-04-13 | Keep workbench-first layout (superseded) | Original direction was to make the product usable immediately; the current direction keeps that intent by placing the playground directly below the larger CLI hero. |
-| 2026-04-13 | Shift to a larger CLI-led hero with the playground below | User wants the hero to carry more structure, teach CLI usage, and demote the current editor into a `Playground` section without becoming a generic landing page. |
+| 2026-04-13 | Shift to a larger CLI-led hero with the playground below | User wants the hero to carry more structure, teach CLI usage, and demote the then-current editor into a `Playground` section without becoming a generic landing page. |
 | 2026-04-13 | Use warm yellow as the primary accent | Matches the open playground direction while avoiding purple SaaS defaults. |
 | 2026-04-13 | Keep JetBrains Mono for deterministic values only | The existing shadcn setup already imports it, but all-mono hurts mixed Chinese/English reading. |
 | 2026-04-13 | Allow one tiny friendly mark near the wordmark | Captures Hugging Face-style warmth without turning the page into a toy. |
 | 2026-04-13 | Use "给评测用的可复现文本噪声。" as the Chinese anchor | User accepted the more natural Chinese phrasing over the stiffer draft. |
 | 2026-04-13 | Choose the noise face mark | User preferred it over the glitch glyph and seed badge variants after previewing all three. |
 | 2026-04-13 | Remove Mixed/Chinese/English playground presets | The input now defaults to a language-matched sample from the current UI locale instead of offering preset example chips. |
+| 2026-05-04 | Align social cards with current hero copy and use PNG images | X does not render SVG `twitter:image`; Open Graph titles now keep the brand plus hero headline. |

@@ -30,11 +30,14 @@ pnpm --dir web run generate-types
 
 ```text
 web/
-  public/        static assets
-  src/pages/     route entrypoints
-  src/components UI and workbench pieces
-  src/lib/       web-only helpers
-  src/styles/    global tokens and styling
+  public/          static assets, including PNG social cards
+  src/pages/       route entrypoints, OG SVG source, and /v1/transform
+  src/components/  UI and workbench pieces
+  src/lib/         web-only helpers, i18n copy, diffing, social SVG renderer
+  src/styles/      global tokens and styling
 ```
 
 The canonical live domain is `https://noisemake.xyz`.
+
+Social card metadata uses static PNG images from `web/public/og/` because X does
+not render SVG `twitter:image` assets.

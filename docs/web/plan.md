@@ -37,11 +37,14 @@ The browser UI is a different surface, not a different engine.
 - Support localized routes at `/zh` and `/en`.
 - Support theme switching and manual language switching.
 - Make CLI and npm package parity obvious in the UI.
+- Serve production metadata and social-card images for `https://noisemake.xyz`.
+- Provide a small `/v1/transform` JSON endpoint that delegates to the root
+  package.
 
 ## What The Web Package Must Not Do
 
 - It must not reimplement the perturbation algorithm.
-- It must not add a server-side transform API just to wrap the package.
+- It must not let `/v1/transform` become a separate algorithm implementation.
 - It must not push UI concerns back into root `src/`.
 - It must not turn into a generic SaaS landing page.
 - It must not change core package behavior just to make highlighting easier.
@@ -63,6 +66,8 @@ In scope for the web package:
 - localized routes
 - deterministic control surface
 - output diff/highlight behavior on the UI side
+- thin JSON transform endpoint
+- Open Graph and X-compatible PNG social cards
 - design system and interaction polish
 - browser-local preferences such as theme and language choice
 

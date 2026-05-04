@@ -92,10 +92,9 @@ Support dark mode using the standard shadcn + Tailwind CSS approach:
 
 ## Suggested Page Shape
 
-Use a CLI-led tool layout. The hero should be larger than the current slim top
-band, but it must still sell the tool by showing real usage, not by behaving like
-a generic SaaS landing page. The current editor/workbench becomes a `Playground`
-section directly below the hero.
+Use a CLI-led tool layout. The hero must sell the tool by showing real usage,
+not by behaving like a generic SaaS landing page. The `Playground` section stays
+directly below the hero.
 
 First-screen hierarchy:
 
@@ -123,7 +122,7 @@ the product from becoming a marketing page with a buried demo.
 
 Hero actions:
 
-- Primary: `Copy CLI command`. This copies the CLI example and confirms
+- Primary: `Copy command`. This copies the CLI example and confirms
   with the same toast style used by output copy.
 - Secondary: `Try Playground`. This scrolls or jumps to the `Playground` section.
 - Do not use generic CTA language such as `Get started`.
@@ -135,9 +134,9 @@ Suggested top-level layout:
 | noise face  noisemake                         zh/en theme    |
 +--------------------------------------------------------------+
 | HERO                                                         |
-| Deterministic text noise for evals.      +----------------+  |
-| Same input, same seed, same output.      | $ npx          |  |
-| Not an LLM rewrite. Controlled noise.    |   noisemake    |  |
+| Make text less polished                  +----------------+  |
+| Inject small mistakes so text feels      | $ npx          |  |
+| more hand-written.                       |   noisemake    |  |
 | Same engine as CLI and package.          |   "..."        |  |
 |                                          +----------------+  |
 +--------------------------------------------------------------+
@@ -175,7 +174,7 @@ Desktop layout:
   the playground if needed.
 - The CLI panel should show exactly one minimal command with no flags. Do not
   include `--seed`, `--frequency`, `--types`, or `--languages` in the hero.
-- The hero action group should place `Copy CLI command` first and `Try Playground`
+- The hero action group should place `Copy command` first and `Try Playground`
   second.
 - Keep input and output as the dominant panes.
 - Keep the control rail narrower than the text panes.
@@ -247,7 +246,7 @@ Interaction states:
 | Controls | No language selected | Inline error in the language group: "Choose at least one language." |
 | Run | Ready | Primary button label: "Run noisemake". |
 | Run | Running | Button label: "Running...", disabled until the current run finishes. |
-| Output | Before first run | Quiet placeholder: "Run noisemake to create a reproducible noisy variant." |
+| Output | Before first run | Quiet placeholder: "Output appears after you run noisemake." |
 | Output | Success | Output text appears in the output pane with changed spans visually highlighted. |
 | Output | No changes | Output pane keeps the input text and shows: "No eligible mutation was selected for this seed and frequency. Try a lower frequency or a different seed." |
 | Output | Stale | Previous output remains visible with a muted stale status until the next successful run. |
@@ -404,18 +403,18 @@ Keyboard and screen reader rules:
 
 ## Copy Direction
 
-English positioning:
+English hero and social positioning:
 
-- "Deterministic text noise for evals."
-- "Same input, same seed, same output."
-- "Not an LLM rewrite. Controlled perturbation."
+- Hero headline: "Make text less polished"
+- Hero proof line: "Inject small mistakes so text feels more hand-written"
+- Open Graph title: "noisemake - Make text less polished"
 
-Chinese positioning:
+Chinese hero and social positioning:
 
-- "给评测用的可复现文本噪声。"
 - Chinese product name: "造声".
-- "同一输入、同一种子、同一输出。"
-- "不是 LLM 改写，而是可控扰动。"
+- Hero headline: "让文本别那么工整"
+- Hero proof line: "给文本注入一些小错误，让它更像手工写出来的"
+- Open Graph title: "造声 - 让文本别那么工整"
 
 Avoid copy that sounds like detector evasion. The product can say it makes text
 less mechanically polished, but the main framing should stay research/eval/tooling.
@@ -445,9 +444,8 @@ Ask the design reviewer to focus on:
 - Saved history.
 - File upload.
 - Batch processing.
-- Server-side API for perturbation.
+- Expanding `/v1/transform` beyond a thin package wrapper.
 - Database or KV storage.
 - Analytics.
-- Actual Cloudflare deployment.
 - Changes to the CLI.
 - Changes to the core `noisemake()` algorithm.

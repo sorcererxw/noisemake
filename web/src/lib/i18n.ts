@@ -199,16 +199,14 @@ export const SEO_COPY: Record<
   }
 > = {
   en: {
-    title: "noisemake - Deterministic Text Noise for AI Evals and CLI",
-    description:
-      "Generate reproducible text perturbations with seeded typos, repeats, word swaps, spacing, and punctuation noise for evals, fixtures, CLI workflows, and research.",
+    title: "noisemake - Make text less polished",
+    description: "Inject small mistakes so text feels more hand-written",
     ogTitle: "noisemake - Make text less polished",
     ogDescription: "Inject small mistakes so text feels more hand-written",
   },
   zh: {
-    title: "造声 - 给评测用的可复现文本噪声",
-    description:
-      "用造声生成可复现的错别字、重复、词序、空格和标点扰动，适合评测、测试夹具、CLI 工作流和文本研究。",
+    title: "造声 - 让文本别那么工整",
+    description: "给文本注入一些小错误，让它更像手工写出来的",
     ogTitle: "造声 - 让文本别那么工整",
     ogDescription: "给文本注入一些小错误，让它更像手工写出来的",
   },

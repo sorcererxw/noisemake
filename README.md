@@ -14,6 +14,8 @@ The current package supports:
 - Adjacent word swaps
 - Light repetition
 
+The browser playground is live at [`https://noisemake.xyz`](https://noisemake.xyz).
+
 ## Quick Start
 
 CLI:
@@ -76,6 +78,7 @@ If you want to understand how the package is shaped:
 
 If you want to work on the web playground:
 
+- [Live web playground](https://noisemake.xyz)
 - [Web docs index](docs/web/README.md)
 - [Web package plan](docs/web/plan.md)
 - [Web design system](docs/web/design-system.md)
