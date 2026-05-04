@@ -18,7 +18,8 @@ export type UiCopy = {
   languagesLabel: string;
   run: string;
   running: string;
-  copy: string;
+  copyCliCommand: string;
+  copyOutput: string;
   copied: string;
   copyError: string;
   inputPlaceholder: string;
@@ -45,26 +46,27 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     proof: "Inject small mistakes so text feels more hand-written",
     cliLabel: "CLI usage",
     playgroundLabel: "Playground",
-    playgroundIntro: "Try noisemake in the browser",
-    inputLabel: "Paste your text",
-    controlsLabel: "Noise settings",
-    outputLabel: "Output text",
-    frequencyLabel: "frequency",
-    seedLabel: "seed",
+    playgroundIntro: "Paste polished text, set deterministic options, and reproduce the same noisy output.",
+    inputLabel: "Paste polished text",
+    controlsLabel: "Set deterministic noise",
+    outputLabel: "Reproducible noisy output",
+    frequencyLabel: "Frequency",
+    seedLabel: "Seed",
     randomLabel: "random",
     typesLabel: "Noise types",
     languagesLabel: "Languages",
-    run: "Run",
+    run: "Run noisemake",
     running: "Running...",
-    copy: "Copy",
+    copyCliCommand: "Copy CLI command",
+    copyOutput: "Copy output",
     copied: "Copied.",
-    copyError: "Could not copy. Please copy it manually.",
-    inputPlaceholder: "Paste some text here.",
-    outputPlaceholder: "Your output will show up here.",
+    copyError: "Could not copy. Select the text manually.",
+    inputPlaceholder: "Paste polished text here.",
+    outputPlaceholder: "Output appears after you run noisemake.",
     noChange:
-      "Nothing changed this time. Try a lower frequency or a different seed.",
-    frequencyHelper: "Higher = less noise.",
-    seedHelper: "Same seed = same output.",
+      "No eligible mutation was selected for this seed and frequency. Try a lower frequency or a different seed.",
+    frequencyHelper: "Higher means less noise.",
+    seedHelper: "Same input + same seed = same output.",
     frequencyError: "Use a positive whole number.",
     typeError: "Choose at least one noise type.",
     languageError: "Choose at least one language.",
@@ -80,9 +82,9 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
       punct: "punct",
     },
     typeHelpers: {
-      typo: "Typos and misspellings.",
+      typo: "IME-style Chinese substitutions and keyboard-like English typos.",
       repeat: "Light word or phrase repetition.",
-      spacing: "Whitespace glitches across words, punctuation, and mixed-script boundaries.",
+      spacing: "Whitespace glitches across words, punctuation, and mixed Chinese-English boundaries.",
       punct: "Normalize full-width Chinese punctuation into ASCII marks.",
     },
     languageLabels: {
@@ -90,8 +92,8 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
       en: "English",
     },
     languageHelpers: {
-      zh: "",
-      en: "",
+      zh: "Apply Chinese strategies.",
+      en: "Apply English strategies.",
     },
   },
   zh: {
@@ -99,25 +101,26 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     proof: "给文本注入一些小错误，让它更像手工写出来的",
     cliLabel: "CLI 用法",
     playgroundLabel: "Playground",
-    playgroundIntro: "在浏览器里试试 noisemake",
-    inputLabel: "粘贴你的文本",
-    controlsLabel: "噪声设置",
-    outputLabel: "输出文本",
+    playgroundIntro: "粘贴干净文本，设置确定性选项，复现同一份噪声输出。",
+    inputLabel: "粘贴待扰动文本",
+    controlsLabel: "设置可复现噪声",
+    outputLabel: "可复现噪声输出",
     frequencyLabel: "频率",
     seedLabel: "种子",
     randomLabel: "随机",
     typesLabel: "噪声类型",
     languagesLabel: "语言",
-    run: "运行",
+    run: "运行 noisemake",
     running: "运行中...",
-    copy: "复制",
-    copied: "已复制",
-    copyError: "复制失败，请手动复制",
-    inputPlaceholder: "在这里粘贴一段文本。",
-    outputPlaceholder: "输出结果会显示在这里。",
-    noChange: "这次没变化。试试调低频率，或者换个种子",
+    copyCliCommand: "复制 CLI 命令",
+    copyOutput: "复制输出",
+    copied: "已复制。",
+    copyError: "复制失败，请手动选择文本。",
+    inputPlaceholder: "在这里粘贴一段待扰动文本。",
+    outputPlaceholder: "运行 noisemake 后会显示输出。",
+    noChange: "这个种子和频率没有选中可用扰动。试试调低频率，或者换个种子。",
     frequencyHelper: "数值越高，噪声越少。",
-    seedHelper: "同一种子，同一输出。",
+    seedHelper: "同一输入 + 同一种子 = 同一输出。",
     frequencyError: "请输入正整数。",
     typeError: "至少选择一种噪声类型。",
     languageError: "至少选择一种语言。",
@@ -133,8 +136,8 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
       punct: "标点",
     },
     typeHelpers: {
-      typo: "错别字",
-      repeat: "词语轻微重复",
+      typo: "中文 IME 式替换和英文键盘式拼写错误。",
+      repeat: "词语或短语的轻微重复。",
       spacing: "词间空格、标点后空格和中英边界空格扰动。",
       punct: "把全角中文标点变成半角英文标点。",
     },
@@ -143,8 +146,8 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
       en: "英文",
     },
     languageHelpers: {
-      zh: "",
-      en: "",
+      zh: "应用中文扰动策略。",
+      en: "应用英文扰动策略。",
     },
   },
 };
@@ -158,22 +161,21 @@ export const SEO_COPY: Record<
     ogDescription: string;
   }
 > = {
-  en: {
-    title: "noisemake - Make text less polished",
-    description:
-      "Generate controlled text perturbations for evals, research, and agent workflows. Same input, same seed, same options, same output.",
-    ogTitle: "noisemake social preview",
-    ogDescription:
-      "Make text less polished. Inject small mistakes so text feels more hand-written.",
-  },
-  zh: {
-    title: "noisemake - 让文本别那么工整",
-    description:
-      "给评测、研究和 agent 工作流生成可控文本扰动。同一输入、同一种子、同一选项，得到同一输出。",
-    ogTitle: "noisemake 社媒预览图",
-    ogDescription: "让文本别那么工整。给文本注入一些小错误，让它更像手工写出来的。",
-  },
+  en: createSeoCopy("en"),
+  zh: createSeoCopy("zh"),
 };
+
+function createSeoCopy(lang: UiLang) {
+  const copy = UI_COPY[lang];
+  const summary = `${copy.headline}. ${copy.proof}.`;
+
+  return {
+    title: `noisemake - ${copy.headline}`,
+    description: summary,
+    ogTitle: `noisemake - ${copy.headline}`,
+    ogDescription: summary,
+  };
+}
 
 export function isUiLang(value: unknown): value is UiLang {
   return value === "zh" || value === "en";

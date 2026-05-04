@@ -410,8 +410,8 @@ function CliUsagePanel({
           type="button"
           variant="ghost"
           size="icon"
-          aria-label={copy.copy}
-          title={copy.copy}
+          aria-label={copy.copyCliCommand}
+          title={copy.copyCliCommand}
           onClick={copyCliCommand}
         >
           <Copy aria-hidden="true" size={14} />
@@ -932,7 +932,7 @@ function OutputPanel({
           onClick={copyOutput}
           disabled={copyDisabled}
         >
-          {copy.copy}
+          {copy.copyOutput}
         </Button>
       </div>
       <div
