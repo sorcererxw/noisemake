@@ -18,6 +18,8 @@ const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://noisemake.
 const canonicalUrl = `${siteUrl}/${lang}`;
 const alternateUrl = lang === "zh" ? `${siteUrl}/en` : `${siteUrl}/zh`;
 const ogImageUrl = `${siteUrl}/og/${lang}.svg`;
+const sourceUrl = "https://github.com/sorcererxw/noisemake";
+const npmUrl = "https://www.npmjs.com/package/noisemake";
 const ogLocale = lang === "zh" ? "zh_CN" : "en_US";
 const alternateLocale = lang === "zh" ? "en_US" : "zh_CN";
 const structuredData = {
@@ -30,6 +32,12 @@ const structuredData = {
   inLanguage: lang,
   description,
   image: ogImageUrl,
+  codeRepository: sourceUrl,
+  programmingLanguage: "TypeScript",
+  softwareVersion: "0.1.0",
+  license: "MIT AND LGPL-3.0-or-later",
+  downloadUrl: npmUrl,
+  isAccessibleForFree: true,
   offers: {
     "@type": "Offer",
     price: "0",
@@ -37,9 +45,9 @@ const structuredData = {
   },
   softwareHelp: {
     "@type": "CreativeWork",
-    url: "https://github.com/sorcererxw/noisemake",
+    url: sourceUrl,
   },
-  sameAs: ["https://github.com/sorcererxw/noisemake"],
+  sameAs: [sourceUrl, npmUrl],
 };
 ---
 

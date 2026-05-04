@@ -6,7 +6,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { ChevronDown, CircleHelp, Copy, Languages, Moon, Sun } from "lucide-react";
+import { ArrowDown, ChevronDown, CircleHelp, Copy, Languages, Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -42,6 +42,7 @@ const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat", "spacing", "punct"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
 const HERO_CLI_COMMAND = 'npx noisemake "这是一段测试文本"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
+const NPM_URL = "https://www.npmjs.com/package/noisemake";
 const PANEL_BASE_CLASSES = "flex min-w-0 flex-col gap-3 p-3 sm:p-4 lg:h-full";
 const PANEL_HEADER_CLASSES = "flex min-h-7 items-center justify-between gap-3";
 const PANEL_TITLE_CLASSES = "text-sm font-semibold leading-5";
@@ -62,6 +63,54 @@ const TAG_BUTTON_BASE_CLASSES =
   "flex h-8 min-w-0 items-center gap-1 rounded-md border px-2 py-1 text-left text-muted-foreground transition-all hover:-translate-y-px";
 const TAG_INDICATOR_BASE_CLASSES =
   "size-2.5 shrink-0 rounded-full border border-muted-foreground/50 opacity-70 transition-all";
+
+async function copyTextToClipboard(text: string) {
+  if (fallbackCopyText(text)) {
+    return true;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function fallbackCopyText(text: string) {
+  const textarea = document.createElement("textarea");
+  const previousActiveElement = document.activeElement instanceof HTMLElement
+    ? document.activeElement
+    : null;
+  const selection = document.getSelection();
+  const previousSelection = selection?.rangeCount
+    ? selection.getRangeAt(0).cloneRange()
+    : null;
+
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "0";
+  textarea.style.left = "-9999px";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+
+  textarea.focus();
+  textarea.select();
+
+  try {
+    return document.execCommand("copy");
+  } catch {
+    return false;
+  } finally {
+    document.body.removeChild(textarea);
+    if (previousSelection) {
+      selection?.removeAllRanges();
+      selection?.addRange(previousSelection);
+    }
+    previousActiveElement?.focus();
+  }
+}
 
 export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   const copy = UI_COPY[lang];
@@ -212,19 +261,17 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
       return;
     }
 
-    try {
-      await navigator.clipboard.writeText(output);
+    if (await copyTextToClipboard(output)) {
       setToast(copy.copied);
-    } catch {
+    } else {
       setToast(copy.copyError);
     }
   }
 
   async function copyCliCommand() {
-    try {
-      await navigator.clipboard.writeText(HERO_CLI_COMMAND);
+    if (await copyTextToClipboard(HERO_CLI_COMMAND)) {
       setToast(copy.copied);
-    } catch {
+    } else {
       setToast(copy.copyError);
     }
   }
@@ -311,6 +358,8 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
           </section>
         </section>
 
+        <ExplainerSection copy={copy} />
+
         <SiteFooter copy={copy} />
       </div>
 
@@ -330,17 +379,25 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
 }
 
 function SiteFooter({ copy }: { copy: UiCopy }) {
+  const footerLinks = [
+    [copy.footerOpenSource, SOURCE_URL],
+    [copy.footerNpm, NPM_URL],
+  ] as const;
+
   return (
     <footer className="mt-1 flex flex-col items-start justify-end gap-2 py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center">
       <div className="flex w-full flex-wrap justify-start gap-x-3 gap-y-1 sm:justify-end">
-        <a
-          className="inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4 decoration-foreground/35 hover:decoration-primary"
-          href={SOURCE_URL}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {copy.footerOpenSource}
-        </a>
+        {footerLinks.map(([label, href]) => (
+          <a
+            key={href}
+            className="inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4 decoration-foreground/35 hover:decoration-primary"
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {label}
+          </a>
+        ))}
       </div>
     </footer>
   );
@@ -388,8 +445,40 @@ function Hero({
         <p className="mt-3 max-w-2xl break-words text-base leading-7 text-muted-foreground sm:text-lg">
           {copy.proof}
         </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Button type="button" size="lg" className="px-3 font-semibold" onClick={copyCliCommand}>
+            <Copy aria-hidden="true" size={16} />
+            {copy.copyCliCommand}
+          </Button>
+          <Button asChild variant="outline" size="lg" className="px-3 font-semibold">
+            <a href="#playground">
+              <ArrowDown aria-hidden="true" size={16} />
+              {copy.tryPlayground}
+            </a>
+          </Button>
+        </div>
       </div>
       <CliUsagePanel copy={copy} copyCliCommand={copyCliCommand} />
+    </section>
+  );
+}
+
+function ExplainerSection({ copy }: { copy: UiCopy }) {
+  return (
+    <section className="grid gap-4 pt-8 pb-6 md:grid-cols-12 md:pt-10 md:pb-8" aria-labelledby="explainer-title">
+      <div className="min-w-0 md:col-span-5">
+        <h2 id="explainer-title" className="font-display text-2xl font-semibold leading-tight">
+          {copy.explainerTitle}
+        </h2>
+        <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">{copy.explainerIntro}</p>
+      </div>
+      <ul className="grid min-w-0 gap-2 text-sm leading-6 text-muted-foreground md:col-span-7 sm:grid-cols-2">
+        {copy.explainerItems.map((item) => (
+          <li key={item} className="border-l border-border pl-3">
+            {item}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -925,14 +1014,16 @@ function OutputPanel({
           {copy.outputLabel}
         </h2>
         <Button
-          className="px-3 text-xs font-semibold"
+          className="size-7 text-muted-foreground hover:text-foreground"
           type="button"
-          variant="outline"
-          size="lg"
+          variant="ghost"
+          size="icon-xs"
+          aria-label={copy.copyOutput}
+          title={copy.copyOutput}
           onClick={copyOutput}
           disabled={copyDisabled}
         >
-          {copy.copyOutput}
+          <Copy aria-hidden="true" size={16} />
         </Button>
       </div>
       <div

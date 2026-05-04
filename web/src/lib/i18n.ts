@@ -6,8 +6,12 @@ export type UiCopy = {
   headline: string;
   proof: string;
   cliLabel: string;
+  tryPlayground: string;
   playgroundLabel: string;
   playgroundIntro: string;
+  explainerTitle: string;
+  explainerIntro: string;
+  explainerItems: string[];
   inputLabel: string;
   controlsLabel: string;
   outputLabel: string;
@@ -31,6 +35,7 @@ export type UiCopy = {
   typeError: string;
   languageError: string;
   footerOpenSource: string;
+  footerNpm: string;
   languageLabel: string;
   themeLabel: string;
   defaultInput: string;
@@ -45,8 +50,18 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     headline: "Make text less polished",
     proof: "Inject small mistakes so text feels more hand-written",
     cliLabel: "CLI usage",
+    tryPlayground: "Try Playground",
     playgroundLabel: "Playground",
     playgroundIntro: "Paste polished text, set deterministic options, and reproduce the same noisy output.",
+    explainerTitle: "Add a little controlled mess",
+    explainerIntro:
+      "Use noisemake when your sample text feels too clean. Pick a seed, choose the kinds of rough edges you want, and get the same result again when you need it.",
+    explainerItems: [
+      "Keep a fixed seed when you want repeatable examples.",
+      "Mix typos, small repeats, spacing slips, and punctuation changes.",
+      "Limit changes to Chinese, English, or both.",
+      "Run it in the browser, from the CLI, or as a package.",
+    ],
     inputLabel: "Paste polished text",
     controlsLabel: "Set deterministic noise",
     outputLabel: "Reproducible noisy output",
@@ -57,7 +72,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     languagesLabel: "Languages",
     run: "Run noisemake",
     running: "Running...",
-    copyCliCommand: "Copy CLI command",
+    copyCliCommand: "Copy command",
     copyOutput: "Copy output",
     copied: "Copied.",
     copyError: "Could not copy. Select the text manually.",
@@ -71,6 +86,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     typeError: "Choose at least one noise type.",
     languageError: "Choose at least one language.",
     footerOpenSource: "Open source",
+    footerNpm: "npm",
     languageLabel: "Language",
     themeLabel: "Toggle theme",
     defaultInput:
@@ -100,24 +116,34 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     headline: "让文本别那么工整",
     proof: "给文本注入一些小错误，让它更像手工写出来的",
     cliLabel: "CLI 用法",
+    tryPlayground: "尝试一下",
     playgroundLabel: "Playground",
     playgroundIntro: "粘贴干净文本，设置确定性选项，复现同一份噪声输出。",
-    inputLabel: "粘贴待扰动文本",
-    controlsLabel: "设置可复现噪声",
-    outputLabel: "可复现噪声输出",
+    explainerTitle: "给文本加一点可控的小瑕疵",
+    explainerIntro:
+      "如果一段文本看起来太干净，可以用 noisemake 加入轻微错字、重复、空格或标点变化。固定种子后，下次还能得到同样结果。",
+    explainerItems: [
+      "固定种子，方便复现和对比。",
+      "按需要混合错别字、重复、空格和标点变化。",
+      "可以只改中文、只改英文，或两种都处理。",
+      "浏览器、CLI 和包里都能用。",
+    ],
+    inputLabel: "原文",
+    controlsLabel: "设置",
+    outputLabel: "输出",
     frequencyLabel: "频率",
     seedLabel: "种子",
     randomLabel: "随机",
     typesLabel: "噪声类型",
     languagesLabel: "语言",
-    run: "运行 noisemake",
+    run: "运行",
     running: "运行中...",
-    copyCliCommand: "复制 CLI 命令",
+    copyCliCommand: "复制命令",
     copyOutput: "复制输出",
     copied: "已复制。",
     copyError: "复制失败，请手动选择文本。",
     inputPlaceholder: "在这里粘贴一段待扰动文本。",
-    outputPlaceholder: "运行 noisemake 后会显示输出。",
+    outputPlaceholder: "运行后会显示输出。",
     noChange: "这个种子和频率没有选中可用扰动。试试调低频率，或者换个种子。",
     frequencyHelper: "数值越高，噪声越少。",
     seedHelper: "同一输入 + 同一种子 = 同一输出。",
@@ -125,6 +151,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     typeError: "至少选择一种噪声类型。",
     languageError: "至少选择一种语言。",
     footerOpenSource: "开源",
+    footerNpm: "npm",
     languageLabel: "语言",
     themeLabel: "切换主题",
     defaultInput:
@@ -161,21 +188,23 @@ export const SEO_COPY: Record<
     ogDescription: string;
   }
 > = {
-  en: createSeoCopy("en"),
-  zh: createSeoCopy("zh"),
+  en: {
+    title: "noisemake - Deterministic Text Noise for AI Evals and CLI",
+    description:
+      "Generate reproducible text perturbations with seeded typos, repeats, spacing, and punctuation noise for evals, fixtures, CLI workflows, and research.",
+    ogTitle: "noisemake - Deterministic Text Noise for AI Evals and CLI",
+    ogDescription:
+      "Generate reproducible text perturbations with seeded typos, repeats, spacing, and punctuation noise for evals, fixtures, CLI workflows, and research.",
+  },
+  zh: {
+    title: "noisemake - 给评测用的可复现文本噪声",
+    description:
+      "用种子生成可复现的错别字、重复、空格和标点扰动，适合评测、测试夹具、CLI 工作流和文本研究。",
+    ogTitle: "noisemake - 给评测用的可复现文本噪声",
+    ogDescription:
+      "用种子生成可复现的错别字、重复、空格和标点扰动，适合评测、测试夹具、CLI 工作流和文本研究。",
+  },
 };
-
-function createSeoCopy(lang: UiLang) {
-  const copy = UI_COPY[lang];
-  const summary = `${copy.headline}. ${copy.proof}.`;
-
-  return {
-    title: `noisemake - ${copy.headline}`,
-    description: summary,
-    ogTitle: `noisemake - ${copy.headline}`,
-    ogDescription: summary,
-  };
-}
 
 export function isUiLang(value: unknown): value is UiLang {
   return value === "zh" || value === "en";
