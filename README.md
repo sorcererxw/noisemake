@@ -11,6 +11,7 @@ The current package supports:
 - English keyboard typos, including insertion-like slips
 - Spacing glitches in English words, after punctuation, and across Chinese-English boundaries
 - Punctuation normalization from full-width Chinese marks to ASCII marks
+- Adjacent word swaps
 - Light repetition
 
 ## Quick Start
@@ -29,7 +30,7 @@ Options:
 ```text
 --frequency <n>     Average one perturbation per n eligible tokens (default: "200")
 --seed <seed>       Seed for deterministic output
---types <list>      Enabled noise types: typo,repeat,spacing,punct (default: "typo,repeat,spacing,punct")
+--types <list>      Enabled noise types: typo,repeat,spacing,punct,swap (default: "typo,repeat,spacing,punct,swap")
 --languages <list>  Enabled languages: zh,en (default: "zh,en")
 --file <path>       Read input text from a UTF-8 file
 --out <path>        Write output text to a UTF-8 file, creating parent directories if needed

@@ -40,6 +40,15 @@ export type MutationCandidate =
       end: number;
       replacement: string;
       weight: number;
+    }
+  | {
+      type: "swap";
+      start: number;
+      end: number;
+      firstToken: string;
+      secondToken: string;
+      separator: string;
+      weight: number;
     };
 
 export interface AppliedMutation {

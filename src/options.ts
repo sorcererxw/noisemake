@@ -1,4 +1,4 @@
-export const NOISE_TYPES = ["typo", "repeat", "spacing", "punct"] as const;
+export const NOISE_TYPES = ["typo", "repeat", "spacing", "punct", "swap"] as const;
 export type NoiseType = (typeof NOISE_TYPES)[number];
 
 export const LANGUAGES = ["zh", "en"] as const;
@@ -20,7 +20,7 @@ export interface NormalizedOptions {
 }
 
 const DEFAULT_FREQUENCY = 200;
-const DEFAULT_TYPES: readonly NoiseType[] = ["typo", "repeat", "spacing", "punct"];
+const DEFAULT_TYPES: readonly NoiseType[] = ["typo", "repeat", "spacing", "punct", "swap"];
 const DEFAULT_LANGUAGES: readonly Language[] = ["zh", "en"];
 
 const TYPE_MULTIPLIERS: Readonly<Record<NoiseType, number>> = {
@@ -28,6 +28,7 @@ const TYPE_MULTIPLIERS: Readonly<Record<NoiseType, number>> = {
   repeat: 0.05,
   spacing: 0.15,
   punct: 0.12,
+  swap: 0.08,
 };
 
 export function normalizeOptions(options: NoisemakeOptions = {}): NormalizedOptions {

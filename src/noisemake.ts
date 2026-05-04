@@ -10,6 +10,7 @@ import { createRng, type Rng } from "./rng.js";
 import { buildPunctCandidates, materializePunct } from "./punct.js";
 import { buildSpacingCandidates, materializeSpacing } from "./spacing.js";
 import { toCodePoints } from "./spans.js";
+import { buildSwapCandidates, materializeSwap } from "./swap.js";
 import {
   buildEnKeyboardTypoCandidates,
   buildZhImeTypoCandidates,
@@ -50,6 +51,10 @@ export function noisemake(text: string, options?: NoisemakeOptions): string {
     candidates.push(...buildPunctCandidates(chars, normalized.languages));
   }
 
+  if (normalized.types.has("swap")) {
+    candidates.push(...buildSwapCandidates(text, normalized.languages));
+  }
+
   const mutations = selectMutations(candidates, normalized, rng, materializeCandidate);
 
   return applyMutations(chars, mutations);
@@ -69,6 +74,10 @@ function materializeCandidate(
 
   if (candidate.type === "punct") {
     return materializePunct(candidate);
+  }
+
+  if (candidate.type === "swap") {
+    return materializeSwap(candidate);
   }
 
   return materializeRepeat(candidate);

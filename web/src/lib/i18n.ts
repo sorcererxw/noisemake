@@ -3,6 +3,7 @@ import type { Language, NoiseType } from "@/lib/transform";
 export type UiLang = "en" | "zh";
 
 export type UiCopy = {
+  brandName: string;
   headline: string;
   proof: string;
   cliLabel: string;
@@ -47,6 +48,7 @@ export type UiCopy = {
 
 export const UI_COPY: Record<UiLang, UiCopy> = {
   en: {
+    brandName: "noisemake",
     headline: "Make text less polished",
     proof: "Inject small mistakes so text feels more hand-written",
     cliLabel: "CLI usage",
@@ -58,7 +60,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
       "Use noisemake when your sample text feels too clean. Pick a seed, choose the kinds of rough edges you want, and get the same result again when you need it.",
     explainerItems: [
       "Keep a fixed seed when you want repeatable examples.",
-      "Mix typos, small repeats, spacing slips, and punctuation changes.",
+      "Mix typos, small repeats, word swaps, spacing slips, and punctuation changes.",
       "Limit changes to Chinese, English, or both.",
       "Run it in the browser, from the CLI, or as a package.",
     ],
@@ -96,12 +98,14 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
       repeat: "repeat",
       spacing: "spacing",
       punct: "punct",
+      swap: "swap",
     },
     typeHelpers: {
       typo: "IME-style Chinese substitutions and keyboard-like English typos.",
       repeat: "Light word or phrase repetition.",
       spacing: "Whitespace glitches across words, punctuation, and mixed Chinese-English boundaries.",
       punct: "Normalize full-width Chinese punctuation into ASCII marks.",
+      swap: "Swap two adjacent words without crossing punctuation.",
     },
     languageLabels: {
       zh: "Chinese",
@@ -113,6 +117,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     },
   },
   zh: {
+    brandName: "造声",
     headline: "让文本别那么工整",
     proof: "给文本注入一些小错误，让它更像手工写出来的",
     cliLabel: "CLI 用法",
@@ -121,10 +126,10 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     playgroundIntro: "粘贴干净文本，设置确定性选项，复现同一份噪声输出。",
     explainerTitle: "给文本加一点可控的小瑕疵",
     explainerIntro:
-      "如果一段文本看起来太干净，可以用 noisemake 加入轻微错字、重复、空格或标点变化。固定种子后，下次还能得到同样结果。",
+      "如果一段文本看起来太干净，可以用造声加入轻微错字、重复、词序、空格或标点变化。固定种子后，下次还能得到同样结果。",
     explainerItems: [
       "固定种子，方便复现和对比。",
-      "按需要混合错别字、重复、空格和标点变化。",
+      "按需要混合错别字、重复、词序、空格和标点变化。",
       "可以只改中文、只改英文，或两种都处理。",
       "浏览器、CLI 和包里都能用。",
     ],
@@ -161,12 +166,14 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
       repeat: "口吃",
       spacing: "空格",
       punct: "标点",
+      swap: "词序",
     },
     typeHelpers: {
       typo: "中文 IME 式替换和英文键盘式拼写错误。",
       repeat: "词语或短语的轻微重复。",
       spacing: "词间空格、标点后空格和中英边界空格扰动。",
       punct: "把全角中文标点变成半角英文标点。",
+      swap: "把两个相邻词的位置对调，不跨标点。",
     },
     languageLabels: {
       zh: "中文",
@@ -191,18 +198,18 @@ export const SEO_COPY: Record<
   en: {
     title: "noisemake - Deterministic Text Noise for AI Evals and CLI",
     description:
-      "Generate reproducible text perturbations with seeded typos, repeats, spacing, and punctuation noise for evals, fixtures, CLI workflows, and research.",
+      "Generate reproducible text perturbations with seeded typos, repeats, word swaps, spacing, and punctuation noise for evals, fixtures, CLI workflows, and research.",
     ogTitle: "noisemake - Deterministic Text Noise for AI Evals and CLI",
     ogDescription:
-      "Generate reproducible text perturbations with seeded typos, repeats, spacing, and punctuation noise for evals, fixtures, CLI workflows, and research.",
+      "Generate reproducible text perturbations with seeded typos, repeats, word swaps, spacing, and punctuation noise for evals, fixtures, CLI workflows, and research.",
   },
   zh: {
-    title: "noisemake - 给评测用的可复现文本噪声",
+    title: "造声 - 给评测用的可复现文本噪声",
     description:
-      "用种子生成可复现的错别字、重复、空格和标点扰动，适合评测、测试夹具、CLI 工作流和文本研究。",
-    ogTitle: "noisemake - 给评测用的可复现文本噪声",
+      "用造声生成可复现的错别字、重复、词序、空格和标点扰动，适合评测、测试夹具、CLI 工作流和文本研究。",
+    ogTitle: "造声 - 给评测用的可复现文本噪声",
     ogDescription:
-      "用种子生成可复现的错别字、重复、空格和标点扰动，适合评测、测试夹具、CLI 工作流和文本研究。",
+      "用造声生成可复现的错别字、重复、词序、空格和标点扰动，适合评测、测试夹具、CLI 工作流和文本研究。",
   },
 };
 

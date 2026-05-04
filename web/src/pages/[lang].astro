@@ -1,6 +1,6 @@
 ---
 import PlaygroundApp from "@/components/PlaygroundApp";
-import { SEO_COPY, isUiLang } from "@/lib/i18n";
+import { SEO_COPY, UI_COPY, isUiLang } from "@/lib/i18n";
 import "../styles/global.css";
 
 export const prerender = false;
@@ -12,6 +12,7 @@ if (!isUiLang(lang)) {
 }
 
 const seoCopy = SEO_COPY[lang];
+const appName = UI_COPY[lang].brandName;
 const title = seoCopy.title;
 const description = seoCopy.description;
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://noisemake.xyz";
@@ -25,7 +26,7 @@ const alternateLocale = lang === "zh" ? "en_US" : "zh_CN";
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "noisemake",
+  name: appName,
   url: canonicalUrl,
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Web",
@@ -61,7 +62,7 @@ const structuredData = {
     <meta name="description" content={description} />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <meta name="theme-color" content="#f9c74f" />
-    <meta name="application-name" content="noisemake" />
+    <meta name="application-name" content={appName} />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang={lang} href={canonicalUrl} />
     <link rel="alternate" hreflang={lang === "zh" ? "en" : "zh"} href={alternateUrl} />
@@ -70,7 +71,7 @@ const structuredData = {
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:site_name" content="noisemake" />
+    <meta property="og:site_name" content={appName} />
     <meta property="og:locale" content={ogLocale} />
     <meta property="og:locale:alternate" content={alternateLocale} />
     <meta property="og:image" content={ogImageUrl} />

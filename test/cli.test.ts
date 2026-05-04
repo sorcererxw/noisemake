@@ -153,7 +153,7 @@ describe("CLI dist output", () => {
     expect(result.stdout).toContain("Usage: noisemake [options] [text...]");
     expect(result.stdout).toContain("--file <path>");
     expect(result.stdout).toContain("--out <path>");
-    expect(result.stdout).toContain("typo,repeat,spacing,punct");
+    expect(result.stdout).toContain("typo,repeat,spacing,punct,swap");
     expect(result.stdout).toContain("-h, --help");
     expect(result.stdout).toContain("Use exactly one input source");
     expect(result.stdout).toContain('noisemake "text" --seed 42');

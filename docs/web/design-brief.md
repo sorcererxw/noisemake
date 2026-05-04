@@ -21,10 +21,11 @@ reproducible imperfections into text. It supports:
 - Chinese IME-style typo substitutions.
 - English keyboard typo simulation.
 - Light repetition.
+- Adjacent word swaps.
 - Deterministic output with `seed`.
 - Noise density with `frequency`.
 - Language filters: `zh`, `en`.
-- Noise type filters: `typo`, `repeat`, `spacing`, `punct`.
+- Noise type filters: `typo`, `repeat`, `spacing`, `punct`, `swap`.
 
 The first users are researchers and agent workflows that need reproducible noisy
 text fixtures, not vague LLM rewriting.
@@ -198,7 +199,7 @@ The playground should include:
 - Output textarea.
 - Frequency input.
 - Seed input.
-- Noise type checkboxes: `typo`, `repeat`, `spacing`, `punct`.
+- Noise type checkboxes: `typo`, `repeat`, `spacing`, `punct`, `swap`.
 - Language checkboxes: `zh`, `en`.
 - Run button.
 - Copy output button.
@@ -217,7 +218,7 @@ Default controls:
 - `input`: prefilled with a language-matched sample for the current UI route.
 - `seed`: text input, default `42` so first-time users immediately see
   reproducible behavior.
-- Noise types: `typo`, `repeat`, `spacing`, and `punct` all checked by default; at least one must
+- Noise types: `typo`, `repeat`, `spacing`, `punct`, and `swap` all checked by default; at least one must
   remain checked.
 - Languages: `zh` and `en` both checked by default; at least one must remain
   checked.
@@ -230,6 +231,7 @@ Control helper copy:
 - `repeat`: "Light word or phrase repetition."
 - `spacing`: "Whitespace glitches across words, punctuation, and mixed Chinese-English boundaries."
 - `punct`: "Normalize full-width Chinese punctuation into ASCII marks."
+- `swap`: "Swap two adjacent words without crossing punctuation."
 - `zh`: "Apply Chinese strategies."
 - `en`: "Apply English strategies."
 
@@ -311,7 +313,7 @@ SaaS landing page.
 
 Brand mark:
 
-- Include one tiny friendly `noise face` near the wordmark.
+- Include one tiny friendly `noise face` near the localized wordmark: `noisemake` in English, `造声` in Chinese.
 - Shape: small rounded square, two offset dot eyes, slightly jagged mouth.
 - Do not use emoji as decoration.
 - Do not add a large mascot, illustration, or hero character.
@@ -410,6 +412,7 @@ English positioning:
 Chinese positioning:
 
 - "给评测用的可复现文本噪声。"
+- Chinese product name: "造声".
 - "同一输入、同一种子、同一输出。"
 - "不是 LLM 改写，而是可控扰动。"
 

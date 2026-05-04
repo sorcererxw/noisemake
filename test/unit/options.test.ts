@@ -6,7 +6,7 @@ describe("normalizeOptions", () => {
     const options = normalizeOptions();
 
     expect(options.frequency).toBe(200);
-    expect([...options.types]).toEqual(["typo", "repeat", "spacing", "punct"]);
+    expect([...options.types]).toEqual(["typo", "repeat", "spacing", "punct", "swap"]);
     expect([...options.languages]).toEqual(["zh", "en"]);
   });
 
@@ -31,6 +31,9 @@ describe("normalizeOptions", () => {
       options.typeMultipliers.repeat,
     );
     expect(options.typeMultipliers.punct).toBeGreaterThan(
+      options.typeMultipliers.repeat,
+    );
+    expect(options.typeMultipliers.swap).toBeGreaterThan(
       options.typeMultipliers.repeat,
     );
   });

@@ -18,7 +18,7 @@ The target is "open playground with taste," not a Hugging Face clone. Keep the f
 
 ## Brand Mark
 
-- Use a tiny friendly `noise face` near the `noisemake` wordmark.
+- Use a tiny friendly `noise face` near the localized wordmark: `noisemake` in English, `造声` in Chinese.
 - The mark should be simple enough to work at 16-24px.
 - It may suggest perturbation, fuzz, or a slightly imperfect text signal.
 - Do not use emoji as the mark.
@@ -121,7 +121,7 @@ Dark mode target:
 
 - **Hero CLI panel:** Use a compact terminal-like code surface that shows actual commands, such as `npx noisemake "..." --seed 42 --frequency 200`, and a short reproducibility note. This surface earns its frame because it teaches usage.
 - **Buttons:** Run is the primary warm-yellow action. Copy is secondary.
-- **Checkboxes:** Prefer shadcn checkbox or toggle-like chips for `typo`, `repeat`, `spacing`, `punct`, `zh`, and `en`. Active state uses the yellow accent, not blue or purple.
+- **Checkboxes:** Prefer shadcn checkbox or toggle-like chips for `typo`, `repeat`, `spacing`, `punct`, `swap`, `zh`, and `en`. Active state uses the yellow accent, not blue or purple.
 - **Textareas:** Large, calm, and resizable only if it does not break the workbench. Use clear labels above each pane.
 - **Output highlights:** Changed spans should use `--changed-bg` and `--changed-border`. This is the page's main visual event.
 - **Toasts:** Use for copy success/failure only. Do not use toasts for validation that should live next to the field.
@@ -140,6 +140,7 @@ Dark mode target:
 - Keep the research/eval framing.
 - English anchor: "Deterministic text noise for evals."
 - Chinese anchor: "给评测用的可复现文本噪声。"
+- Chinese product name: "造声".
 - Use "playground", "seed", "frequency", and "same engine as the CLI/package" language.
 - Avoid detector-evasion wording. "Less mechanically polished" is acceptable only when the surrounding copy makes the research/eval use case clear.
 

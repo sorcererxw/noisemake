@@ -38,7 +38,7 @@ type ThemeMode = "light" | "dark";
 type WorkbenchState = "idle" | "dirty" | "invalid" | "running" | "success" | "no-change";
 type ToastState = string | null;
 
-const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat", "spacing", "punct"];
+const DEFAULT_TYPES: NoiseType[] = ["typo", "repeat", "spacing", "punct", "swap"];
 const DEFAULT_LANGUAGES: Language[] = ["zh", "en"];
 const HERO_CLI_COMMAND = 'npx noisemake "这是一段测试文本"';
 const SOURCE_URL = "https://github.com/sorcererxw/noisemake";
@@ -284,7 +284,7 @@ export default function PlaygroundApp({ lang }: { lang: UiLang }) {
   return (
     <main className="min-h-screen px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
-        <HeaderBar lang={lang} />
+        <HeaderBar lang={lang} copy={copy} />
         <Hero copy={copy} copyCliCommand={copyCliCommand} />
 
         <section
@@ -403,21 +403,21 @@ function SiteFooter({ copy }: { copy: UiCopy }) {
   );
 }
 
-function HeaderBar({ lang }: { lang: UiLang }) {
+function HeaderBar({ lang, copy }: { lang: UiLang; copy: UiCopy }) {
   return (
     <header className="flex flex-col items-start justify-between gap-4 pt-4 pb-2 sm:flex-row sm:items-center">
       <a
         className="inline-flex items-center gap-2 font-display text-xl font-semibold text-foreground no-underline"
         href={`/${lang}`}
-        aria-label="noisemake"
+        aria-label={copy.brandName}
       >
         <img className="block size-6 shrink-0" src="/noise-face.svg" alt="" width="24" height="24" />
-        <span>noisemake</span>
+        <span>{copy.brandName}</span>
       </a>
       <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-2 gap-y-1 sm:justify-end">
-        <LanguageSwitch lang={lang} copy={UI_COPY[lang]} />
+        <LanguageSwitch lang={lang} copy={copy} />
         <span className="h-4 w-px bg-border/80" aria-hidden="true" />
-        <ThemeSwitch copy={UI_COPY[lang]} />
+        <ThemeSwitch copy={copy} />
       </div>
     </header>
   );
@@ -757,7 +757,7 @@ function ControlRail({
           legend={copy.typesLabel}
           error={typeError}
           showValue={false}
-          values={["typo", "repeat", "spacing", "punct"] as const}
+          values={["typo", "repeat", "spacing", "punct", "swap"] as const}
           selectedValues={types}
           labels={copy.labels}
           helpers={copy.typeHelpers}

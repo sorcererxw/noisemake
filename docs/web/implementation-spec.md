@@ -121,7 +121,7 @@ Create a small SVG asset:
 - Details: two offset dot eyes, slightly jagged mouth.
 - No emoji.
 - No large mascot or hero character.
-- Use near the `noisemake` wordmark only.
+- Use near the localized wordmark only: `noisemake` in English, `造声` in Chinese.
 
 ## Copy
 
@@ -144,6 +144,7 @@ English:
 
 Chinese:
 
+- Brand name: `造声`
 - Headline: `给评测用的可复现文本噪声。`
 - Proof line: `同一输入、同一种子、同一输出。`
 - Framing: `不是 LLM 改写，而是可控扰动。`
@@ -161,7 +162,7 @@ Default values:
 - `input`: prefill with a realistic sample that matches the current UI language.
 - `frequency`: `5`
 - `seed`: `42`
-- `types`: `["typo", "repeat", "spacing", "punct"]`
+- `types`: `["typo", "repeat", "spacing", "punct", "swap"]`
 - `languages`: `["zh", "en"]`
 
 Control behavior:
@@ -186,6 +187,7 @@ Helper copy:
 - `repeat`: `Light word or phrase repetition.`
 - `spacing`: `Whitespace glitches across words, punctuation, and mixed Chinese-English boundaries.`
 - `punct`: `Normalize full-width Chinese punctuation into ASCII marks.`
+- `swap`: `Swap two adjacent words without crossing punctuation.`
 - `zh`: `Apply Chinese strategies.`
 - `en`: `Apply English strategies.`
 

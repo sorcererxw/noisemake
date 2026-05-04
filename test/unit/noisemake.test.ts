@@ -166,4 +166,23 @@ describe("noisemake", () => {
     expect(left).toBe(right);
     expect(left).not.toBe(text);
   });
+
+  it("can produce deterministic adjacent word swaps", () => {
+    const text = "alpha beta gamma delta ".repeat(80);
+    const left = noisemake(text, {
+      frequency: 1,
+      seed: "swap-en",
+      types: ["swap"],
+      languages: ["en"],
+    });
+    const right = noisemake(text, {
+      frequency: 1,
+      seed: "swap-en",
+      types: ["swap"],
+      languages: ["en"],
+    });
+
+    expect(left).toBe(right);
+    expect(left).not.toBe(text);
+  });
 });
