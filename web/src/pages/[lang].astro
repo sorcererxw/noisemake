@@ -15,6 +15,8 @@ const seoCopy = SEO_COPY[lang];
 const appName = UI_COPY[lang].brandName;
 const title = seoCopy.title;
 const description = seoCopy.description;
+const socialTitle = seoCopy.ogTitle;
+const socialDescription = seoCopy.ogDescription;
 const siteUrl = Astro.site?.toString().replace(/\/$/, "") ?? "https://noisemake.xyz";
 const canonicalUrl = `${siteUrl}/${lang}`;
 const alternateUrl = lang === "zh" ? `${siteUrl}/en` : `${siteUrl}/zh`;
@@ -67,8 +69,8 @@ const structuredData = {
     <link rel="alternate" hreflang={lang} href={canonicalUrl} />
     <link rel="alternate" hreflang={lang === "zh" ? "en" : "zh"} href={alternateUrl} />
     <link rel="alternate" hreflang="x-default" href={`${siteUrl}/en`} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content={appName} />
@@ -79,12 +81,12 @@ const structuredData = {
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={title} />
+    <meta property="og:image:alt" content={socialTitle} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={socialDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content={title} />
+    <meta name="twitter:image:alt" content={socialTitle} />
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
     <title>{title}</title>
     <script is:inline>
