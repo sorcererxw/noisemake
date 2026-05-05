@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import { Command, CommanderError } from "commander";
+import { realpathSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { noisemake } from "./index.js";
 import type { Language, NoiseType } from "./options.js";
 
@@ -12,6 +14,13 @@ type CliOptions = {
   languages?: string;
   file?: string;
   out?: string;
+};
+
+type NpmExecTtyLineBreakInput = {
+  output: string;
+  stdoutIsTTY: boolean;
+  stderrIsTTY: boolean;
+  env: Pick<NodeJS.ProcessEnv, "npm_command" | "npm_execpath">;
 };
 
 async function main(argv: readonly string[]): Promise<number> {
@@ -103,7 +112,7 @@ Examples:
     });
 
     if (options.out === undefined) {
-      process.stdout.write(output);
+      writeCliOutput(output);
     } else {
       await writeTextFile(options.out, output);
     }
@@ -113,6 +122,37 @@ Examples:
     process.stderr.write(`error: ${getErrorMessage(error)}\n`);
     return 1;
   }
+}
+
+function writeCliOutput(output: string): void {
+  process.stdout.write(output);
+
+  if (
+    needsNpmExecTtyLineBreak({
+      output,
+      stdoutIsTTY: process.stdout.isTTY === true,
+      stderrIsTTY: process.stderr.isTTY === true,
+      env: process.env,
+    })
+  ) {
+    process.stderr.write("\n");
+  }
+}
+
+export function needsNpmExecTtyLineBreak({
+  output,
+  stdoutIsTTY,
+  stderrIsTTY,
+  env,
+}: NpmExecTtyLineBreakInput): boolean {
+  return (
+    output !== "" &&
+    !output.endsWith("\n") &&
+    stdoutIsTTY &&
+    stderrIsTTY &&
+    env.npm_command === "exec" &&
+    env.npm_execpath !== undefined
+  );
 }
 
 function parseFrequency(value: string | undefined): number {
@@ -170,6 +210,20 @@ function getErrorMessage(error: unknown): string {
   return String(error);
 }
 
-main(process.argv.slice(2)).then((exitCode) => {
-  process.exitCode = exitCode;
-});
+function isDirectCliExecution(argvEntry: string | undefined): boolean {
+  if (argvEntry === undefined) {
+    return false;
+  }
+
+  try {
+    return realpathSync(argvEntry) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectCliExecution(process.argv[1])) {
+  main(process.argv.slice(2)).then((exitCode) => {
+    process.exitCode = exitCode;
+  });
+}

@@ -1,8 +1,9 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { needsNpmExecTtyLineBreak } from "../src/cli.js";
 
 const CLI = "dist/cli.js";
 
@@ -166,6 +167,55 @@ describe("CLI dist output", () => {
     expect(result.stderr).toBe("");
     expect(result.stdout).toContain("Usage: noisemake [options] [text...]");
     expect(result.stdout).toContain("-h, --help");
+  });
+
+  it("runs when invoked through an installed-package bin symlink", () => {
+    const tempDir = mkdtempSync(join(tmpdir(), "noisemake-bin-"));
+    const binPath = join(tempDir, "noisemake");
+
+    symlinkSync(resolve(CLI), binPath);
+
+    const result = spawnSync(binPath, ["短文本", "--frequency", "1000"], {
+      encoding: "utf8",
+    });
+
+    expect(result.status).toBe(0);
+    expect(result.stderr).toBe("");
+    expect(result.stdout).toBe("短文本");
+  });
+
+  it("keeps interactive npx output visible without changing stdout bytes", () => {
+    const env = {
+      npm_command: "exec",
+      npm_execpath: "/opt/homebrew/lib/node_modules/npm/bin/npm-cli.js",
+    };
+
+    expect(
+      needsNpmExecTtyLineBreak({
+        output: "这是一段测试文本",
+        stdoutIsTTY: true,
+        stderrIsTTY: true,
+        env,
+      }),
+    ).toBe(true);
+
+    expect(
+      needsNpmExecTtyLineBreak({
+        output: "这是一段测试文本\n",
+        stdoutIsTTY: true,
+        stderrIsTTY: true,
+        env,
+      }),
+    ).toBe(false);
+
+    expect(
+      needsNpmExecTtyLineBreak({
+        output: "这是一段测试文本",
+        stdoutIsTTY: false,
+        stderrIsTTY: true,
+        env,
+      }),
+    ).toBe(false);
   });
 });
 

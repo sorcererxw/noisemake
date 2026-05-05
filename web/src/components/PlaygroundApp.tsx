@@ -53,9 +53,9 @@ const CONTROL_INPUT_CLASSES =
   "h-11 w-full rounded-lg border border-input bg-card px-3 text-foreground transition-colors outline-none";
 const MONO_CONTROL_INPUT_CLASSES = `${CONTROL_INPUT_CLASSES} font-mono`;
 const SURFACE_TEXTAREA_CLASSES =
-  "min-h-64 max-h-96 flex-1 resize-none overflow-y-auto rounded-lg border border-input bg-card p-4 leading-7 text-foreground transition-colors outline-none md:min-h-80 lg:min-h-0 lg:max-h-none";
+  "simple-scrollbar min-h-64 max-h-96 flex-1 resize-none overflow-y-auto rounded-lg border border-input bg-card p-4 leading-7 text-foreground transition-colors outline-none md:min-h-80 lg:min-h-0 lg:max-h-none";
 const OUTPUT_REGION_CLASSES =
-  "min-h-64 max-h-96 flex-1 overflow-y-auto rounded-lg border border-input bg-muted/40 p-4 leading-7 text-foreground whitespace-pre-wrap md:min-h-80 lg:min-h-0 lg:max-h-none";
+  "simple-scrollbar min-h-64 max-h-96 flex-1 overflow-y-auto rounded-lg border border-input bg-muted/40 p-4 leading-7 text-foreground whitespace-pre-wrap md:min-h-80 lg:min-h-0 lg:max-h-none";
 const TAG_INPUT_CLASSES =
   "flex min-h-10 flex-wrap gap-1.5 rounded-lg border border-input bg-card p-1.5 transition-colors";
 const TAG_BUTTON_BASE_CLASSES =
@@ -404,16 +404,16 @@ function SiteFooter({ copy }: { copy: UiCopy }) {
 
 function HeaderBar({ lang, copy }: { lang: UiLang; copy: UiCopy }) {
   return (
-    <header className="flex flex-col items-start justify-between gap-4 pt-4 pb-2 sm:flex-row sm:items-center">
+    <header className="flex items-center justify-between gap-3 pt-4 pb-2">
       <a
-        className="inline-flex items-center gap-2 font-display text-xl font-semibold text-foreground no-underline"
+        className="inline-flex min-w-0 items-center gap-2 font-display text-xl font-semibold text-foreground no-underline"
         href={`/${lang}`}
         aria-label={copy.brandName}
       >
         <img className="block size-6 shrink-0" src="/noise-face.svg" alt="" width="24" height="24" />
-        <span>{copy.brandName}</span>
+        <span className="truncate">{copy.brandName}</span>
       </a>
-      <div className="flex min-w-0 flex-wrap items-center justify-start gap-x-2 gap-y-1 sm:justify-end">
+      <div className="ml-auto flex shrink-0 items-center justify-end gap-x-2 gap-y-1">
         <LanguageSwitch lang={lang} copy={copy} />
         <span className="h-4 w-px bg-border/80" aria-hidden="true" />
         <ThemeSwitch copy={copy} />
@@ -593,7 +593,7 @@ function ThemeSwitch({ copy }: { copy: UiCopy }) {
   return (
     <div className="inline-flex items-center justify-center">
       <Button
-        className="text-muted-foreground aria-pressed:text-foreground"
+        className="text-muted-foreground"
         type="button"
         variant="ghost"
         size="icon"
