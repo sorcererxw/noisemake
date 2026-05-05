@@ -63,14 +63,14 @@ English:
 - Brand: `noisemake`
 - Headline: `Make text less polished`
 - Proof line: `Inject small mistakes so text feels more hand-written`
-- CLI command: `npx noisemake "This parser stays stable"`
+- CLI command: `npx -y noisemake "This parser stays stable"`
 
 Chinese:
 
 - Brand: `造声`
 - Headline: `让文本别那么工整`
 - Proof line: `给文本注入一些小错误，让它更像手工写出来的`
-- CLI command: `npx noisemake "这是一段测试文本"`
+- CLI command: `npx -y noisemake "这是一段测试文本"`
 
 SEO page titles and descriptions may stay more search-oriented. Open Graph and
 Twitter card titles must keep the brand plus the hero headline:

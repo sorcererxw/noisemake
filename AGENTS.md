@@ -227,6 +227,20 @@ If you cannot run a check, report exactly why and what you did instead.
 - Default to ASCII for new text unless the file already needs Chinese examples or
   user-facing Chinese copy.
 
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in GitHub Issues for `sorcererxw/noisemake`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+This repo uses the default triage label vocabulary. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This repo uses a single-context domain docs layout. See `docs/agents/domain.md`.
+
 ## When In Doubt
 
 Choose the path that best preserves deterministic research tooling:

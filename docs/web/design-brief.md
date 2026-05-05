@@ -109,12 +109,12 @@ clear CLI code surface. It should not use a stock illustration, decorative blob,
 or feature-card grid. The hero earns its size by teaching:
 
 ```bash
-npx noisemake "This parser stays stable"
+npx -y noisemake "This parser stays stable"
 ```
 
-Keep the hero CLI example to one minimal command without flags. Localize the
-sample text by route: English on `/en`, Chinese on `/zh`. Detailed options belong
-in GitHub docs and `noisemake --help`, not in the hero.
+Keep the hero CLI example to one minimal command without `noisemake` options.
+Localize the sample text by route: English on `/en`, Chinese on `/zh`. Detailed
+options belong in GitHub docs and `noisemake --help`, not in the hero.
 
 The playground can sit just below the fold on small screens, but desktop should
 show at least its section label or top border in the first viewport. This keeps
