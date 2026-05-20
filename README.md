@@ -1,5 +1,9 @@
 # noisemake
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sorcererxw/noisemake/main/web/public/logo.png" alt="noisemake logo" width="120" />
+</p>
+
 `noisemake` injects controlled, reproducible imperfections into text.
 
 It is a TypeScript CLI and npm library for deterministic text perturbation, not an
