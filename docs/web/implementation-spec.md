@@ -89,8 +89,9 @@ to PNG files:
 - `web/public/og/zh.png`
 
 Both images are `1200x630` and should visually match the current hero headline
-and proof line. The SVG source renderer lives in `web/src/lib/og-image.ts` and is
-also served by `web/src/pages/og/[lang].svg.ts` for browser/debug use.
+and proof line. They should use `web/public/logo.png` as the product mark. The
+SVG source renderer lives in `web/src/lib/og-image.ts` and is also served by
+`web/src/pages/og/[lang].svg.ts` for browser/debug use.
 
 When hero or social copy changes, update these together:
 

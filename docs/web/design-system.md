@@ -18,8 +18,8 @@ The target is "open playground with taste," not a Hugging Face clone. Keep the f
 
 ## Brand Mark
 
-- Use a tiny friendly `noise face` near the localized wordmark: `noisemake` in English, `造声` in Chinese.
-- The mark should be simple enough to work at 16-24px.
+- Use the raster product logo from `web/public/logo.png` near the localized wordmark: `noisemake` in English, `造声` in Chinese.
+- The mark should remain legible in compact header, favicon, and social-card contexts.
 - It may suggest perturbation, fuzz, or a slightly imperfect text signal.
 - Do not use emoji as the mark.
 - Do not add a large mascot, illustration, or hero character.
@@ -27,7 +27,7 @@ The target is "open playground with taste," not a Hugging Face clone. Keep the f
 
 Chosen direction:
 
-- **Noise face:** a tiny rounded square with two offset dot eyes and a slightly jagged mouth. This was chosen over the glitch glyph and seed badge because it best carries the Hugging Face-inspired open playground feel.
+- **Product logo:** the black/yellow glitch face supplied as `web/public/logo.png`. It replaces the earlier inline `noise face` SVG and is the canonical source for favicon and header branding.
 
 ## Typography
 

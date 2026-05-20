@@ -37,11 +37,8 @@ export function renderOgSvg(lang: UiLang) {
   <rect width="1200" height="630" fill="#fffaf0"/>
   <rect x="48" y="48" width="1104" height="534" rx="28" fill="#ffffff" stroke="#eadfca" stroke-width="2"/>
   <g transform="translate(92 84)">
-    <rect width="64" height="64" rx="16" fill="#f9c74f" stroke="#2b2111" stroke-width="4"/>
-    <circle cx="24" cy="26" r="5" fill="#2b2111"/>
-    <circle cx="43" cy="22" r="5" fill="#2b2111"/>
-    <path d="M19 43 L29 39 L38 45 L48 40" fill="none" stroke="#2b2111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="84" y="45" fill="#241c12" font-family="Space Grotesk, IBM Plex Sans, Noto Sans SC, Arial, sans-serif" font-size="42" font-weight="700">${brandName}</text>
+    <image href="/logo.png" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
+    <text x="92" y="49" fill="#241c12" font-family="Space Grotesk, IBM Plex Sans, Noto Sans SC, Arial, sans-serif" font-size="42" font-weight="700">${brandName}</text>
   </g>
   <text x="92" y="308" fill="#241c12" font-family="${font.headline}" font-size="78" font-weight="700">${headline}</text>
   <text x="96" y="392" fill="#66543a" font-family="${font.proof}" font-size="36" font-weight="500">${proof}</text>

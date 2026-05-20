@@ -131,7 +131,7 @@ Suggested top-level layout:
 
 ```text
 +--------------------------------------------------------------+
-| noise face  noisemake                         zh/en theme    |
+| product logo noisemake                        zh/en theme    |
 +--------------------------------------------------------------+
 | HERO                                                         |
 | Make text less polished                  +----------------+  |
@@ -313,7 +313,7 @@ SaaS landing page.
 
 Brand mark:
 
-- Include one tiny friendly `noise face` near the localized wordmark: `noisemake` in English, `造声` in Chinese.
+- Include the product logo near the localized wordmark: `noisemake` in English, `造声` in Chinese.
 - Shape: small rounded square, two offset dot eyes, slightly jagged mouth.
 - Do not use emoji as decoration.
 - Do not add a large mascot, illustration, or hero character.

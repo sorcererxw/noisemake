@@ -410,8 +410,10 @@ function HeaderBar({ lang, copy }: { lang: UiLang; copy: UiCopy }) {
         href={`/${lang}`}
         aria-label={copy.brandName}
       >
-        <img className="block size-6 shrink-0" src="/noise-face.svg" alt="" width="24" height="24" />
-        <span className="truncate">{copy.brandName}</span>
+        <span className="relative block size-9 shrink-0 before:pointer-events-none before:absolute before:inset-[0.65rem] before:-z-10 before:hidden before:rounded-full before:bg-[radial-gradient(circle,rgba(255,215,36,0.74)_0%,rgba(255,215,36,0.36)_46%,rgba(255,215,36,0)_78%)] before:blur-md dark:before:block">
+          <img className="block size-full object-contain" src="/logo.png" alt="" width="36" height="36" />
+        </span>
+        <span className="translate-y-[0.06em] truncate leading-none">{copy.brandName}</span>
       </a>
       <div className="ml-auto flex shrink-0 items-center justify-end gap-x-2 gap-y-1">
         <LanguageSwitch lang={lang} copy={copy} />
