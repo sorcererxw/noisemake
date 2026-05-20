@@ -73,13 +73,12 @@ export function renderOgSvg(lang: UiLang) {
       <stop offset="46%" stop-color="#ffd724" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#ffd724" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#fffaf0"/>
       <stop offset="100%" stop-color="#fff4cf"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="630" fill="#0f0d08"/>
-  <rect x="56" y="56" width="1088" height="518" rx="34" fill="url(#panel)"/>
+  <rect width="1200" height="630" fill="url(#background)"/>
   <circle cx="250" cy="294" r="156" fill="url(#logoGlow)" opacity="0.82"/>
   <image href="/logo.png" x="140" y="190" width="220" height="220" preserveAspectRatio="xMidYMid meet"/>
   <g transform="translate(420 176)">
