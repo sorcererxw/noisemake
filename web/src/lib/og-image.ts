@@ -4,16 +4,39 @@ const OG_FONT: Record<
   UiLang,
   {
     headline: string;
+    headlineSize: number;
+    headlineLines: string[];
+    headlineLineGap: number;
     proof: string;
+    proofSize: number;
+    proofLines: string[];
+    proofY: number;
+    proofLineGap: number;
   }
 > = {
   en: {
     headline: "Space Grotesk, IBM Plex Sans, Arial, sans-serif",
+    headlineSize: 56,
+    headlineLines: ["Make text less polished"],
+    headlineY: 184,
+    headlineLineGap: 78,
     proof: "IBM Plex Sans, Arial, sans-serif",
+    proofSize: 33,
+    proofLines: ["Inject small mistakes so text", "feels more hand-written"],
+    proofY: 252,
+    proofLineGap: 42,
   },
   zh: {
     headline: "Noto Sans SC, IBM Plex Sans, Arial, sans-serif",
+    headlineSize: 78,
+    headlineLines: ["让文本别那么工整"],
+    headlineY: 184,
+    headlineLineGap: 78,
     proof: "Noto Sans SC, IBM Plex Sans, Arial, sans-serif",
+    proofSize: 34,
+    proofLines: ["给文本注入一些小错误，", "让它更像手工写出来的"],
+    proofY: 250,
+    proofLineGap: 44,
   },
 };
 
@@ -28,20 +51,43 @@ export function renderOgSvg(lang: UiLang) {
   const title = escapeSvgText(seoCopy.ogTitle);
   const description = escapeSvgText(seoCopy.ogDescription);
   const brandName = escapeSvgText(uiCopy.brandName);
-  const headline = escapeSvgText(uiCopy.headline);
-  const proof = escapeSvgText(uiCopy.proof);
+  const headlineLines = font.headlineLines
+    .map((line, index) => {
+      const y = font.headlineY + index * font.headlineLineGap;
+      return `<text x="0" y="${y}" fill="#17130c" font-family="${font.headline}" font-size="${font.headlineSize}" font-weight="700">${escapeSvgText(line)}</text>`;
+    })
+    .join("");
+  const proofLines = font.proofLines
+    .map((line, index) => {
+      const y = font.proofY + index * font.proofLineGap;
+      return `<text x="2" y="${y}" fill="#6d5b3f" font-family="${font.proof}" font-size="${font.proofSize}" font-weight="500">${escapeSvgText(line)}</text>`;
+    })
+    .join("");
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
   <title id="title">${title}</title>
   <desc id="desc">${description}</desc>
-  <rect width="1200" height="630" fill="#fffaf0"/>
-  <rect x="48" y="48" width="1104" height="534" rx="28" fill="#ffffff" stroke="#eadfca" stroke-width="2"/>
-  <g transform="translate(92 84)">
-    <image href="/logo.png" width="72" height="72" preserveAspectRatio="xMidYMid meet"/>
-    <text x="92" y="49" fill="#241c12" font-family="Space Grotesk, IBM Plex Sans, Noto Sans SC, Arial, sans-serif" font-size="42" font-weight="700">${brandName}</text>
+  <defs>
+    <radialGradient id="logoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd724" stop-opacity="0.56"/>
+      <stop offset="46%" stop-color="#ffd724" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#ffd724" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fffaf0"/>
+      <stop offset="100%" stop-color="#fff4cf"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#0f0d08"/>
+  <rect x="56" y="56" width="1088" height="518" rx="34" fill="url(#panel)"/>
+  <circle cx="250" cy="294" r="156" fill="url(#logoGlow)" opacity="0.82"/>
+  <image href="/logo.png" x="140" y="190" width="220" height="220" preserveAspectRatio="xMidYMid meet"/>
+  <g transform="translate(420 176)">
+    <text x="0" y="68" fill="#17130c" font-family="Space Grotesk, IBM Plex Sans, Noto Sans SC, Arial, sans-serif" font-size="62" font-weight="700">${brandName}</text>
+    <rect x="2" y="76" width="138" height="10" rx="5" fill="#ffd724"/>
+    ${headlineLines}
+    ${proofLines}
   </g>
-  <text x="92" y="308" fill="#241c12" font-family="${font.headline}" font-size="78" font-weight="700">${headline}</text>
-  <text x="96" y="392" fill="#66543a" font-family="${font.proof}" font-size="36" font-weight="500">${proof}</text>
 </svg>`;
 }
 
