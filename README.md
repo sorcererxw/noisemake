@@ -8,9 +8,16 @@
 
 `noisemake` injects controlled, reproducible imperfections into text.
 
-It is a TypeScript CLI and npm library for deterministic text perturbation, not an
-LLM rewriting tool. Provide a seed when you need stable output for the same input
-and options.
+It is a TypeScript CLI and npm library for deterministic text perturbation in LLM
+text rewriting workflows. Provide a seed when you need stable output for the same
+input and options.
+
+## Background
+
+AI-generated text is often too polished and smooth for testing, prototyping, or
+simulating real user input. `noisemake` exists for cases where you already have
+text and need it to feel more hand-typed by adding controlled imperfections,
+while keeping the original wording and structure recognizable.
 
 The current package supports:
 
