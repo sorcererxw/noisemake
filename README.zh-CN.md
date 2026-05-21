@@ -9,7 +9,6 @@
 `noisemake` 用可控、可复现的方式给文本注入瑕疵。
 
 它是一个用于 LLM 文本改写工作流的确定性文本扰动 TypeScript CLI 和 npm library。
-需要同一输入和选项得到稳定输出时，请显式传入 seed。
 
 ## 项目背景
 
@@ -59,6 +58,7 @@ npx noisemake --file ./input.txt --out ./output.txt --seed 42
 - `--out` 将 UTF-8 输出写入文件而不是 stdout，并按需创建父目录。
 - 输入格式会被保留。已有的末尾换行会保持不变。
 - `--frequency 100` 比 `--frequency 1000` 噪声更高。
+- 需要同一输入和选项得到稳定输出时，请显式传入 seed。
 - 短文本完全可能不产生任何变化，这是正常结果。
 
 库用法：

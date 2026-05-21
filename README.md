@@ -9,8 +9,7 @@
 `noisemake` injects controlled, reproducible imperfections into text.
 
 It is a TypeScript CLI and npm library for deterministic text perturbation in LLM
-text rewriting workflows. Provide a seed when you need stable output for the same
-input and options.
+text rewriting workflows.
 
 ## Background
 
@@ -61,6 +60,7 @@ Input and output:
 - `--out` writes UTF-8 output to a file instead of stdout, and creates parent directories if needed.
 - Input formatting is preserved. Existing trailing newlines stay unchanged.
 - `--frequency 100` is noisier than `--frequency 1000`.
+- Provide a seed when you need stable output for the same input and options.
 - Short text can legitimately produce no changes.
 
 Library:
