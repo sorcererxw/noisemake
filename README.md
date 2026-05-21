@@ -4,6 +4,8 @@
   <img src="https://raw.githubusercontent.com/sorcererxw/noisemake/main/web/public/logo.png" alt="noisemake logo" width="120" />
 </p>
 
+> [中文文档](README.zh-CN.md)
+
 `noisemake` injects controlled, reproducible imperfections into text.
 
 It is a TypeScript CLI and npm library for deterministic text perturbation, not an
@@ -25,8 +27,8 @@ The browser playground is live at [`https://noisemake.xyz`](https://noisemake.xy
 CLI:
 
 ```bash
-npx noisemake "这个 parser 很 stable" --frequency 200 --seed baseline
-echo "这是一段测试文本" | npx noisemake --frequency 1000 --seed 42
+npx noisemake "This parser stays stable under repeated tests." --frequency 200 --seed baseline
+echo "This is a small test sentence." | npx noisemake --frequency 1000 --seed 42
 npx noisemake --file ./input.txt --seed 42
 npx noisemake --file ./input.txt --out ./output.txt --seed 42
 ```
@@ -58,7 +60,7 @@ Library:
 ```ts
 import { noisemake } from "noisemake";
 
-const output = noisemake("这个 parser 很 stable", {
+const output = noisemake("This parser stays stable under repeated tests.", {
   frequency: 200,
   seed: "baseline",
   types: ["typo", "repeat"],
