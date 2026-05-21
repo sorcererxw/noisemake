@@ -15,11 +15,7 @@
 
 不要把论文里的 robust word recognition 模型直接并入 noisemake 核心。
 
-论文的主目标是防御 adversarial misspellings：在下游 NLP 模型前面加一层词识别/纠错模块，把攻击性拼写归一化回原词。noisemake 的目标相反，是生成可控、可复现的文本扰动。引入词识别模型会带来训练语料、词表、模型权重、backoff 策略和运行时体积问题，也会把核心引擎从静态规则扰动推向模型推断。这不符合当前产品承诺：
-
-```text
-same input + same seed + same options = same output
-```
+论文的主目标是防御 adversarial misspellings：在下游 NLP 模型前面加一层词识别/纠错模块，把攻击性拼写归一化回原词。noisemake 的目标相反，是生成可控、可复现的文本扰动。引入词识别模型会带来训练语料、词表、模型权重、backoff 策略和运行时体积问题，也会把核心引擎从静态规则扰动推向模型推断。这不符合当前产品边界。
 
 更适合吸收的是论文攻击侧的字符扰动约束。它们能让 noisemake 的英文 typo 更像有意构造的可读 misspelling，同时保持纯规则、静态数据和确定性 RNG。
 
@@ -188,4 +184,3 @@ pnpm run test:dist
 3. 新增 `insert` 操作，或把 `duplicate` 调整为更接近插入型扰动。
 4. 更新 unit tests。
 5. 运行 `pnpm run test:unit`。
-

@@ -9,7 +9,8 @@
 `noisemake` injects controlled, reproducible imperfections into text.
 
 It is a TypeScript CLI and npm library for deterministic text perturbation, not an
-LLM rewriting tool. Same input, same seed, same options, same output.
+LLM rewriting tool. Provide a seed when you need stable output for the same input
+and options.
 
 The current package supports:
 
@@ -68,48 +69,7 @@ const output = noisemake("This parser stays stable under repeated tests.", {
 });
 ```
 
-## Documentation
-
-If you just want to use the package:
-
-- This README is enough for the public surface.
-
-If you want to understand how the package is shaped:
-
-- [Documentation map](docs/README.md)
-- [Core docs index](docs/core/README.md)
-- [Core repo map](docs/core/repo-map.md)
-- [Core package plan and decisions](docs/core/plan.md)
-- [Core history and superseded assumptions](docs/core/history.md)
-
-If you want to work on the web playground:
-
-- [Live web playground](https://noisemake.xyz)
-- [Web docs index](docs/web/README.md)
-- [Web package plan](docs/web/plan.md)
-- [Web design system](docs/web/design-system.md)
-- [Web design brief](docs/web/design-brief.md)
-- [Web implementation spec](docs/web/implementation-spec.md)
-- [Web package commands](web/README.md)
-
-If you want research context:
-
-- [Research notes index](docs/research/README.md)
-- [docs/research](docs/research)
-
-If you need licensing and bundled data provenance:
-
-- [Legal and data-boundary docs](docs/legal/README.md)
-- [License boundary summary](docs/legal/license-boundary.md)
-- [NOTICE](NOTICE)
-- [Rime Luna source note](third_party/rime-luna-pinyin/SOURCE.md)
-- [Rime Pinyin Simplified source note](third_party/rime-pinyin-simp/SOURCE.md)
-
-If you are changing code in this repo:
-
-- [AGENTS.md](AGENTS.md)
-
-## Data License
+## License
 
 The project code is MIT. Bundled Chinese IME confusion data is derived from
 LGPL-3.0-or-later Rime dictionary data and remains LGPL-covered data. See

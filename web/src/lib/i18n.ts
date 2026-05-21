@@ -56,10 +56,10 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     cliCommand: 'npx -y noisemake "This parser stays stable"',
     tryPlayground: "Try Playground",
     playgroundLabel: "Playground",
-    playgroundIntro: "Paste polished text, set deterministic options, and reproduce the same noisy output.",
+    playgroundIntro: "Paste polished text, set deterministic options, and reproduce noisy output.",
     explainerTitle: "Add a little controlled mess",
     explainerIntro:
-      "Use noisemake when your sample text feels too clean. Pick a seed, choose the kinds of rough edges you want, and get the same result again when you need it.",
+      "Use noisemake when your sample text feels too clean. Pick a seed, choose the kinds of rough edges you want, and get stable output again when you need it.",
     explainerItems: [
       "Keep a fixed seed when you want repeatable examples.",
       "Mix typos, small repeats, word swaps, spacing slips, and punctuation changes.",
@@ -85,7 +85,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     noChange:
       "No eligible mutation was selected for this seed and frequency. Try a lower frequency or a different seed.",
     frequencyHelper: "Higher means less noise.",
-    seedHelper: "Same input + same seed = same output.",
+    seedHelper: "Fixed seed keeps output stable for the same input.",
     frequencyError: "Use a positive whole number.",
     typeError: "Choose at least one noise type.",
     languageError: "Choose at least one language.",
@@ -126,10 +126,10 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     cliCommand: 'npx -y noisemake "这是一段测试文本"',
     tryPlayground: "尝试一下",
     playgroundLabel: "Playground",
-    playgroundIntro: "粘贴干净文本，设置确定性选项，复现同一份噪声输出。",
+    playgroundIntro: "粘贴干净文本，设置确定性选项，复现噪声输出。",
     explainerTitle: "给文本加一点可控的小瑕疵",
     explainerIntro:
-      "如果一段文本看起来太干净，可以用造声加入轻微错字、重复、词序、空格或标点变化。固定种子后，下次还能得到同样结果。",
+      "如果一段文本看起来太干净，可以用造声加入轻微错字、重复、词序、空格或标点变化。固定种子后，需要时可以得到稳定输出。",
     explainerItems: [
       "固定种子，方便复现和对比。",
       "按需要混合错别字、重复、词序、空格和标点变化。",
@@ -154,7 +154,7 @@ export const UI_COPY: Record<UiLang, UiCopy> = {
     outputPlaceholder: "运行后会显示输出。",
     noChange: "这个种子和频率没有选中可用扰动。试试调低频率，或者换个种子。",
     frequencyHelper: "数值越高，噪声越少。",
-    seedHelper: "同一输入 + 同一种子 = 同一输出。",
+    seedHelper: "固定种子会让同一输入的输出保持稳定。",
     frequencyError: "请输入正整数。",
     typeError: "至少选择一种噪声类型。",
     languageError: "至少选择一种语言。",

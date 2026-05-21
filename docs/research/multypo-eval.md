@@ -13,11 +13,7 @@
 
 ## 对 noisemake 的结论
 
-不要直接把论文的 MulTypo 算法搬进 noisemake 核心。更合适的做法是吸收它的抽样原则，同时保留 noisemake 当前的产品边界：
-
-```text
-same input + same seed + same options = same output
-```
+不要直接把论文的 MulTypo 算法搬进 noisemake 核心。更合适的做法是吸收它的抽样原则，同时保留 noisemake 当前的产品边界。
 
 论文目标是评估 LLM 在多语言键盘 typo 下的鲁棒性；noisemake 目标是生成可控、可复现的文本扰动。两者方向相近，但接口语义不同。论文使用 typo rate 来决定要插入多少 typo；noisemake 使用 `frequency` 对候选 mutation 做 seeded Bernoulli 采样。因此不建议把 `frequency` 改成论文式的固定 typo 数量或腐蚀率。
 
@@ -174,4 +170,3 @@ pnpm run test:unit
 ```bash
 pnpm run test:dist
 ```
-

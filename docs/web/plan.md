@@ -20,11 +20,8 @@ It is a deterministic text-noise playground for:
 
 ## Product Promise
 
-The web app must reinforce the same promise as the core package:
-
-```text
-same input + same seed + same options = same output
-```
+The web app must reinforce the same boundary as the core package: controlled,
+reproducible perturbation, not LLM rewriting.
 
 The browser UI is a different surface, not a different engine.
 

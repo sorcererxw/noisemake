@@ -9,7 +9,7 @@
 `noisemake` 用可控、可复现的方式给文本注入瑕疵。
 
 它是一个用于确定性文本扰动的 TypeScript CLI 和 npm library，不是 LLM 改写工具。
-同样的输入、同样的 seed、同样的选项，会得到同样的输出。
+需要同一输入和选项得到稳定输出时，请显式传入 seed。
 
 当前 package 支持：
 
@@ -68,48 +68,7 @@ const output = noisemake("这是一段用于测试的中文文本。", {
 });
 ```
 
-## 文档
-
-如果你只是想使用这个 package：
-
-- 这份 README 已覆盖公开使用界面。
-
-如果你想理解 package 的设计形态：
-
-- [文档地图](docs/README.md)
-- [Core 文档索引](docs/core/README.md)
-- [Core repo 地图](docs/core/repo-map.md)
-- [Core package 计划与决策](docs/core/plan.md)
-- [Core 历史与已废弃假设](docs/core/history.md)
-
-如果你想开发 web playground：
-
-- [线上 web playground](https://noisemake.xyz)
-- [Web 文档索引](docs/web/README.md)
-- [Web package 计划](docs/web/plan.md)
-- [Web 设计系统](docs/web/design-system.md)
-- [Web 设计简报](docs/web/design-brief.md)
-- [Web 实现规格](docs/web/implementation-spec.md)
-- [Web package 命令](web/README.md)
-
-如果你想了解研究背景：
-
-- [研究笔记索引](docs/research/README.md)
-- [docs/research](docs/research)
-
-如果你需要 license 和内置数据来源信息：
-
-- [法律与数据边界文档](docs/legal/README.md)
-- [License 边界摘要](docs/legal/license-boundary.md)
-- [NOTICE](NOTICE)
-- [Rime Luna 来源说明](third_party/rime-luna-pinyin/SOURCE.md)
-- [Rime Pinyin Simplified 来源说明](third_party/rime-pinyin-simp/SOURCE.md)
-
-如果你要修改这个 repo 的代码：
-
-- [AGENTS.md](AGENTS.md)
-
-## 数据 License
+## License
 
 项目代码使用 MIT license。内置中文输入法混淆数据派生自
 LGPL-3.0-or-later Rime 词典数据，并仍然属于 LGPL 覆盖的数据。见

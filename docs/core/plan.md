@@ -555,7 +555,7 @@ Test command split:
 
 Unit tests exercise source modules. CLI and package import tests exercise built `dist/` output so shebang, bin, ESM, and CJS packaging issues are caught before publish.
 
-- Same input plus same options plus same seed returns the same output.
+- Fixed input plus options plus seed returns stable output.
 - Multiple fixed seeds should be tested against a sufficiently long sample to prove the perturbation path can produce changes without making tests depend on one lucky seed.
 - Short text with `frequency` larger than the candidate count may return input unchanged.
 - Empty string returns empty string.

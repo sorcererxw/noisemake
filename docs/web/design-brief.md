@@ -226,7 +226,7 @@ Default controls:
 Control helper copy:
 
 - `frequency`: "Higher means less noise."
-- `seed`: "Same input + same seed = same output."
+- `seed`: "Fixed seed keeps output stable for the same input."
 - `typo`: "IME-style Chinese substitutions and keyboard-like English typos."
 - `repeat`: "Light word or phrase repetition."
 - `spacing`: "Whitespace glitches across words, punctuation, and mixed Chinese-English boundaries."
@@ -268,7 +268,7 @@ Storyboard:
 | 2 | Scans the CLI panel | "This is not a vague AI rewriter." | The command is short enough to understand immediately; deeper options are left to GitHub docs and CLI help. |
 | 3 | Scrolls or jumps to Playground | "I can try the same engine here." | Playground section appears immediately after the hero, not behind feature copy. |
 | 4 | Reviews or edits the default text | "This is a real tool, not a mockup." | Input starts with a realistic sample that matches the current interface language and accepts pasted text directly. |
-| 5 | Reviews `frequency` and `seed` | "The controls map to reproducibility." | Helper copy explains that higher frequency means less noise and same seed means same output. |
+| 5 | Reviews `frequency` and `seed` | "The controls map to reproducibility." | Helper copy explains that higher frequency means less noise and fixed seed keeps output stable. |
 | 6 | Clicks Run | "A deliberate operation happened." | Run shows a short running state; output changes only after Run. |
 | 7 | Reads output | "I can inspect what changed." | Changed spans are highlighted inline; no-change cases explain why nothing changed. |
 | 8 | Copies output | "This is usable in my workflow." | Copy button confirms success with a short toast. |

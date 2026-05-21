@@ -9,13 +9,8 @@ Codex discovers this repo-root `AGENTS.md` automatically. Keep it concise enough
 fit inside Codex's project-instruction budget.
 
 `noisemake` is a TypeScript CLI and npm library for controlled, reproducible text
-perturbation. It is not an LLM rewriting tool. The product promise is:
-
-```text
-same input + same seed + same options = same output
-```
-
-Protect that promise before optimizing anything else.
+perturbation. It is not an LLM rewriting tool. Seeded calls must remain stable,
+but do not use formula-style slogans as product positioning.
 
 ## Read First
 
@@ -60,8 +55,8 @@ third_party/
 
 ## Hard Invariants
 
-- Determinism is the top invariant. Seeded calls must stay reproducible.
 - Do not change public CLI or library behavior without updating tests and docs.
+- Determinism is a hard invariant for seeded calls.
 - Core modules under `src/*.ts`, except `src/cli.ts`, must stay runtime-neutral.
   Do not add `node:*`, `process`, `fs`, or other Node-only APIs outside `src/cli.ts`.
 - Keep CLI stdout clean. Successful CLI runs write only transformed text to stdout.
@@ -108,7 +103,7 @@ package shape, `tsup.config.ts`, or anything in `dist` expectations.
 When changing candidate generation, selection, RNG, Unicode spans, or mutation
 application, verify:
 
-- Same input/options/seed returns the same output across repeated calls.
+- Fixed input/options/seed returns stable output across repeated calls.
 - Different fixed seeds can produce different outputs on sufficiently long text.
 - Very low noise can return unchanged text.
 - `languages: ["zh"]` leaves English text untouched for typo-only runs.

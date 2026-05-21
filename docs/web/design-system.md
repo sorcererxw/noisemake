@@ -5,7 +5,7 @@
 - **What this is:** A deterministic text-noise playground for the `noisemake` npm package and CLI.
 - **Who it is for:** Researchers, eval builders, and agent workflows that need reproducible noisy text fixtures.
 - **Project type:** Open research playground, not a marketing site and not an enterprise dashboard.
-- **Core promise:** Same input, same seed, same output.
+- **Core promise:** Fixed seeds keep output stable for the same input and options.
 
 ## Aesthetic Direction
 
